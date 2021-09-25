@@ -341,6 +341,8 @@ yMACRO_reset_all        (void)
    /*---(header)-------------------------*/
    DEBUG_SCRP   yLOG_senter  (__FUNCTION__);
    /*---(mode)---------------------------*/
+   ymacro_rec_reset ();
+   ymacro_exe_reset ();
    DEBUG_SCRP   yLOG_snote   ("macro_off");
    SET_MACRO_IGNORE;
    SET_MACRO_STOP;
@@ -349,12 +351,41 @@ yMACRO_reset_all        (void)
       x_abbr = S_MACRO_LIST [i];
       ymacro_wipe  (x_abbr);
    }
+   /*---(record clear)-------------------*/
+   g_rkeys [0] = G_KEY_NULL;
+   g_rlen      = 0;
+   g_rpos      =   0;
+   g_rcur      = '-';
+   g_rcurr     = -1;
    /*---(complete)-----------------------*/
    DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
-char         /*-> process macro sub-mode keys --------[ ------ [ge.H65.229.88]*/ /*-[02.0000.102.!]-*/ /*-[--.---.---.--]-*/
+uchar
+yMACRO_handle_prep (uchar a_major, uchar a_minor)
+{
+   switch (a_minor) {
+   case '@' :
+      yMODE_enter  (SMOD_MACRO   );
+      return a_minor;
+      break;
+   case 'q' :
+      IF_MACRO_RECORDING {
+         yMACRO_rec_end ();
+      } else {
+         yMODE_enter  (SMOD_MACRO   );
+         return a_minor;
+      }
+      break;
+   case 'Q' :
+      yMACRO_reset_all ();
+      break;
+   }
+   return 0;
+}
+
+uchar        /*-> process macro sub-mode keys --------[ ------ [ge.H65.229.88]*/ /*-[02.0000.102.!]-*/ /*-[--.---.---.--]-*/
 ymacro_smode            (uchar a_major, uchar a_minor)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -445,7 +476,10 @@ ymacro__unit_quiet      (void)
    char       *x_args [20]  = {"yMACRO_unit" };
    /*> yURG_logger   (x_narg, x_args);                                                <*/
    /*> yURG_urgs     (x_narg, x_args);                                                <*/
+   yMODE_init (MODE_MAP);
+   yMODE_handler_setup ();
    yMACRO_init ();
+   yMACRO_config (NULL, NULL);
    return 0;
 }
 
@@ -460,7 +494,10 @@ ymacro__unit_loud       (void)
    yURG_name  ("ystr"         , YURG_ON);
    yURG_name  ("yparse"       , YURG_ON);
    DEBUG_YVIKEYS yLOG_info     ("yMACRO"     , yMACRO_version   ());
+   yMODE_init (MODE_MAP);
+   yMODE_handler_setup ();
    yMACRO_init ();
+   yMACRO_config (NULL, NULL);
    return 0;
 }
 

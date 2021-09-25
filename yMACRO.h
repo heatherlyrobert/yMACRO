@@ -51,6 +51,8 @@
 #define     SET_MACRO_RECORD     yMACRO_modeset (MACRO_RECORD);
 #define     SET_MACRO_IGNORE     yMACRO_modeset (MACRO_IGNORE);
 
+#define     CASE_MACRO_KEYS   '@' : case 'q' : case 'Q'
+
 
 typedef  const unsigned char  cuchar;
 typedef  unsigned char        uchar;
@@ -66,6 +68,7 @@ char        yMACRO_init             (void);
 char        yMACRO_config           (void *a_loader, void *a_saver);
 char        yMACRO_wrap             (void);
 char        yMACRO_reset_all        (void);
+uchar       yMACRO_handle_prep      (uchar a_major, uchar a_minor);
 
 /*===[[ yMACRO_rec.c ]]=======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
@@ -73,7 +76,7 @@ char        yMACRO_rec_mode         (void);
 char        yMACRO_rec_key          (char a_key);
 char        yMACRO_rec_end          (void);
 char        yMACRO_direct           (char *a_string);
-char        yMACRO_rec_status       (char *a_list);
+char        yMACRO_rec_status       (char a_size, short a_width, char *a_list);
 
 
 /*===[[ yMACRO_exe.c ]]=======================================================*/

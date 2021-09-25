@@ -34,9 +34,9 @@
 
 
 /*====================------------------------------------====================*/
-/*===----                     character-by-character                   ----===*/
+/*===----                        status control                        ----===*/
 /*====================------------------------------------====================*/
-static void  o___DETAIL__________o () { return; }
+static void  o___CONTROL_________o () { return; }
 
 char 
 ymacro_rec_set          (uchar a_abbr)
@@ -64,6 +64,13 @@ ymacro_rec_reset        (void)
 }
 
 char yMACRO_rec_mode  (void)         { return g_rmode; }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     character-by-character                   ----===*/
+/*====================------------------------------------====================*/
+static void  o___DETAIL__________o () { return; }
 
 char         /*-> prepare a macro recording ----------[ ------ [ge.831.112.53]*/ /*-[01.0000.023.A]-*/ /*-[--.---.---.--]-*/
 ymacro_rec_beg          (char a_name)
@@ -385,48 +392,100 @@ yMACRO_direct           (char *a_string)
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                        status control                        ----===*/
+/*====================------------------------------------====================*/
+static void  o___STATUS__________o () { return; }
+
 char
-yMACRO_rec_status       (char *a_list)
+yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
 {
-   /*> char        x_dots      [LEN_HUND] = "····+····+····+····+····+····+····+····+····+····+····+····+····+····+····+····+····+····";                                            <* 
-    *> /+> char        x_dots      [LEN_HUND] = "····´····´····´····´····´····´····´····´····´····´····´····´····´";   <+/                                                          <* 
-    *> int         x_len       = 0;                                                                                                                                                 <* 
-    *> int         x_wide;                                                                                                                                                          <* 
-    *> int         w;                                                                                                                                                               <* 
-    *> /+---(header)-------------------------+/                                                                                                                                     <* 
-    *> DEBUG_SCRP   yLOG_enter   (__FUNCTION__);                                                                                                                                    <* 
-    *> /+---(get size)-----------------------+/                                                                                                                                     <* 
-    *> yVIKEYS_view_size   (YVIKEYS_STATUS, NULL, &x_wide, NULL, NULL, NULL);                                                                                                       <* 
-    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , x_wide);                                                                                                                            <* 
-    *> if (myVIKEYS.env != YVIKEYS_CURSES)    x_wide /= 7.5;                                                                                                                        <* 
-    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , x_wide);                                                                                                                            <* 
-    *> w = x_wide - 15;                                                                                                                                                             <* 
-    *> DEBUG_SCRP   yLOG_value   ("w"         , w);                                                                                                                                 <* 
-    *> DEBUG_SCRP   yLOG_value   ("s_rcurr"   , s_rcurr);                                                                                                                           <* 
-    *> if (s_rcurr < 0) {                                                                                                                                                           <* 
-    *>    snprintf (a_list, LEN_FULL, "record  - ---  %*.*s", w, w, x_dots);                                                                                                        <* 
-    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                 <* 
-    *>    return 0;                                                                                                                                                                 <* 
-    *> }                                                                                                                                                                            <* 
-    *> DEBUG_SCRP   yLOG_info    ("s_rkeys"   , s_rkeys);                                                                                                                           <* 
-    *> x_len = strlen (s_rkeys) - 1;                                                                                                                                                <* 
-    *> DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);                                                                                                                             <* 
-    *> if (x_len == 0) {                                                                                                                                                            <* 
-    *>    snprintf (a_list, LEN_FULL, "record  %c   0  %*.*s", s_rname, w, w, x_dots);                                                                                              <* 
-    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                 <* 
-    *>    return 0;                                                                                                                                                                 <* 
-    *> }                                                                                                                                                                            <* 
-    *> w -= 3;                                                                                                                                                                      <* 
-    *> if (x_len == 1) {                                                                                                                                                            <* 
-    *>    snprintf (a_list, LEN_FULL, "record  %c %3d  [%c] %*.*s", s_rname, x_len, s_rkeys [x_len - 1], w - x_len, w - x_len, x_dots + x_len);                                     <* 
-    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                 <* 
-    *>    return 0;                                                                                                                                                                 <* 
-    *> }                                                                                                                                                                            <* 
-    *> w -= 1;                                                                                                                                                                      <* 
-    *> snprintf (a_list, LEN_FULL, "record  %c %3d  %*.*s [%c] %*.*s", s_rname, x_len, x_len - 1, x_len - 1, s_rkeys, s_rkeys [x_len - 1], w - x_len, w - x_len, x_dots + x_len);   <* 
-    *> /+---(complete)-----------------------+/                                                                                                                                     <* 
-    *> DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                    <* 
-    *> return 0;                                                                                                                                                                    <*/
+   int         x_len       = 0;
+   int         x_wide;
+   int         w;
+   uchar       x_name      = '-';
+   uchar       x_keys      [LEN_RECD]  = "";
+   uchar       x_curr      = '¬';
+   uchar       x_lenstr    [LEN_TERSE] = "---";
+   uchar       x_pre       [LEN_DESC]  = "";
+   uchar       x_over      = ' ';
+   uchar       x_mid       [LEN_RECD]  = "";
+   /*---(header)-------------------------*/
+   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get size)-----------------------*/
+   /*> yVIKEYS_view_size   (YVIKEYS_STATUS, NULL, &x_wide, NULL, NULL, NULL);         <* 
+    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , a_wide);                              <* 
+    *> if (myVIKEYS.env != YVIKEYS_CURSES)    a_wide /= 7.5;                          <*/
+   DEBUG_SCRP   yLOG_value   ("a_wide"    , a_wide);
+   w = a_wide - 15;
+   DEBUG_SCRP   yLOG_value   ("w"         , w);
+   /*---(length)-------------------------*/
+   if (g_rcurr >= 0) {
+      x_name = g_rname;
+      strlcpy (x_keys, g_rkeys, LEN_RECD);
+      x_len = strlen (x_keys) - 1;
+      x_curr = x_keys [x_len - 1];
+      sprintf (x_lenstr, "%3d", x_len);
+   }
+   DEBUG_SCRP   yLOG_info    ("x_keys"    , x_keys);
+   DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);
+   DEBUG_SCRP   yLOG_value   ("x_curr"    , x_curr);
+   /*---(prefix)-------------------------*/
+   switch (a_size) {
+   case 'u'  : case 't'  :
+      sprintf (x_pre, "rec %c %c", x_name, x_curr);
+      break;
+   case 's'  : case 'm'  : case 'l'  : case 'g'  :
+      sprintf (x_pre, "record  %c %3s %c", x_name, x_lenstr, x_curr);
+      break;
+   }
+   /*---(maxlen)-------------------------*/
+   switch (a_size) {
+   case 'u'  :  w =   0; break;
+   case 't'  :  w =  10; break;
+   case 's'  :  w =  20; break;
+   case 'm'  :  w =  50; break;
+   default   :  w =  90; break;
+   }
+   /*---(correct len)--------------------*/
+   if (x_len > w) {
+      x_over = '<';
+      x_len  = w;
+   }
+   /*---(keys)---------------------------*/
+   switch (a_size) {
+   case 'u'  :
+      sprintf  (x_mid, " ´");
+      break;
+   default   :
+      snprintf (x_mid, LEN_RECD, "%*.*s%*.*s  ´", x_len, x_len, x_keys, w - x_len, w - x_len, YSTR_MACRO + x_len);
+      break;
+   }
+   /*---(concatenate)--------------------*/
+   sprintf (a_list, "%s %c%s", x_pre, x_over, x_mid);
+   /*> if (g_rcurr < 0) {                                                                                                                                                               <* 
+    *>    snprintf (a_list, LEN_FULL, "record  - ---  %*.*s", w, w, YSTR_MACRO);                                                                                                        <* 
+    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                     <* 
+    *>    return 0;                                                                                                                                                                     <* 
+    *> }                                                                                                                                                                                <* 
+    *> if (x_len == 0) {                                                                                                                                                                <* 
+    *>    snprintf (a_list, LEN_FULL, "record  %c   0  %*.*s", g_rname, w, w, YSTR_MACRO);                                                                                              <* 
+    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                     <* 
+    *>    return 0;                                                                                                                                                                     <* 
+    *> }                                                                                                                                                                                <* 
+    *> w -= 3;                                                                                                                                                                          <* 
+    *> if (x_len == 1) {                                                                                                                                                                <* 
+    *>    snprintf (a_list, LEN_FULL, "record  %c %3d  [%c] %*.*s", g_rname, x_len, g_rkeys [x_len - 1], w - x_len, w - x_len, YSTR_MACRO + x_len);                                     <* 
+    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                     <* 
+    *>    return 0;                                                                                                                                                                     <* 
+    *> }                                                                                                                                                                                <* 
+    *> w -= 1;                                                                                                                                                                          <* 
+    *> snprintf (a_list, LEN_FULL, "record  %c %3d  %*.*s [%c] %*.*s", g_rname, x_len, x_len - 1, x_len - 1, g_rkeys, g_rkeys [x_len - 1], w - x_len, w - x_len, YSTR_MACRO + x_len);   <*/
+   /*---(complete)-----------------------*/
+   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 
