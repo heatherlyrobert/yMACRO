@@ -412,46 +412,60 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
    uchar       x_pre       [LEN_DESC]  = "";
    uchar       x_over      = ' ';
    uchar       x_mid       [LEN_RECD]  = "";
+   int         x_beg       =   0;
    /*---(header)-------------------------*/
    DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get size)-----------------------*/
    /*> yVIKEYS_view_size   (YVIKEYS_STATUS, NULL, &x_wide, NULL, NULL, NULL);         <* 
     *> DEBUG_SCRP   yLOG_value   ("x_wide"    , a_wide);                              <* 
     *> if (myVIKEYS.env != YVIKEYS_CURSES)    a_wide /= 7.5;                          <*/
+   DEBUG_SCRP   yLOG_char    ("a_size"    , a_size);
    DEBUG_SCRP   yLOG_value   ("a_wide"    , a_wide);
-   w = a_wide - 15;
-   DEBUG_SCRP   yLOG_value   ("w"         , w);
    /*---(length)-------------------------*/
    if (g_rcurr >= 0) {
       x_name = g_rname;
       strlcpy (x_keys, g_rkeys, LEN_RECD);
       x_len = strlen (x_keys) - 1;
-      x_curr = x_keys [x_len - 1];
+      if (x_len > 0)  x_curr = x_keys [x_len - 1];
       sprintf (x_lenstr, "%3d", x_len);
    }
    DEBUG_SCRP   yLOG_info    ("x_keys"    , x_keys);
    DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);
    DEBUG_SCRP   yLOG_value   ("x_curr"    , x_curr);
+   /*---(check size)---------------------*/
+   if (a_size == '-') {
+      if (a_wide < 20)  a_size = 'u';
+      if (a_wide < 30)  a_size = 't';
+   }
    /*---(prefix)-------------------------*/
    switch (a_size) {
    case 'u'  : case 't'  :
       sprintf (x_pre, "rec %c %c", x_name, x_curr);
       break;
-   case 's'  : case 'm'  : case 'l'  : case 'g'  :
+   default   :
       sprintf (x_pre, "record  %c %3s %c", x_name, x_lenstr, x_curr);
       break;
    }
    /*---(maxlen)-------------------------*/
    switch (a_size) {
-   case 'u'  :  w =   0; break;
-   case 't'  :  w =  10; break;
-   case 's'  :  w =  20; break;
-   case 'm'  :  w =  50; break;
-   default   :  w =  90; break;
+   case 'u'  :  a_wide =   0; break;
+   case 't'  :  a_wide =  20; break;
+   case 's'  :  a_wide =  40; break;
+   case 'm'  :  a_wide =  70; break;
+   case 'l'  :  a_wide = 110; break;
+   case 'h'  :  a_wide = 160; break;
+   case 'g'  :  a_wide = 220; break;
    }
+   w =  a_wide - 20;
+   if (a_size == 't')  w = 10;
+   DEBUG_SCRP   yLOG_value   ("w"         , w);
    /*---(correct len)--------------------*/
+   IF_MACRO_RECORDING {
+      if (x_len >= 1)  ++x_len;
+   }
    if (x_len > w) {
       x_over = '<';
+      x_beg  = x_len - w;
       x_len  = w;
    }
    /*---(keys)---------------------------*/
@@ -459,12 +473,15 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
    case 'u'  :
       sprintf  (x_mid, " ´");
       break;
+   case 't'  :
+      snprintf (x_mid, LEN_RECD, "%c%*.*s%*.*s´", x_over, x_len, x_len, x_keys + x_beg, w - x_len, w - x_len, YSTR_MACRO + x_len);
+      break;
    default   :
-      snprintf (x_mid, LEN_RECD, "%*.*s%*.*s  ´", x_len, x_len, x_keys, w - x_len, w - x_len, YSTR_MACRO + x_len);
+      snprintf (x_mid, LEN_RECD, "%c%*.*s%*.*s  ´", x_over, x_len, x_len, x_keys + x_beg, w - x_len, w - x_len, YSTR_MACRO + x_len);
       break;
    }
    /*---(concatenate)--------------------*/
-   sprintf (a_list, "%s %c%s", x_pre, x_over, x_mid);
+   sprintf (a_list, "%s %s", x_pre, x_mid);
    /*> if (g_rcurr < 0) {                                                                                                                                                               <* 
     *>    snprintf (a_list, LEN_FULL, "record  - ---  %*.*s", w, w, YSTR_MACRO);                                                                                                        <* 
     *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                     <* 
