@@ -117,8 +117,10 @@ int         yMACRO_dump             (void *a_file);
 
 /*===[[ yMACRO_flat.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
-char        yMACRO_install          (char a_src);
-char        yMACRO_flatten          (char a_src, char a_dst);
+char        yMACRO_install_at       (uchar a_src, uchar a_dst);
+char        yMACRO_install          (uchar a_src);
+char        yMACRO_flatten_to       (uchar a_src, uchar a_dst);
+char        yMACRO_flatten          (uchar a_src);
 
 
 

@@ -213,10 +213,10 @@ ymacro_exe_adv          (uchar a_play)
       break;
    }
    /*---(next key)-----------------------*/
-   if (/* yvikeys_keys_repeating () */ 1) {
+   if (yKEYS_repeating ()) {
       DEBUG_LOOP   yLOG_snote   ("older keys");
-      /*> g_macros [g_ecurr].cur = yvikeys_keys_keygpos ();                           <*/
-      /*> yvikeys_keys_repos (yvikeys_keys_gpos + 1);                                 <*/
+      g_macros [g_ecurr].cur = yKEYS_current ();
+      yKEYS_repos (yKEYS_position + 1);
    } else if (g_pause > 0) {
       DEBUG_LOOP   yLOG_snote   ("pausing");
       DEBUG_SCRP   yLOG_sint    (g_macros [g_ecurr].pos);
