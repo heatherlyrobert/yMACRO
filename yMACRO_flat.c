@@ -89,7 +89,7 @@ ymacro__flatten         (char a_lvl, char a_src, char *a_out)
 }
 
 char
-yMACRO_flatten_to       (uchar a_src, uchar a_dst)
+yMACRO_flatten_at       (uchar a_src, uchar a_dst)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -143,7 +143,7 @@ yMACRO_flatten_to       (uchar a_src, uchar a_dst)
    return rc;
 }
 
-char yMACRO_flatten  (uchar a_src) { return yMACRO_flatten_to (a_src, '0'); }
+char yMACRO_flatten  (uchar a_src) { return yMACRO_flatten_at (a_src, '0'); }
 
 int
 ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)

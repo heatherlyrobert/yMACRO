@@ -76,7 +76,6 @@ char        yMACRO_rec_mode         (void);
 char        yMACRO_rec_key          (char a_key);
 char        yMACRO_rec_end          (void);
 char        yMACRO_direct           (char *a_string);
-char        yMACRO_rec_status       (char a_size, short a_width, char *a_list);
 
 
 /*===[[ yMACRO_exe.c ]]=======================================================*/
@@ -85,7 +84,6 @@ char        yMACRO_exe_mode         (void);
 char        yMACRO_exe_pos          (char *a_name, int *a_pos);
 char        yMACRO_exe_repos        (int a_pos);
 uchar       yMACRO_exec             (uchar a_play);
-char        yMACRO_exe_status       (char *a_list);
 
 /*===[[ yMACRO_file.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
@@ -110,8 +108,11 @@ char*       yMACRO__unit            (char *a_question, uchar a_abbr);
 
 /*===[[ yMACRO_rptg.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
-char        yMACRO_list             (int *a_count, char *a_list);
+char        yMACRO_list             (char a_style, char *a_list);
 int         yMACRO_dump             (void *a_file);
+char        yMACRO_rec_status       (char a_size, short a_wide, char *a_list);
+char        yMACRO_exe_status       (char a_size, short a_wide, char *a_list);
+char        yMACRO_inv_status       (char a_size, short a_wide, char *a_list);
 
 
 
@@ -119,7 +120,7 @@ int         yMACRO_dump             (void *a_file);
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 char        yMACRO_install_at       (uchar a_src, uchar a_dst);
 char        yMACRO_install          (uchar a_src);
-char        yMACRO_flatten_to       (uchar a_src, uchar a_dst);
+char        yMACRO_flatten_at       (uchar a_src, uchar a_dst);
 char        yMACRO_flatten          (uchar a_src);
 
 

@@ -352,43 +352,43 @@ char         /*-> tbd --------------------------------[ ------ [gc.A43.108.12]*/
 ymacro_exe_play         (uchar a_key)
 {
    char        rc          =    1;
-   /*> IF_MACRO_OFF   return 0;                                                       <* 
-    *> DEBUG_SCRP   yLOG_enter   (__FUNCTION__);                                      <* 
-    *> DEBUG_SCRP   yLOG_value   ("a_key"     , a_key);                               <* 
-    *> switch (a_key) {                                                               <* 
-    *> case '0' : case '1' : case '2' : case '3' : case '4' :                         <* 
-    *> case '5' : case '6' : case '7' : case '8' : case '9' :                         <* 
-    *> case '-'      : case '+'      :                                                <* 
-    *>    yvikeys_macro__delay ('d', a_key);                                          <* 
-    *>    break;                                                                      <* 
-    *> case 'n' : case 's' : case 'b' : case 'p' : case 'd' :                         <* 
-    *>    g_dupdate = a_key;                                                          <* 
-    *>    break;                                                                      <* 
-    *> case ',' :                                                                     <* 
-    *>    DEBUG_SCRP   yLOG_note    ("delay");                                        <* 
-    *>    yvikeys_macro_set2delay ();                                                 <* 
-    *>    break;                                                                      <* 
-    *> case '.' :                                                                     <* 
-    *>    DEBUG_SCRP   yLOG_note    ("playback");                                     <* 
-    *>    yvikeys_macro_set2play ();                                                  <* 
-    *>    break;                                                                      <* 
-    *> case G_KEY_ESCAPE : case G_CHAR_ESCAPE :                                       <* 
-    *>    DEBUG_SCRP   yLOG_note    ("escape");                                       <* 
-    *>    yvikeys_macro_set2stop ();                                                  <* 
-    *>    yvikeys_script_close ();                                                    <* 
-    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                   <* 
-    *>    return -1;                                                                  <* 
-    *>    break;                                                                      <* 
-    *> case G_KEY_RETURN : case G_KEY_ENTER  : case G_CHAR_RETURN :                   <* 
-    *>    DEBUG_SCRP   yLOG_note    ("return");                                       <* 
-    *>    yvikeys_macro_set2run   ();                                                 <* 
-    *>    break;                                                                      <* 
-    *> default  :                                                                     <* 
-    *>    rc = 0;                                                                     <* 
-    *>    break;                                                                      <* 
-    *> }                                                                              <* 
-    *> DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                      <* 
-    *> return rc;                                                                     <*/
+   IF_MACRO_OFF   return 0;
+   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_SCRP   yLOG_value   ("a_key"     , a_key);
+   switch (a_key) {
+   case '0' : case '1' : case '2' : case '3' : case '4' :
+   case '5' : case '6' : case '7' : case '8' : case '9' :
+   case '-'      : case '+'      :
+      yMACRO_ddelay (a_key);
+      break;
+   case 'n' : case 's' : case 'b' : case 'p' : case 'd' :
+      g_dupdate = a_key;
+      break;
+   case ',' :
+      DEBUG_SCRP   yLOG_note    ("delay");
+      ymacro_set2delay ();
+      break;
+   case '.' :
+      DEBUG_SCRP   yLOG_note    ("playback");
+      ymacro_set2play ();
+      break;
+   case G_KEY_ESCAPE : case G_CHAR_ESCAPE :
+      DEBUG_SCRP   yLOG_note    ("escape");
+      ymacro_set2stop ();
+      ymacro_script__close ();
+      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      return -1;
+      break;
+   case G_KEY_RETURN : case G_KEY_ENTER  : case G_CHAR_RETURN :
+      DEBUG_SCRP   yLOG_note    ("return");
+      ymacro_set2run   ();
+      break;
+   default  :
+      rc = 0;
+      break;
+   }
+   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   return rc;
 }
 
 uchar
@@ -460,54 +460,5 @@ yMACRO_exe_status_OLD        (char *a_list)
     *> return 0;                                                                                                                                                                             <*/
 }
 
-char
-yMACRO_exe_status            (char *a_list)
-{
-   /*> char        x_bef       [LEN_RECD] = "";                                                                                                                                              <* 
-    *> char        x_aft       [LEN_RECD] = "";                                                                                                                                              <* 
-    *> int         x_pos       = 0;                                                                                                                                                          <* 
-    *> int         x_rem       = 0;                                                                                                                                                          <* 
-    *> char        x_dots      [LEN_HUND] = "····+····+····+····+····+····+····+····+····+····+····+····+····+····+····+····+····+····";                                                     <* 
-    *> int         x_len       = 0;                                                                                                                                                          <* 
-    *> uchar       x_ch        = ' ';                                                                                                                                                        <* 
-    *> int         x_wide;                                                                                                                                                                   <* 
-    *> int         w;                                                                                                                                                                        <* 
-    *> char       *p           = NULL;                                                                                                                                                       <* 
-    *> /+---(header)-------------------------+/                                                                                                                                              <* 
-    *> DEBUG_SCRP   yLOG_enter   (__FUNCTION__);                                                                                                                                             <* 
-    *> /+---(get size)-----------------------+/                                                                                                                                              <* 
-    *> yVIKEYS_view_size   (YVIKEYS_STATUS, NULL, &x_wide, NULL, NULL, NULL);                                                                                                                <* 
-    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , x_wide);                                                                                                                                     <* 
-    *> if (myVIKEYS.env != YVIKEYS_CURSES)    x_wide /= 7.5;                                                                                                                                 <* 
-    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , x_wide);                                                                                                                                     <* 
-    *> w = ((x_wide - 30) / 2);                                                                                                                                                              <* 
-    *> DEBUG_SCRP   yLOG_value   ("w"         , w);                                                                                                                                          <* 
-    *> x_len = strlen (x_dots);                                                                                                                                                              <* 
-    *> p =  x_dots + x_len - w;                                                                                                                                                              <* 
-    *> /+---(idle version)-------------------+/                                                                                                                                              <* 
-    *> if (s_ecurr < 0) {                                                                                                                                                                    <* 
-    *>    snprintf (a_list, LEN_FULL, "macro   %c %c %c -- --- --- %*.*s  ¬  %*.*s", s_ename, s_ddelay, s_dupdate, w, w, p, w, w, x_dots);                                                   <* 
-    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                          <* 
-    *>    return 0;                                                                                                                                                                          <* 
-    *> }                                                                                                                                                                                     <* 
-    *> /+---(position)-----------------------+/                                                                                                                                              <* 
-    *> x_pos = s_macros [s_ecurr].pos;                                                                                                                                                       <* 
-    *> x_ch  = s_macros [s_ecurr].cur;                                                                                                                                                       <* 
-    *> if (x_ch < 32)  x_ch = '£';                                                                                                                                                           <* 
-    *> /+---(prefix)-------------------------+/                                                                                                                                              <* 
-    *> if      (x_pos <=  0)  sprintf (x_bef , "%*.*s", w, w, p);                                                                                                                            <* 
-    *> else if (x_pos >   w)  sprintf (x_bef , "<%-*.*s", w - 1, w - 1, s_macros [s_ecurr].keys + x_pos - w + 1);                                                                            <* 
-    *> else                   sprintf (x_bef , "%*.*s%*.*s"   , w - x_pos, w - x_pos, p, x_pos, x_pos, s_macros [s_ecurr].keys);                                                             <* 
-    *> /+---(suffix)-------------------------+/                                                                                                                                              <* 
-    *> x_rem = s_macros [s_ecurr].len - s_macros [s_ecurr].pos - 1;                                                                                                                          <* 
-    *> if      (x_rem <=  0)  sprintf (x_aft , "%*.*s", w, w, x_dots);                                                                                                                       <* 
-    *> else if (x_rem >   w)  sprintf (x_aft , "%-*.*s>", w - 1, w - 1, s_macros [s_ecurr].keys + x_pos + 1);                                                                                <* 
-    *> else                   sprintf (x_aft , "%*.*s%*.*s"   , x_rem, x_rem, s_macros [s_ecurr].keys + x_pos + 1, w - x_rem, w - x_rem, x_dots + x_rem);                                    <* 
-    *> /+---(concat)-------------------------+/                                                                                                                                              <* 
-    *> snprintf (a_list, LEN_FULL, "macro   %c %c %c %2d %3d %3d %s  %c  %s", s_ename, s_ddelay, s_dupdate, s_macros [s_ecurr].repeat, x_pos, s_macros [s_ecurr].len, x_bef, x_ch, x_aft);   <* 
-    *> /+---(complete)-----------------------+/                                                                                                                                              <* 
-    *> DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                                                                                                             <* 
-    *> return 0;                                                                                                                                                                             <*/
-}
 
 

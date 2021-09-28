@@ -87,8 +87,8 @@ yMACRO_init             (void)
    }
    /*---(macro abbrev list)--------------*/
    strlcpy (S_MACRO_LIST, ""         , S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_NUMBER, S_MACRO_MAX);
+   strlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, "."        , S_MACRO_MAX);
    DEBUG_PROG   yLOG_info    ("LIST"      , S_MACRO_LIST);
@@ -542,11 +542,11 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
     *>    snprintf (unit_answer, LEN_RECD, "MACRO keys   (%c) : %-.45s", a_abbr, g_macros [g_ecurr].keys);   <* 
     *>    return unit_answer;                                                                                <* 
     *> }                                                                                                     <*/
-   /*> else if (strcmp (a_question, "list"           )   == 0) {                          <* 
-    *>    yvikeys_macro_list (&c, x_list);                                                <* 
-    *>    snprintf (unit_answer, LEN_RECD, "MACRO list       : %2d %-.45s", c, x_list);   <* 
-    *>    return unit_answer;                                                             <* 
-    *> }                                                                                  <*/
+   else if (strcmp (a_question, "list"           )   == 0) {
+      c = yMACRO_list ('F', x_list);
+      snprintf (unit_answer, LEN_RECD, "MACRO list       : %2d %s", c, x_list);
+      return unit_answer;
+   }
    /*> else if (strcmp (a_question, "speed"          )   == 0) {                                                                                                                                                                                      <* 
     *>    snprintf (unit_answer, LEN_RECD, "MACRO speed    %c : %8.6fd %5.3fu %2d/%2ds, deb %c/%c, exe %c/%c, %2dp", g_blitzing, myVIKEYS.delay, myVIKEYS.update, s_skips, myVIKEYS.macro_skip, g_ddelay, g_dupdate, g_edelay, g_eupdate, g_pause);   <* 
     *>    return unit_answer;                                                                                                                                                                                                                         <* 
