@@ -354,36 +354,40 @@ ymacro_exe_play         (uchar a_key)
    char        rc          =    1;
    IF_MACRO_OFF   return 0;
    DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_SCRP   yLOG_char    ("a_key"     , a_key);
    DEBUG_SCRP   yLOG_value   ("a_key"     , a_key);
    switch (a_key) {
    case '0' : case '1' : case '2' : case '3' : case '4' :
    case '5' : case '6' : case '7' : case '8' : case '9' :
    case '-'      : case '+'      :
+      DEBUG_SCRP   yLOG_note    ("reqested change to delay");
       yMACRO_ddelay (a_key);
       break;
    case 'n' : case 's' : case 'b' : case 'p' : case 'd' :
+      DEBUG_SCRP   yLOG_note    ("reqested change to update");
       g_dupdate = a_key;
       break;
    case ',' :
-      DEBUG_SCRP   yLOG_note    ("delay");
+      DEBUG_SCRP   yLOG_note    ("reqested delay mode");
       ymacro_set2delay ();
       break;
    case '.' :
-      DEBUG_SCRP   yLOG_note    ("playback");
+      DEBUG_SCRP   yLOG_note    ("reqested playback mode");
       ymacro_set2play ();
       break;
    case G_KEY_ESCAPE : case G_CHAR_ESCAPE :
-      DEBUG_SCRP   yLOG_note    ("escape");
+      DEBUG_SCRP   yLOG_note    ("reqested termination with escape");
       ymacro_set2stop ();
       ymacro_script__close ();
       DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
       return -1;
       break;
    case G_KEY_RETURN : case G_KEY_ENTER  : case G_CHAR_RETURN :
-      DEBUG_SCRP   yLOG_note    ("return");
+      DEBUG_SCRP   yLOG_note    ("reqested normal run with return");
       ymacro_set2run   ();
       break;
    default  :
+      DEBUG_SCRP   yLOG_note    ("requested step macro forward");
       rc = 0;
       break;
    }
@@ -398,11 +402,11 @@ yMACRO_exec             (uchar a_play)
    char        rc          =    0;
    uchar       x_key       =  ' ';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(playback)-----------------------*/
    DEBUG_SCRP   yLOG_note    ("handle playback control");
    DEBUG_SCRP   yLOG_value   ("a_play"    , a_play);
-   rc = ymacro_exe_play (a_play);
+   a_play = ymacro_exe_play (a_play);
    DEBUG_SCRP   yLOG_value   ("play"      , rc);
    if (rc < 0) {
       DEBUG_SCRP   yLOG_note    ("terminated, do not execute next key");
@@ -425,40 +429,12 @@ yMACRO_exec             (uchar a_play)
    /*---(advance)------------------------*/
    DEBUG_SCRP   yLOG_note    ("advance");
    ymacro_exe_adv (a_play);
-   /*> ymacro_exe_adv (0);                                                         <*/
+   /*> ymacro_exe_adv (0);                                                            <*/
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
    return x_key;
 }
 
-char
-yMACRO_exe_status_OLD        (char *a_list)
-{
-   /*> char        x_bef       [LEN_RECD] = "";                                                                                                                                              <* 
-    *> char        x_aft       [LEN_RECD] = "";                                                                                                                                              <* 
-    *> int         x_pos       = 0;                                                                                                                                                          <* 
-    *> int         x_rem       = 0;                                                                                                                                                          <* 
-    *> char        x_dots      [LEN_HUND] = "···························";                                                                                                                   <* 
-    *> char        x_ldots     [LEN_HUND] = "··Ü····Ü····Ü····Ü····Ü····";                                                                                                                   <* 
-    *> char        x_rdots     [LEN_HUND] = "····Ü····Ü····Ü····Ü····Ü··";                                                                                                                   <* 
-    *> uchar       x_ch        = ' ';                                                                                                                                                        <* 
-    *> if (s_ecurr < 0) {                                                                                                                                                                    <* 
-    *>    snprintf (a_list, LEN_FULL, "macro   %c %c %c -- --- --- %s ´ %s", s_ename, s_ddelay, s_dupdate, x_ldots, x_rdots);                                                                <* 
-    *>    return 0;                                                                                                                                                                          <* 
-    *> }                                                                                                                                                                                     <* 
-    *> x_pos = s_macros [s_ecurr].pos;                                                                                                                                                       <* 
-    *> x_ch  = s_macros [s_ecurr].cur;                                                                                                                                                       <* 
-    *> if (x_ch < 32)  x_ch = '£';                                                                                                                                                           <* 
-    *> if      (x_pos <=  0)  sprintf (x_bef , "%27.27s", x_ldots);                                                                                                                          <* 
-    *> else if (x_pos >  27)  sprintf (x_bef , "<%-26.26s", s_macros [s_ecurr].keys + x_pos - 26);                                                                                           <* 
-    *> else                   sprintf (x_bef , "%*.*s%*.*s"   , 27 - x_pos, 27 - x_pos, x_ldots, x_pos, x_pos, s_macros [s_ecurr].keys);                                                     <* 
-    *> x_rem = s_macros [s_ecurr].len - s_macros [s_ecurr].pos - 1;                                                                                                                          <* 
-    *> if      (x_rem <=  0)  sprintf (x_aft , "%27.27s", x_rdots);                                                                                                                          <* 
-    *> else if (x_rem >  27)  sprintf (x_aft , "%-26.26s>", s_macros [s_ecurr].keys + s_macros [s_ecurr].pos + 1);                                                                           <* 
-    *> else                   sprintf (x_aft , "%*.*s%*.*s"   , x_rem, x_rem, s_macros [s_ecurr].keys + x_pos + 1, 27 - x_rem, 27 - x_rem, x_rdots + x_rem);                                 <* 
-    *> snprintf (a_list, LEN_FULL, "macro   %c %c %c %2d %3d %3d %27s %c %s", s_ename, s_ddelay, s_dupdate, s_macros [s_ecurr].repeat, x_pos, s_macros [s_ecurr].len, x_bef, x_ch, x_aft);   <* 
-    *> return 0;                                                                                                                                                                             <*/
-}
 
 
 

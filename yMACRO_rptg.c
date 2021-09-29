@@ -5,8 +5,10 @@
 
 /*
  *  yVIKEYS statuses
- *     macros       
- *
+ *     mac     macro inventory
+ *     rec     current recording
+ *     exe     current execution
+ *     exe3    triple-layer macro execution
  *
  */
 
@@ -159,6 +161,82 @@ ymacro_status__sizes    (char *a_size, short *a_wide, short *w)
 }
 
 char
+yMACRO_mac_status       (char a_size, short a_wide, char *a_list)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         x_len       =    0;
+   short       w           =    0;
+   int         c           =    0;
+   uchar       x_list      [LEN_HUND]  = "";
+   uchar       x_pre       [LEN_DESC]  = "";
+   uchar       x_mid       [LEN_RECD]  = "";
+   char        x_over      =  ' ';
+   /*---(header)-------------------------*/
+   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(fix sizes)----------------------*/
+   if (strchr ("hg", a_size) != NULL)  a_size = 'l';
+   if (a_size == '-') { /* no adapt option */
+      if      (a_wide <  20)  a_size = 'u';
+      else if (a_wide <  40)  a_size = 's';
+      else if (a_wide <  56)  a_size = 'm';
+   }
+   /*---(get size details)---------------*/
+   ymacro_status__sizes (&a_size, &a_wide, &w);
+   w =  a_wide - 15;
+   if      (a_size == 'u')  w  =  0;
+   else if (a_size == 't')  w  =  9;
+   else if (a_size == 's')  w  = 26;
+   else                     w -=  2;
+   /*---(list)---------------------------*/
+   c = yMACRO_list ('F', x_list);
+   switch (a_size) {
+   case 'u'  : case 't'  :
+      yMACRO_list ('-', x_list);
+      break;
+   case 's'  :
+      yMACRO_list ('a', x_list);
+      break;
+   default   :
+      c = yMACRO_list ('F', x_list);
+      break;
+   }
+   x_len = strlen (x_list);
+   /*---(prefix)-------------------------*/
+   switch (a_size) {
+   case 'u'  : case 't'  :
+      sprintf (x_pre, "mac %2d %c", c, g_ename);
+      break;
+   case 's'  :
+      sprintf (x_pre, "macros  %2d %c", c, g_ename);
+      break;
+   default   :
+      sprintf (x_pre, "macros  %2d %c %c", c, g_rname, g_ename);
+      break;
+   }
+   /*---(middle)-------------------------*/
+   if (x_len > w) {
+      x_over = '>';
+      x_len  = w;
+   }
+   switch (a_size) {
+   case 'u'  :
+      sprintf  (x_mid, "´");
+      break;
+   case 's'  :
+      snprintf (x_mid, LEN_RECD, "%s´", x_list);
+      break;
+   default   :
+      snprintf (x_mid, LEN_RECD, "%*.*s%c%*.*s´", x_len, x_len, x_list, x_over, w - x_len, w - x_len, YSTR_EMPTY);
+      break;
+   }
+   /*---(concatenate)--------------------*/
+   sprintf (a_list, "%s %s", x_pre, x_mid);
+   /*---(complete)-----------------------*/
+   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -228,24 +306,60 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
 }
 
 char
-yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
+ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len, char *a_list)
 {
    /*---(locals)-----------+-----+-----+-*/
-   int         x_len       =    0;
-   int         x_wide;
-   short       w;
-   short       h;
-   uchar       x_keys      [LEN_RECD]  = "";
-   uchar       x_repstr    [LEN_TERSE] = "--";
    int         x_pos       =    0;
-   uchar       x_posstr    [LEN_TERSE] = "---";
-   uchar       x_curr      =  '¬';
-   uchar       x_lenstr    [LEN_TERSE] = "---";
+   uchar       x_cur       =  '¬';
    uchar       x_pre       [LEN_DESC]  = "";
-   uchar       x_over      =  ' ';
    char        x_bef       [LEN_RECD]  = "";
    char        x_aft       [LEN_RECD]  = "";
    int         x_rem       =    0;
+   /*---(default)------------------------*/
+   strcpy (a_rep, "--");
+   strcpy (a_pos, "---");
+   strcpy (a_len, "---");
+   /*---(populate)-----------------------*/
+   if (n >= 0 && g_macros [n].len > 0) {
+      sprintf (a_rep, "%2d", g_macros [n].repeat);
+      sprintf (a_pos, "%3d", g_macros [n].pos);
+      sprintf (a_len, "%3d", g_macros [n].len);
+      x_pos  = g_macros [n].pos;
+      x_cur  = g_macros [n].cur;
+      if (x_cur  < 32)  x_cur  = '£';
+      if (x_pos  <  0)  x_cur  = '¬';
+   }
+   /*---(tiny)---------------------------*/
+   if (h == 0) {
+      sprintf (a_list, "%c", x_cur);
+      return 0;
+   }
+   /*---(before)-------------------------*/
+   if      (x_pos <=  0)  sprintf (x_bef , "%*.*s", h, h, YSTR_MACRO);
+   else if (x_pos >   h)  sprintf (x_bef , "<%-*.*s", h - 1, h - 1, g_macros [n].keys + x_pos - h + 1);
+   else                   sprintf (x_bef , "%*.*s%*.*s"   , h - x_pos, h - x_pos, YSTR_MACRO, x_pos, x_pos, g_macros [n].keys);
+   /*---(after)--------------------------*/
+   x_rem = g_macros [n].len - g_macros [n].pos - 1;
+   if      (x_rem <=  0)  sprintf (x_aft , "%*.*s", h, h, YSTR_MACRO);
+   else if (x_rem >   h)  sprintf (x_aft , "%-*.*s>", h - 1, h - 1, g_macros [n].keys + x_pos + 1);
+   else                   sprintf (x_aft , "%*.*s%*.*s"   , x_rem, x_rem, g_macros [n].keys + x_pos + 1, h - x_rem, h - x_rem, YSTR_MACRO + x_rem);
+   /*---(concat)-------------------------*/
+   sprintf (a_list, "%s %c %s", x_bef, x_cur, x_aft);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   short       w;
+   short       h;
+   uchar       x_rep       [LEN_TERSE] = "--";
+   uchar       x_pos       [LEN_TERSE] = "---";
+   uchar       x_len       [LEN_TERSE] = "---";
+   uchar       x_pre       [LEN_DESC]  = "";
+   char        x_list      [LEN_RECD]  = "";
    /*---(header)-------------------------*/
    DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get size)-----------------------*/
@@ -269,48 +383,27 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
    case  'h' :  h = 64;  break;
    case  'g' :  h = 94;  break;
    }
-   /*---(length)-------------------------*/
-   if (g_ecurr >= 0 && g_macros [g_ecurr].len > 0) {
-      strlcpy (x_keys, g_macros [g_ecurr].keys, LEN_RECD);
-      x_len  = g_macros [g_ecurr].len;
-      sprintf (x_lenstr, "%3d", x_len);
-      sprintf (x_repstr, "%2d", g_macros [g_ecurr].repeat);
-      x_pos  = g_macros [g_ecurr].pos;
-      sprintf (x_posstr, "%3d", x_pos);
-      x_curr = g_macros [g_ecurr].cur;
-      if (x_curr < 32)  x_curr = '£';
-   }
-   DEBUG_SCRP   yLOG_info    ("x_keys"    , x_keys);
-   DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);
-   DEBUG_SCRP   yLOG_value   ("x_curr"    , x_curr);
+   /*---(prepare)------------------------*/
+   ymacro_status__exe (g_ecurr, h, x_rep, x_pos, x_len, x_list);
    /*---(prefix)-------------------------*/
    switch (a_size) {
    case 'u'  : case 't'  :
       sprintf (x_pre, "exe %c", g_ename);
       break;
    default   :
-      sprintf (x_pre, "execute %c %c %c %2s %3s %3s", g_ename, g_ddelay, g_dupdate, x_repstr, x_posstr, x_lenstr);
+      sprintf (x_pre, "execute %c %c %c %2s %3s %3s", g_ddelay, g_dupdate, g_ename, x_rep, x_pos, x_len);
       break;
    }
-   /*---(before)-------------------------*/
-   if      (x_pos <=  0)  sprintf (x_bef , "%*.*s", h, h, YSTR_MACRO);
-   else if (x_pos >   h)  sprintf (x_bef , "<%-*.*s", h - 1, h - 1, g_macros [g_ecurr].keys + x_pos - h + 1);
-   else                   sprintf (x_bef , "%*.*s%*.*s"   , h - x_pos, h - x_pos, YSTR_MACRO, x_pos, x_pos, g_macros [g_ecurr].keys);
-   /*---(after)--------------------------*/
-   x_rem = g_macros [g_ecurr].len - g_macros [g_ecurr].pos - 1;
-   if      (x_rem <=  0)  sprintf (x_aft , "%*.*s", h, h, YSTR_MACRO);
-   else if (x_rem >   h)  sprintf (x_aft , "%-*.*s>", h - 1, h - 1, g_macros [g_ecurr].keys + x_pos + 1);
-   else                   sprintf (x_aft , "%*.*s%*.*s"   , x_rem, x_rem, g_macros [g_ecurr].keys + x_pos + 1, h - x_rem, h - x_rem, YSTR_MACRO + x_rem);
    /*---(concat)-------------------------*/
    switch (a_size) {
    case 'u' :
-      snprintf (a_list, LEN_RECD, "%s %c  ´", x_pre, x_curr);
+      snprintf (a_list, LEN_RECD, "%s %s  ´", x_pre, x_list);
       break;
    case 't' : case 's' :
-      snprintf (a_list, LEN_RECD, "%s  %s %c %s ´", x_pre, x_bef, x_curr, x_aft);
+      snprintf (a_list, LEN_RECD, "%s  %s ´", x_pre, x_list);
       break;
    default  :
-      snprintf (a_list, LEN_RECD, "%s  %s %c %s  ´", x_pre, x_bef, x_curr, x_aft);
+      snprintf (a_list, LEN_RECD, "%s  %s  ´", x_pre, x_list);
       break;
    }
    /*---(complete)-----------------------*/
@@ -319,75 +412,7 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
 }
 
 char
-yMACRO_inv_status       (char a_size, short a_wide, char *a_list)
+yMACRO_exe3_status      (char a_size, short a_wide, char *a_list)
 {
-   /*---(locals)-----------+-----+-----+-*/
-   int         x_len       =    0;
-   short       w           =    0;
-   int         c           =    0;
-   uchar       x_list      [LEN_HUND]  = "";
-   uchar       x_pre       [LEN_DESC]  = "";
-   uchar       x_mid       [LEN_RECD]  = "";
-   char        x_over      =  ' ';
-   /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
-   /*---(get size)-----------------------*/
-   if (a_size == '-') { /* no adapt option */
-      if      (a_wide <  20)  a_size = 'u';
-      else if (a_wide <  40)  a_size = 's';
-      else if (a_wide <  56)  a_size = 'm';
-   }
-   ymacro_status__sizes (&a_size, &a_wide, &w);
-   w =  a_wide - 15;
-   if      (a_size == 'u')  w  =  0;
-   else if (a_size == 't')  w  =  9;
-   else if (a_size == 's')  w  = 26;
-   else                     w -=  2;
-   /*---(list)---------------------------*/
-   c = yMACRO_list ('F', x_list);
-   switch (a_size) {
-   case 'u'  : case 't'  :
-      yMACRO_list ('-', x_list);
-      break;
-   case 's'  :
-      yMACRO_list ('a', x_list);
-      break;
-   default   :
-      c = yMACRO_list ('F', x_list);
-      break;
-   }
-   x_len = strlen (x_list);
-   /*---(prefix)-------------------------*/
-   switch (a_size) {
-   case 'u'  : case 't'  :
-      sprintf (x_pre, "mac %2d %c", c, g_ename);
-      break;
-   case 's'  :
-      sprintf (x_pre, "macros  %2d %c", c, g_ename);
-      break;
-   default   :
-      sprintf (x_pre, "macros  %2d %c %c", c, g_rname, g_ename);
-      break;
-   }
-   /*---(middle)-------------------------*/
-   if (x_len > w) {
-      x_over = '>';
-      x_len  = w;
-   }
-   switch (a_size) {
-   case 'u'  :
-      sprintf  (x_mid, "´");
-      break;
-   case 's'  :
-      snprintf (x_mid, LEN_RECD, "%s´", x_list);
-      break;
-   default   :
-      snprintf (x_mid, LEN_RECD, "%*.*s%c%*.*s´", x_len, x_len, x_list, x_over, w - x_len, w - x_len, YSTR_EMPTY);
-      break;
-   }
-   /*---(concatenate)--------------------*/
-   sprintf (a_list, "%s %s", x_pre, x_mid);
-   /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
-   return 0;
 }
+

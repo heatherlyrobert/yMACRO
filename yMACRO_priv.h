@@ -35,8 +35,8 @@
 
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.0-, separated into independent library"
-#define     P_VERNUM    "2.0l"
-#define     P_VERTXT    "all status lines done and unit tested -- record, execute, and macros"
+#define     P_VERNUM    "2.0m"
+#define     P_VERTXT    "basic macro execution working and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -224,6 +224,12 @@ char*       yMACRO_keys_last        (void);
 char        ymacro_keys_dump        (FILE *a_file);
 char        ymacro_keys_init        (void);
 char        ymacro_keys_repos       (int a_pos);
+
+
+
+/*===[[ yMACRO_rptg.c ]]======================================================*/
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len, char *a_list);
 
 
 

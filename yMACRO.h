@@ -112,7 +112,8 @@ char        yMACRO_list             (char a_style, char *a_list);
 int         yMACRO_dump             (void *a_file);
 char        yMACRO_rec_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_exe_status       (char a_size, short a_wide, char *a_list);
-char        yMACRO_inv_status       (char a_size, short a_wide, char *a_list);
+char        yMACRO_exe3_status      (char a_size, short a_wide, char *a_list);
+char        yMACRO_mac_status       (char a_size, short a_wide, char *a_list);
 
 
 
