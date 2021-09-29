@@ -4,6 +4,12 @@
 #include    "yMACRO_priv.h"
 
 
+
+char    g_depth  =   0;
+char    g_stack [LEN_LABEL] = "";
+
+
+
 char yMACRO_exe_mode     (void)         { return g_emode; }
 
 char
@@ -46,8 +52,6 @@ yMACRO_exe_repos            (int a_pos)
    g_macros [g_ecurr].cur = g_macros [g_ecurr].keys [g_macros [g_ecurr].pos];
    return 0;
 }
-
-
 
 char         /*-> prepare a macro execution ----------[ ------ [ge.832.122.52]*/ /*-[01.0000.112.5]-*/ /*-[--.---.---.--]-*/
 ymacro_exe_beg          (char a_name)
@@ -107,6 +111,9 @@ ymacro_exe_beg          (char a_name)
    }
    /*---(execution style)-------------*/
    IF_MACRO_OFF {
+      /*---(reset stack)--------------*/
+      g_stack [0] = '\0';
+      g_depth     = 0;
       /*---(normal)-------------------*/
       if (a_name == tolower (a_name) && a_name != ',') {
          DEBUG_SCRP   yLOG_note    ("normal execution");
@@ -119,6 +126,10 @@ ymacro_exe_beg          (char a_name)
          SET_MACRO_PLAYBACK;
       }
    }
+   /*---(update stack)----------------*/
+   g_stack [g_depth] = tolower (a_name);
+   ++g_depth;
+   g_stack [g_depth] = '\0';
    /*---(macro name)------------------*/
    DEBUG_SCRP   yLOG_char    ("macro_name", g_ename);
    /*---(get macro)-------------------*/
@@ -224,9 +235,9 @@ ymacro_exe_adv          (uchar a_play)
    } else {
       DEBUG_LOOP   yLOG_snote   ("new keystroke");
       ++g_macros [g_ecurr].pos;
-      DEBUG_SCRP   yLOG_sint    (g_macros [g_ecurr].pos);
       if (g_macros [g_ecurr].pos < 0)  g_macros [g_ecurr].cur = 0;
       else                             g_macros [g_ecurr].cur = g_macros [g_ecurr].keys [g_macros [g_ecurr].pos];
+      DEBUG_SCRP   yLOG_sint    (g_macros [g_ecurr].pos);
    }
    DEBUG_SCRP   yLOG_schar   (g_macros [g_ecurr].cur);
    /*---(complete)--------------------*/
@@ -272,14 +283,24 @@ ymacro_exe_key          (void)
       /*---(pop)----------------------------*/
       else if (g_macros [g_ecurr].runby >= 0) {
          DEBUG_SCRP   yLOG_note    ("return to caller/runby");
+         /*---(reset current)----*/
          g_macros [g_ecurr].pos    = -1;
          g_epos = -1;
          g_macros [g_ecurr].cur    = '·';
          g_macros [g_ecurr].repeat =  0;
+         /*---(update runby)-----*/
          x_runby = g_macros [g_ecurr].runby;
          g_macros [g_ecurr].runby  = -1;
+         /*---(back to prev)-----*/
          g_ecurr = x_runby;
          g_ename = S_MACRO_LIST [g_ecurr];
+         if (g_macros [g_ecurr].keys [g_macros [g_ecurr].pos] == G_CHAR_HALT) {
+            g_macros [g_ecurr].pos--;
+         }
+         /*---(update stack)-----*/
+         --g_depth;
+         g_stack [g_depth] = '\0';
+         /*---(output)-----------*/
          DEBUG_SCRP   yLOG_value   ("g_ecurr"    , g_ecurr);
          DEBUG_SCRP   yLOG_char    ("abbr"      , S_MACRO_LIST [g_ecurr]);
          DEBUG_SCRP   yLOG_value   ("pos"       , g_macros [g_ecurr].pos);
@@ -302,6 +323,10 @@ ymacro_exe_key          (void)
          /*> g_macros [g_ecurr].pos    = -1;                                          <* 
           *> g_macros [g_ecurr].cur    = '·';                                         <* 
           *> g_macros [g_ecurr].repeat =  0;                                          <*/
+         /*---(reset stack)--------------*/
+         g_stack [0] = '\0';
+         g_depth     = 0;
+         /*---(done)---------------------*/
          DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
          return G_KEY_NOOP;
       }

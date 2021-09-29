@@ -360,6 +360,8 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
    uchar       x_len       [LEN_TERSE] = "---";
    uchar       x_pre       [LEN_DESC]  = "";
    char        x_list      [LEN_RECD]  = "";
+   char        n           =    0;
+   uchar       x_runby     =  '-';
    /*---(header)-------------------------*/
    DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
    /*---(get size)-----------------------*/
@@ -373,7 +375,6 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
       else                    a_size = 'g';
    }
    ymacro_status__sizes (&a_size, &a_wide, &w);
-   w =  a_wide - 20;
    switch (a_size) {
    case  'u' :  h =  0;  break;
    case  't' :  h =  4;  break;
@@ -386,12 +387,19 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
    /*---(prepare)------------------------*/
    ymacro_status__exe (g_ecurr, h, x_rep, x_pos, x_len, x_list);
    /*---(prefix)-------------------------*/
+   if (g_ecurr >= 0) {
+      n = g_macros [g_ecurr].runby;
+      if (n >= 0)  x_runby = S_MACRO_LIST [n];
+   }
    switch (a_size) {
    case 'u'  : case 't'  :
       sprintf (x_pre, "exe %c", g_ename);
       break;
+   case 's'  :
+      sprintf (x_pre, "execute %c %2s %3s %3s", g_ename, x_rep, x_pos, x_len);
+      break;
    default   :
-      sprintf (x_pre, "execute %c %c %c %2s %3s %3s", g_ddelay, g_dupdate, g_ename, x_rep, x_pos, x_len);
+      sprintf (x_pre, "execute %c %c %c %c %2s %3s %3s", g_ddelay, g_dupdate, x_runby, g_ename, x_rep, x_pos, x_len);
       break;
    }
    /*---(concat)-------------------------*/
@@ -403,7 +411,7 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
       snprintf (a_list, LEN_RECD, "%s  %s ´", x_pre, x_list);
       break;
    default  :
-      snprintf (a_list, LEN_RECD, "%s  %s  ´", x_pre, x_list);
+      snprintf (a_list, LEN_RECD, "%s  %s´", x_pre, x_list);
       break;
    }
    /*---(complete)-----------------------*/
@@ -412,7 +420,136 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
 }
 
 char
-yMACRO_exe3_status      (char a_size, short a_wide, char *a_list)
+ymacro_fill_num         (char *a_num, int a_len)
 {
+   int         i           =    0;
+   for (i = 0; i < a_len; ++i) {
+      if (a_num [i] == ' ')  a_num [i] = '·';
+   }
+   return 0;
+}
+
+char
+yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   short       w           =    0;
+   short       h           =    0;
+   short       c           =    0;
+   uchar       x_rep       [LEN_TERSE] = "--";
+   uchar       x_pos       [LEN_TERSE] = "---";
+   uchar       x_len       [LEN_TERSE] = "---";
+   uchar       x_pre       [LEN_DESC]  = "";
+   char        x_list      [LEN_RECD]  = "";
+   char        x_curr      [LEN_RECD]  = "";
+   char        n           =    0;
+   uchar       x_abbr      =  '-';
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   /*---(get size)-----------------------*/
+   if (a_size == '-') { /* no adapt option */
+      if      (a_wide <  20)  a_size = 'u';
+      else if (a_wide <  40)  a_size = 't';
+      else if (a_wide <  70)  a_size = 's';
+      else if (a_wide < 110)  a_size = 'm';
+      else if (a_wide < 160)  a_size = 'l';
+      else if (a_wide < 220)  a_size = 'h';
+      else                    a_size = 'g';
+   }
+   ymacro_status__sizes (&a_size, &a_wide, &w);
+   switch (a_size) {
+   case  'u' :  h =  0;  c = 0;  break;
+   case  't' :  h =  0;  c = 3;  break;
+   case  's' :  h =  0;  c = 3;  break;
+   case  'm' :  h =  4;  c = 3;  break;
+   case  'l' :  h =  9;  c = 3;  break;
+   case  'h' :  h =  9;  c = 4;  break;
+   case  'g' :  h =  9;  c = 5;  break;
+   }
+   /*---(handle micro)-------------------*/
+   if (a_size == 'u') {
+      if (g_depth > 0)  sprintf (a_list, "mex %-5.5s´", g_stack);
+      else              sprintf (a_list, "mex %-5.5s´", "-");
+      return 0;
+   }
+   /*---(prefix)-------------------------*/
+   switch (a_size) {
+   case 't'  :
+      sprintf (a_list, "mex");
+      break;
+   case 's'  : case 'm'  :
+      sprintf (a_list, "mex %2d", g_depth);
+      break;
+   default   :
+      sprintf (a_list, "mex %2d %c %c", g_depth, g_ddelay, g_dupdate);
+      break;
+   }
+   /*---(middle)-------------------------*/
+   for (i = 0; i < c; ++i) {
+      if (i <  g_depth) {
+         x_abbr = g_stack [i];
+         n = ymacro_index (x_abbr);
+         ymacro_status__exe (n, h, x_rep, x_pos, x_len, x_list);
+      }
+      switch (a_size) {
+      case 't'  :
+         if (i < g_depth)  sprintf (x_curr, ", %c %c", x_abbr, g_macros [n].cur);
+         else              sprintf (x_curr, ", - ¬");
+         break;
+      case 's'  :
+         ymacro_fill_num (x_pos, 3);
+         if (i < g_depth)  sprintf (x_curr, ", %c %s %c", x_abbr, x_pos, g_macros [n].cur);
+         else              sprintf (x_curr, ", - --- ¬");
+         break;
+      case 'm'  :
+         ymacro_fill_num (x_pos, 3);
+         if (i < g_depth)  sprintf (x_curr, ", %c %s %s", x_abbr, x_pos, x_list);
+         else              sprintf (x_curr, ", - --- ···· ¬ ····");
+         break;
+      case 'l'  :
+         ymacro_fill_num (x_pos, 3);
+         ymacro_fill_num (x_len, 3);
+         if (i < g_depth)  sprintf (x_curr, ", %c %s %s %s", x_abbr, x_pos, x_len, x_list);
+         else              sprintf (x_curr, ", - --- --- ····+···· ¬ ····+····");
+         break;
+      case 'h'  : case 'g'  :
+         ymacro_fill_num (x_rep, 2);
+         ymacro_fill_num (x_pos, 3);
+         ymacro_fill_num (x_len, 3);
+         if (i < g_depth)  sprintf (x_curr, ", %c %s %s %s %s", x_abbr, x_rep, x_pos, x_len, x_list);
+         else              sprintf (x_curr, ", - -- --- --- ····+···· ¬ ····+····");
+         break;
+      default   :
+         break;
+      }
+      strcat  (a_list, x_curr);
+   }
+   /*---(suffix)-------------------------*/
+   switch (a_size) {
+   case 't'  :
+      strcat  (a_list, " ´");
+      break;
+   case 's'  : case 'm'  :
+      strcat  (a_list, "      ´");
+      break;
+   case 'l'  :
+      strcat  (a_list, "´");
+      break;
+   case 'h'  :
+      strcat  (a_list, "     ´");
+      break;
+   case 'g'  :
+      sprintf (x_rep, "%2d", g_depth);
+      ymacro_fill_num (x_rep, 2);
+      sprintf (x_curr, ", stack %s %-12.12s    ´", x_rep, g_stack);
+      strcat  (a_list, x_curr);
+      break;
+   default   :
+      strcat  (a_list, " ´");
+      break;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
 }
 

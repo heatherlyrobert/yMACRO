@@ -1,4 +1,5 @@
-/*============================----beg-of-source---============================*/ #ifndef yVIKEYS_PRIV
+/*============================----beg-of-source---============================*/
+#ifndef yMACRO_PRIV
 #define yMACRO_PRIV yes
 
 
@@ -34,9 +35,9 @@
 #define     P_CREATED   ""
 
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
-#define     P_VERMINOR  "2.0-, separated into independent library"
-#define     P_VERNUM    "2.0m"
-#define     P_VERTXT    "basic macro execution working and unit tested"
+#define     P_VERMINOR  "2.1-, complex macros"
+#define     P_VERNUM    "2.1a"
+#define     P_VERTXT    "multi-execution working and tested, plus mex_status also tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -101,6 +102,9 @@ extern uchar   g_rkeys     [LEN_RECD];
 extern short   g_rlen;
 extern short   g_rpos;
 extern uchar   g_rcur;
+
+extern char    g_depth;
+extern char    g_stack    [LEN_LABEL];
 
 extern uchar  *g_stub;
 
