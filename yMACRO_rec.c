@@ -46,11 +46,11 @@ ymacro_rec_set          (uchar a_abbr)
    if (a_abbr == ',')  a_abbr = '.';
    n  = strlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
    if (n >= 0) {
-      g_rname = a_abbr;
-      g_rcurr = n;
+      myMACRO.rname = a_abbr;
+      myMACRO.rcurr = n;
    } else {
-      g_rname = '-';
-      g_rcurr = -1;
+      myMACRO.rname = '-';
+      myMACRO.rcurr = -1;
    }
    return n;
 }
@@ -58,12 +58,12 @@ ymacro_rec_set          (uchar a_abbr)
 char         /*-> fully reset macro mode -------------[ leaf   [gz.532.011.00]*/ /*-[00.0000.183.!]-*/ /*-[--.---.---.--]-*/
 ymacro_rec_reset        (void)
 {
-   if (g_rcurr < 0)  return 0;
-   ymacro_wipe (S_MACRO_LIST [g_rcurr]);
+   if (myMACRO.rcurr < 0)  return 0;
+   ymacro_wipe (S_MACRO_LIST [myMACRO.rcurr]);
    return 0;
 }
 
-char yMACRO_rec_mode  (void)         { return g_rmode; }
+char yMACRO_rec_mode  (void)         { return myMACRO.rmode; }
 
 
 
@@ -72,78 +72,102 @@ char yMACRO_rec_mode  (void)         { return g_rmode; }
 /*====================------------------------------------====================*/
 static void  o___DETAIL__________o () { return; }
 
+char
+ymacro_rec_clear        (void)
+{
+   myMACRO.rkeys [0] = G_KEY_NULL;
+   myMACRO.rlen      = 0;
+   myMACRO.rpos      = 0;
+   myMACRO.rcur      = '-';
+   return 0;
+}
+
 char         /*-> prepare a macro recording ----------[ ------ [ge.831.112.53]*/ /*-[01.0000.023.A]-*/ /*-[--.---.---.--]-*/
-ymacro_rec_beg          (char a_name)
+ymacro_rec_beg          (uchar a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    int         n           =   -1;
+   uchar       x_lower     =  '-';
    /*---(header)-------------------------*/
    DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_SCRP   yLOG_char    ("a_name"    , a_name);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_operational (SMOD_MACRO)) {
       DEBUG_SCRP   yLOG_note    ("can not execute until operational");
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_char    ("g_rmode"   , g_rmode);
+   DEBUG_SCRP   yLOG_char    ("myMACRO.rmode"   , myMACRO.rmode);
    --rce;  IF_MACRO_RECORDING {
       DEBUG_SCRP   yLOG_note    ("can not record two macros at once");
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check macro name)------------*/
-   DEBUG_SCRP   yLOG_char    ("a_name"    , a_name);
-   n = ymacro_index  (tolower (a_name));
+   x_lower = tolower (a_name);
+   DEBUG_SCRP   yLOG_char    ("x_lower"   , x_lower);
+   n = ymacro_index  (x_lower);
    DEBUG_SCRP   yLOG_value   ("n"         , n);
    if (n <  0)  {
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check for illegal)-----------*/
-   DEBUG_SCRP   yLOG_value   ("g_rcurr"   , g_rcurr);
-   --rce;  if (g_rcurr >= 0) {
+   DEBUG_SCRP   yLOG_value   ("myMACRO.rcurr"   , myMACRO.rcurr);
+   --rce;  if (myMACRO.rcurr >= 0) {
       DEBUG_SCRP   yLOG_note    ("already recording a macro");
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_value   ("g_ecurr"   , g_ecurr);
-   --rce;  if (n == g_ecurr) {
+   DEBUG_SCRP   yLOG_value   ("ecurr"     , myMACRO.ecurr);
+   --rce;  if (n == myMACRO.ecurr) {
       DEBUG_SCRP   yLOG_note    ("currently executing this macro");
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_SCRP   yLOG_value   ("pos"       , g_macros [n].pos);
    --rce;  if (g_macros [n].pos >= 0) {
       DEBUG_SCRP   yLOG_note    ("this macro is active");
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_SCRP   yLOG_value   ("runby"     , g_macros [n].runby);
    --rce;  if (g_macros [n].runby >= 0) {
       DEBUG_SCRP   yLOG_note    ("this macro is running higher in tree");
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check macro name)------------*/
-   DEBUG_SCRP   yLOG_char    ("a_name"    , a_name);
-   if (ymacro_rec_set (tolower (a_name)) <  0)  {
+   rc = ymacro_rec_set (x_lower);
+   DEBUG_SCRP   yLOG_value   ("rec_set"   , rc);
+   if (rc <  0)  {
+      yKEYS_set_lock ();
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_value   ("g_rcurr"   , g_rcurr);
+   DEBUG_SCRP   yLOG_value   ("myMACRO.rcurr"   , myMACRO.rcurr);
    /*---(prepare)---------------------*/
-   if (strchr (YSTR_UPPER, a_name) != NULL && g_macros [g_rcurr].len > 0) {
-      strlcpy (g_rkeys, g_macros [g_rcurr].keys, LEN_RECD);
+   ymacro_rec_clear ();
+   if (strchr (YSTR_UPPER, a_name) != NULL && g_macros [myMACRO.rcurr].len > 0) {
+      strlcpy (myMACRO.rkeys, g_macros [myMACRO.rcurr].keys, LEN_RECD);
    } else {
-      strlcpy (g_rkeys, "¤", LEN_RECD);
+      strlcpy (myMACRO.rkeys, "¤", LEN_RECD);
    }
-   g_rlen = strlen (g_rkeys);
-   g_rpos = g_rlen - 2;
+   myMACRO.rlen = strlen (myMACRO.rkeys);
+   myMACRO.rpos = myMACRO.rlen - 2;
    /*---(turn on record)--------------*/
-   DEBUG_SCRP   yLOG_value   ("keys"      , g_rkeys);
+   DEBUG_SCRP   yLOG_value   ("keys"      , myMACRO.rkeys);
    SET_MACRO_RECORD;
-   DEBUG_SCRP   yLOG_char    ("g_rmode"   , g_rmode);
+   DEBUG_SCRP   yLOG_char    ("myMACRO.rmode"   , myMACRO.rmode);
    /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "record");          <*/
    /*---(complete)--------------------*/
    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
@@ -162,11 +186,11 @@ yMACRO_rec_key          (char a_key)
       case G_KEY_BS      :  a_key  = G_CHAR_BS;      break;  /* backspace char        */
       case G_KEY_SPACE   :  a_key  = G_CHAR_SPACE;   break;  /* visual space          */
       }
-      g_rcur               = a_key;
-      g_rkeys [g_rlen - 1] = a_key;
-      g_rkeys [g_rlen++  ] = G_CHAR_PLACE;
-      g_rkeys [g_rlen    ] = G_KEY_NULL;
-      g_rpos               = g_rlen - 2;
+      myMACRO.rcur                     = a_key;
+      myMACRO.rkeys [myMACRO.rlen - 1] = a_key;
+      myMACRO.rkeys [myMACRO.rlen++  ] = G_CHAR_PLACE;
+      myMACRO.rkeys [myMACRO.rlen    ] = G_KEY_NULL;
+      myMACRO.rpos                     = myMACRO.rlen - 2;
    }
    return 0;
 }
@@ -178,25 +202,25 @@ ymacro_rec_str          (char *a_keys)
    char        x_ch        = '-';
    IF_MACRO_RECORDING {
       /*---(look for suffix)----------------*/
-      if (g_rkeys [g_rlen - 1] == G_CHAR_PLACE) {
-         g_rkeys [--g_rlen  ] =  G_KEY_NULL;
+      if (myMACRO.rkeys [myMACRO.rlen - 1] == G_CHAR_PLACE) {
+         myMACRO.rkeys [--myMACRO.rlen  ] =  G_KEY_NULL;
       }
-      if (g_rkeys [g_rlen - 1] == G_CHAR_HALT ) {
-         g_rkeys [--g_rlen  ] =  G_KEY_NULL;
+      if (myMACRO.rkeys [myMACRO.rlen - 1] == G_CHAR_HALT ) {
+         myMACRO.rkeys [--myMACRO.rlen  ] =  G_KEY_NULL;
       }
       /*---(add keys)-----------------------*/
-      if (a_keys == NULL)  strlcat (g_rkeys, ""    , LEN_RECD);
-      else                 strlcat (g_rkeys, a_keys, LEN_RECD);
-      g_rlen  = strlen (g_rkeys);
+      if (a_keys == NULL)  strlcat (myMACRO.rkeys, ""    , LEN_RECD);
+      else                 strlcat (myMACRO.rkeys, a_keys, LEN_RECD);
+      myMACRO.rlen  = strlen (myMACRO.rkeys);
       /*---(fix keys)-----------------------*/
-      strlencode   (g_rkeys, ySTR_MAX, LEN_RECD);
+      strlencode   (myMACRO.rkeys, ySTR_MAX, LEN_RECD);
       /*---(add suffix)---------------------*/
-      g_rkeys [g_rlen  ] =  G_CHAR_PLACE;
-      g_rkeys [++g_rlen] =  G_KEY_NULL;
+      myMACRO.rkeys [myMACRO.rlen  ] =  G_CHAR_PLACE;
+      myMACRO.rkeys [++myMACRO.rlen] =  G_KEY_NULL;
       /*---(update pos/char)----------------*/
-      g_rpos = g_rlen - 2;
-      if (g_rpos < 0)  g_rpos = 0;
-      /*> printf ("g_rkeys <<%s>>¦", g_rkeys);                                <*/
+      myMACRO.rpos = myMACRO.rlen - 2;
+      if (myMACRO.rpos < 0)  myMACRO.rpos = 0;
+      /*> printf ("myMACRO.rkeys <<%s>>¦", myMACRO.rkeys);                                <*/
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -206,24 +230,25 @@ char         /*-> complete a macro recording ---------[ ------ [gz.420.001.21]*/
 yMACRO_rec_end          (void)
 {
    IF_MACRO_RECORDING {
-      if (g_rlen > 2 && g_rkeys [g_rlen - 2] == 'q') {
-         g_rkeys [g_rlen - 2] = G_CHAR_HALT;
-         g_rkeys [g_rlen - 1] = G_KEY_NULL;
-         --g_rlen;
+      if (myMACRO.rlen > 2 && myMACRO.rkeys [myMACRO.rlen - 2] == 'q') {
+         myMACRO.rkeys [myMACRO.rlen - 2] = G_CHAR_HALT;
+         myMACRO.rkeys [myMACRO.rlen - 1] = G_KEY_NULL;
+         --myMACRO.rlen;
          ymacro_save ();
-         ymacro_wipe (g_rname);
-      } else if (g_rlen == 2 && g_rkeys [g_rlen - 2] == 'q') {
-         g_rkeys [0] = G_KEY_NULL;
-         g_rlen      = 0;
+         ymacro_wipe (myMACRO.rname);
+      } else if (myMACRO.rlen == 2 && myMACRO.rkeys [myMACRO.rlen - 2] == 'q') {
+         myMACRO.rkeys [0] = G_KEY_NULL;
+         myMACRO.rlen      = 0;
          ymacro_save ();
-         ymacro_wipe (g_rname);
+         ymacro_wipe (myMACRO.rname);
       }
-      g_rkeys [0] = G_KEY_NULL;
-      g_rlen      = 0;
-      g_rpos      =   0;
-      g_rcur      = '-';
+      ymacro_rec_clear ();
+      /*> myMACRO.rkeys [0] = G_KEY_NULL;                                             <* 
+       *> myMACRO.rlen      = 0;                                                      <* 
+       *> myMACRO.rpos      = 0;                                                      <* 
+       *> myMACRO.rcur      = '-';                                                    <*/
       SET_MACRO_IGNORE;
-      g_rcurr = -1;
+      myMACRO.rcurr = -1;
    }
    return 0;
 }
@@ -317,7 +342,7 @@ yMACRO_direct           (char *a_string)
    char        rce         =  -10;
    char        rc          =    0;
    int         x_len       =    0;
-   char        x_id        =  '-';
+   char        x_abbr      =  '-';
    char        x_div       =  '-';
    char       *x_valid     = "*aA0è";
    /*---(header)-------------------------*/
@@ -341,40 +366,45 @@ yMACRO_direct           (char *a_string)
       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_id  = a_string [0];
-   DEBUG_SCRP   yLOG_char    ("x_id"      , x_id);
+   x_abbr  = a_string [0];
+   DEBUG_SCRP   yLOG_char    ("x_abbr"      , x_abbr);
    x_div = a_string [1];
    DEBUG_SCRP   yLOG_char    ("x_div"     , x_div);
    /*---(check for purge)----------------*/
    --rce;  if (x_len == 1) {
-      rc = ymacro_purge  (x_id);
+      rc = ymacro_purge  (x_abbr);
       DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
       return rc;
    }
    /*---(check for shorts)---------------*/
    --rce;  if (x_len == 2) {
+      DEBUG_SCRP   yLOG_char    ("x_div"     , x_div);
       switch (x_div) {
-      case '=' : rc = ymacro_clear     (x_id);        break;
-      case '-' : rc = yMACRO_export    (x_id);        break;
-      case '+' : rc = yMACRO_import    (x_id);        break;
-      case '>' : rc = yMACRO_to_reg    (x_id, '"');   break;
-      case '<' : rc = yMACRO_from_reg  (x_id, '"');   break;
-      default  : rc = yMACRO_copy      (x_id, x_div); break;
+      case '#' : rc = ymacro_clear     (x_abbr);        break;
+      case '-' : rc = yMACRO_export    (x_abbr);        break;
+      case '+' : rc = yMACRO_import    (x_abbr);        break;
+      /*> case '>' : rc = yMACRO_to_reg    (x_abbr, '"');   break;                    <*/
+      /*> case '<' : rc = yMACRO_from_reg  (x_abbr, '"');   break;                    <*/
+      /*> default  : rc = yMACRO_copy      (x_abbr, x_div); break;                    <*/
+      default  :
+         DEBUG_SCRP   yLOG_note    ("two-char action not understood");
+         DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
       }
       DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
       return rc;
    }
    /*---(copy)---------------------------*/
-   --rce;  if (x_len == 3 && x_div == '>') {
-      rc = yMACRO_to_reg     (x_id, a_string [2]);
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
-   --rce;  if (x_len == 3 && x_div == '<') {
-      rc = yMACRO_from_reg   (x_id, a_string [2]);
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
-      return rc;
-   }
+   /*> --rce;  if (x_len == 3 && x_div == '>') {                                      <* 
+    *>    rc = yMACRO_to_reg     (x_abbr, a_string [2]);                              <* 
+    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                   <* 
+    *>    return rc;                                                                  <* 
+    *> }                                                                              <*/
+   /*> --rce;  if (x_len == 3 && x_div == '<') {                                      <* 
+    *>    rc = yMACRO_from_reg   (x_abbr, a_string [2]);                              <* 
+    *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                   <* 
+    *>    return rc;                                                                  <* 
+    *> }                                                                              <*/
    /*---(recording)----------------------*/
    --rce;  if (x_len >  2 && x_div == '=') {
       rc = ymacro_rec_full   (a_string);
@@ -383,7 +413,7 @@ yMACRO_direct           (char *a_string)
    }
    /*---(global)-------------------------*/
    --rce;  if (x_len >  2 && x_div == '!') {
-      rc = yMACRO_central    (x_id, a_string);
+      rc = yMACRO_central    (x_abbr, a_string);
       DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
       return rc;
    }

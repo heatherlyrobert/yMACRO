@@ -5,10 +5,10 @@
 
 /*
  *  yVIKEYS statuses
- *     mac     macro inventory
- *     rec     current recording
- *     exe     current execution
- *     exe3    triple-layer macro execution
+ *     mac     macro inventory status
+ *     rec     current recording status
+ *     exe     current execution status
+ *     mex     multi-layer macro execution status
  *
  */
 
@@ -204,13 +204,13 @@ yMACRO_mac_status       (char a_size, short a_wide, char *a_list)
    /*---(prefix)-------------------------*/
    switch (a_size) {
    case 'u'  : case 't'  :
-      sprintf (x_pre, "mac %2d %c", c, g_ename);
+      sprintf (x_pre, "mac %2d %c", c, myMACRO.ename);
       break;
    case 's'  :
-      sprintf (x_pre, "macros  %2d %c", c, g_ename);
+      sprintf (x_pre, "·macros  %2d %c", c, myMACRO.ename);
       break;
    default   :
-      sprintf (x_pre, "macros  %2d %c %c", c, g_rname, g_ename);
+      sprintf (x_pre, "·macros  %2d %c %c", c, myMACRO.rname, myMACRO.ename);
       break;
    }
    /*---(middle)-------------------------*/
@@ -258,9 +258,9 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
    w =  a_wide - 20;
    if (a_size == 't')  w = 10;
    /*---(length)-------------------------*/
-   if (g_rcurr >= 0) {
-      x_name = g_rname;
-      strlcpy (x_keys, g_rkeys, LEN_RECD);
+   if (myMACRO.rcurr >= 0) {
+      x_name = myMACRO.rname;
+      strlcpy (x_keys, myMACRO.rkeys, LEN_RECD);
       x_len = strlen (x_keys) - 1;
       if (x_len > 0)  x_curr = x_keys [x_len - 1];
       sprintf (x_lenstr, "%3d", x_len);
@@ -274,7 +274,7 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
       sprintf (x_pre, "rec %c %c", x_name, x_curr);
       break;
    default   :
-      sprintf (x_pre, "record  %c %3s %c", x_name, x_lenstr, x_curr);
+      sprintf (x_pre, "·record  %c %3s %c", x_name, x_lenstr, x_curr);
       break;
    }
    /*---(correct len)--------------------*/
@@ -322,8 +322,11 @@ ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len,
    /*---(populate)-----------------------*/
    if (n >= 0 && g_macros [n].len > 0) {
       sprintf (a_rep, "%2d", g_macros [n].repeat);
+      strldchg (a_rep, ' ', '·', LEN_TERSE);
       sprintf (a_pos, "%3d", g_macros [n].pos);
+      strldchg (a_pos, ' ', '·', LEN_TERSE);
       sprintf (a_len, "%3d", g_macros [n].len);
+      strldchg (a_len, ' ', '·', LEN_TERSE);
       x_pos  = g_macros [n].pos;
       x_cur  = g_macros [n].cur;
       if (x_cur  < 32)  x_cur  = '£';
@@ -385,21 +388,25 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
    case  'g' :  h = 94;  break;
    }
    /*---(prepare)------------------------*/
-   ymacro_status__exe (g_ecurr, h, x_rep, x_pos, x_len, x_list);
+   ymacro_status__exe (myMACRO.ecurr, h, x_rep, x_pos, x_len, x_list);
    /*---(prefix)-------------------------*/
-   if (g_ecurr >= 0) {
-      n = g_macros [g_ecurr].runby;
+   if (myMACRO.ecurr >= 0) {
+      n = g_macros [myMACRO.ecurr].runby;
       if (n >= 0)  x_runby = S_MACRO_LIST [n];
    }
    switch (a_size) {
    case 'u'  : case 't'  :
-      sprintf (x_pre, "exe %c", g_ename);
+      sprintf (x_pre, "exe %c", myMACRO.ename);
       break;
    case 's'  :
-      sprintf (x_pre, "execute %c %2s %3s %3s", g_ename, x_rep, x_pos, x_len);
+      if (x_pos [0] != G_CHAR_SPACE && x_pos [0] != '-')  strcpy (x_pos, "ÔÔ");
+      else                           { x_pos [0] = x_pos [1]; x_pos [1] = x_pos [2]; x_pos [2] = '\0'; }
+      if (x_len [0] != G_CHAR_SPACE && x_len [0] != '-')  strcpy (x_len, "ÔÔ");
+      else                           { x_len [0] = x_len [1]; x_len [1] = x_len [2]; x_len [2] = '\0'; }
+      sprintf (x_pre, "·execute %c %2s %2s", myMACRO.ename, x_pos, x_len);
       break;
    default   :
-      sprintf (x_pre, "execute %c %c %c %c %2s %3s %3s", g_ddelay, g_dupdate, x_runby, g_ename, x_rep, x_pos, x_len);
+      sprintf (x_pre, "·execute %c %c %c %c %2s %3s %3s", myMACRO.ddelay, myMACRO.dupdate, x_runby, myMACRO.ename, x_rep, x_pos, x_len);
       break;
    }
    /*---(concat)-------------------------*/
@@ -411,7 +418,7 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
       snprintf (a_list, LEN_RECD, "%s  %s ´", x_pre, x_list);
       break;
    default  :
-      snprintf (a_list, LEN_RECD, "%s  %s´", x_pre, x_list);
+      snprintf (a_list, LEN_RECD, "%s ´%s´", x_pre, x_list);
       break;
    }
    /*---(complete)-----------------------*/
@@ -469,8 +476,9 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
    }
    /*---(handle micro)-------------------*/
    if (a_size == 'u') {
-      if (g_depth > 0)  sprintf (a_list, "mex %-5.5s´", g_stack);
+      if (myMACRO.edepth > 0)  sprintf (a_list, "mex %-5.5s´", myMACRO.estack);
       else              sprintf (a_list, "mex %-5.5s´", "-");
+      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(prefix)-------------------------*/
@@ -479,45 +487,45 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
       sprintf (a_list, "mex");
       break;
    case 's'  : case 'm'  :
-      sprintf (a_list, "mex %2d", g_depth);
+      sprintf (a_list, "·mex %2d", myMACRO.edepth);
       break;
    default   :
-      sprintf (a_list, "mex %2d %c %c", g_depth, g_ddelay, g_dupdate);
+      sprintf (a_list, "·mex %2d %c %c", myMACRO.edepth, myMACRO.ddelay, myMACRO.dupdate);
       break;
    }
    /*---(middle)-------------------------*/
    for (i = 0; i < c; ++i) {
-      if (i <  g_depth) {
-         x_abbr = g_stack [i];
+      if (i <  myMACRO.edepth) {
+         x_abbr = myMACRO.estack [i];
          n = ymacro_index (x_abbr);
          ymacro_status__exe (n, h, x_rep, x_pos, x_len, x_list);
       }
       switch (a_size) {
       case 't'  :
-         if (i < g_depth)  sprintf (x_curr, ", %c %c", x_abbr, g_macros [n].cur);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %c", x_abbr, g_macros [n].cur);
          else              sprintf (x_curr, ", - ¬");
          break;
       case 's'  :
          ymacro_fill_num (x_pos, 3);
-         if (i < g_depth)  sprintf (x_curr, ", %c %s %c", x_abbr, x_pos, g_macros [n].cur);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %s %c", x_abbr, x_pos, g_macros [n].cur);
          else              sprintf (x_curr, ", - --- ¬");
          break;
       case 'm'  :
          ymacro_fill_num (x_pos, 3);
-         if (i < g_depth)  sprintf (x_curr, ", %c %s %s", x_abbr, x_pos, x_list);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %s %s", x_abbr, x_pos, x_list);
          else              sprintf (x_curr, ", - --- ···· ¬ ····");
          break;
       case 'l'  :
          ymacro_fill_num (x_pos, 3);
          ymacro_fill_num (x_len, 3);
-         if (i < g_depth)  sprintf (x_curr, ", %c %s %s %s", x_abbr, x_pos, x_len, x_list);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %s %s %s", x_abbr, x_pos, x_len, x_list);
          else              sprintf (x_curr, ", - --- --- ····+···· ¬ ····+····");
          break;
       case 'h'  : case 'g'  :
          ymacro_fill_num (x_rep, 2);
          ymacro_fill_num (x_pos, 3);
          ymacro_fill_num (x_len, 3);
-         if (i < g_depth)  sprintf (x_curr, ", %c %s %s %s %s", x_abbr, x_rep, x_pos, x_len, x_list);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %s %s %s %s", x_abbr, x_rep, x_pos, x_len, x_list);
          else              sprintf (x_curr, ", - -- --- --- ····+···· ¬ ····+····");
          break;
       default   :
@@ -540,9 +548,9 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
       strcat  (a_list, "     ´");
       break;
    case 'g'  :
-      sprintf (x_rep, "%2d", g_depth);
+      sprintf (x_rep, "%2d", myMACRO.edepth);
       ymacro_fill_num (x_rep, 2);
-      sprintf (x_curr, ", stack %s %-12.12s    ´", x_rep, g_stack);
+      sprintf (x_curr, ", stack %s %-12.12s    ´", x_rep, myMACRO.estack);
       strcat  (a_list, x_curr);
       break;
    default   :
@@ -550,6 +558,36 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
       break;
    }
    /*---(complete)-----------------------*/
+   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char
+yMACRO_scrp_status      (char a_size, short a_wide, char *a_list)
+{
+   /*> int         x_wide;                                                                                         <* 
+    *> int         w;                                                                                              <* 
+    *> char        x_name      [LEN_HUND]  = "";                                                                   <* 
+    *> char        x_recd      [LEN_RECD]  = "";                                                                   <* 
+    *> int         x_len       =   0;                                                                              <* 
+    *> int         n           =   0;                                                                              <* 
+    *> /+---(sizing)-------------------------+/                                                                    <* 
+    *> yVIKEYS_view_size   (YVIKEYS_STATUS, NULL, &x_wide, NULL, NULL, NULL);                                      <* 
+    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , x_wide);                                                           <* 
+    *> w = x_wide - 36;                                                                                            <* 
+    *> DEBUG_SCRP   yLOG_value   ("w"         , w);                                                                <* 
+    *> /+---(not active)---------------------+/                                                                    <* 
+    *> n = yvikeys_macro__index ('.');                                                                             <* 
+    *> if (s_script == NULL || n < 0) {                                                                            <* 
+    *>    snprintf (a_list, x_wide, "script   -  -åæ                       -åæ");                                  <* 
+    *>    return 0;                                                                                                <* 
+    *> }                                                                                                           <* 
+    *> /+---(active)-------------------------+/                                                                    <* 
+    *> sprintf  (x_name, "%2då%.20sæ", strlen (myVIKEYS.m_script), myVIKEYS.m_script);                             <* 
+    *> if (s_macros [n].len > w - 5)  sprintf (x_recd, "%3då%.*s>", s_macros [n].len, w - 5, s_macros [n].keys);   <* 
+    *> else                           sprintf (x_recd, "%3då%.*sæ", s_macros [n].len, w - 5, s_macros [n].keys);   <* 
+    *> snprintf (a_list, LEN_FULL, "script %3d %-24.24s %s", s_line, x_name, x_recd);                              <* 
+    *> /+---(complete)-----------------------+/                                                                    <* 
+    *> return 0;                                                                                                   <*/
 }
 

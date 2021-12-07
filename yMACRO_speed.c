@@ -18,29 +18,29 @@ ymacro__delay           (char a_which, char a_delay)
    DEBUG_SCRP   yLOG_schar   (a_delay);
    /*---(set)----------------------------*/
    if (a_delay >= MACRO_BLITZ && a_delay <= MACRO_TRIPLE) {
-      DEBUG_SCRP   yLOG_note    ("set abs");
-      if (a_which == 'd')  g_ddelay = a_delay;
-      else                 g_edelay = a_delay;
+      DEBUG_SCRP   yLOG_snote   ("set abs");
+      if (a_which == 'd')  myMACRO.ddelay = a_delay;
+      else                 myMACRO.edelay = a_delay;
    }
    if (a_delay == '-') {
-      DEBUG_SCRP   yLOG_note    ("decrease (-)");
-      if (g_ddelay > MACRO_BLITZ) {
-         if (a_which == 'd')  --g_ddelay;
-         else                 --g_edelay;
+      DEBUG_SCRP   yLOG_snote   ("decrease (-)");
+      if (myMACRO.ddelay > MACRO_BLITZ) {
+         if (a_which == 'd')  --(myMACRO.ddelay);
+         else                 --(myMACRO.edelay);
       }
    }
    if (a_delay == '+') {
-      DEBUG_SCRP   yLOG_note    ("increase (+)");
-      if (g_ddelay < MACRO_TRIPLE) {
-         if (a_which == 'd')  ++g_ddelay;
-         else                 ++g_edelay;
+      DEBUG_SCRP   yLOG_snote   ("increase (+)");
+      if (myMACRO.ddelay < MACRO_TRIPLE) {
+         if (a_which == 'd')  ++(myMACRO.ddelay);
+         else                 ++(myMACRO.edelay);
       }
    }
    /*---(new value)-------------------*/
-   DEBUG_SCRP   yLOG_schar   (g_edelay);
-   DEBUG_SCRP   yLOG_schar   (g_ddelay);
+   DEBUG_SCRP   yLOG_schar   (myMACRO.edelay);
+   DEBUG_SCRP   yLOG_schar   (myMACRO.ddelay);
    /*---(complete)--------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -61,14 +61,14 @@ ymacro__update          (char a_which, char a_update)
    DEBUG_SCRP   yLOG_senter  (__FUNCTION__);
    DEBUG_SCRP   yLOG_schar   (a_update);
    /*---(set)----------------------------*/
-   DEBUG_SCRP   yLOG_note    ("set abs");
-   if (a_which == 'd')  g_dupdate = a_update;
-   else                 g_eupdate = a_update;
+   DEBUG_SCRP   yLOG_snote   ("set abs");
+   if (a_which == 'd')  myMACRO.dupdate = a_update;
+   else                 myMACRO.eupdate = a_update;
    /*---(new value)-------------------*/
-   DEBUG_SCRP   yLOG_schar   (g_eupdate);
-   DEBUG_SCRP   yLOG_schar   (g_dupdate);
+   DEBUG_SCRP   yLOG_schar   (myMACRO.eupdate);
+   DEBUG_SCRP   yLOG_schar   (myMACRO.dupdate);
    /*---(complete)--------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -87,12 +87,12 @@ ymacro_set2stop         (void)
 {
    DEBUG_SCRP   yLOG_note    (__FUNCTION__);
    SET_MACRO_STOP;
-   g_macros [g_ecurr].pos    = -1;
-   g_macros [g_ecurr].cur    = '·';
-   g_macros [g_ecurr].repeat =  0;
-   g_ecurr = -1;
-   g_epos  = -1;
-   /*> yvikeys_loop_normal ();                                                        <*/
+   g_macros [myMACRO.ecurr].pos    = -1;
+   g_macros [myMACRO.ecurr].cur    = '·';
+   g_macros [myMACRO.ecurr].repeat =  0;
+   myMACRO.ecurr = -1;
+   myMACRO.epos  = -1;
+   yKEYS_loop_return ();
    return 0;
 }
 
@@ -101,7 +101,7 @@ ymacro_set2play         (void)
 {
    DEBUG_SCRP   yLOG_note    (__FUNCTION__);
    SET_MACRO_PLAYBACK;
-   /*> yvikeys_loop_normal ();                                                        <*/
+   yKEYS_loop_return ();
    /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "macro");           <*/
    return 0;
 }
@@ -111,7 +111,7 @@ ymacro_set2delay        (void)
 {
    DEBUG_SCRP   yLOG_note    (__FUNCTION__);
    SET_MACRO_DELAY;
-   /*> yvikeys_loop_macro (g_ddelay, g_dupdate);                                      <*/
+   yKEYS_loop_macro (myMACRO.ddelay, myMACRO.dupdate);
    /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "macro");           <*/
    return 0;
 }
@@ -120,12 +120,12 @@ char
 ymacro_set2run          (void)
 {
    DEBUG_SCRP   yLOG_note    (__FUNCTION__);
-   DEBUG_SCRP   yLOG_char    ("blitzing"  , g_blitzing);
-   if (g_blitzing == 'y') {
+   DEBUG_SCRP   yLOG_char    ("blitzing"  , myMACRO.blitzing);
+   if (myMACRO.blitzing == 'y') {
       ymacro_set2blitz ();
    } else {
       SET_MACRO_RUN;
-      /*> yvikeys_loop_macro (g_edelay, g_eupdate);                                   <*/
+      yKEYS_loop_macro (myMACRO.edelay, myMACRO.eupdate);
       /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "macro");        <*/
    }
    return 0;
@@ -135,11 +135,11 @@ char
 ymacro_set2blitz        (void)
 {
    DEBUG_SCRP   yLOG_note    (__FUNCTION__);
-   DEBUG_SCRP   yLOG_char    ("blitzing"  , g_blitzing);
-   if (g_blitzing == 'y') return 0;
+   DEBUG_SCRP   yLOG_char    ("blitzing"  , myMACRO.blitzing);
+   if (myMACRO.blitzing == 'y') return 0;
    SET_MACRO_RUN;
-   /*> yvikeys_loop_macro (MACRO_BLITZ, MACRO_BLIND);                                 <*/
-   g_blitzing = 'y';
+   yKEYS_loop_macro (MACRO_BLITZ, MACRO_BLIND);
+   myMACRO.blitzing = 'y';
    return 0;
 }
 

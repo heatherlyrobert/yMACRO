@@ -64,11 +64,12 @@ typedef  const float          cfloat;
 /*===[[ yMACRO_base.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 char*       yMACRO_version          (void);
+char        yMACRO_global_init      (void);       /* for other unit tests */
 char        yMACRO_init             (void);
 char        yMACRO_config           (void *a_loader, void *a_saver);
 char        yMACRO_wrap             (void);
 char        yMACRO_reset_all        (void);
-uchar       yMACRO_handle_prep      (uchar a_major, uchar a_minor);
+char        yMACRO_hmode            (uchar a_major, uchar a_minor);
 
 /*===[[ yMACRO_rec.c ]]=======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
@@ -81,7 +82,7 @@ char        yMACRO_direct           (char *a_string);
 /*===[[ yMACRO_exe.c ]]=======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 char        yMACRO_exe_mode         (void);
-char        yMACRO_exe_pos          (char *a_name, int *a_pos);
+char        yMACRO_exe_pos          (char *a_name, short *a_pos);
 char        yMACRO_exe_repos        (int a_pos);
 uchar       yMACRO_exec             (uchar a_play);
 
@@ -91,9 +92,9 @@ char        yMACRO_writer           (void);
 char        yMACRO_reader           (int n, char *a_verb);
 char        yMACRO_export           (char a_id);
 char        yMACRO_import           (char a_id);
-char        yMACRO_copy             (char a_id, char a_src);
-char        yMACRO_to_reg           (char a_id, char a_reg);
-char        yMACRO_from_reg         (char a_id, char a_reg);
+/*> char        yMACRO_copy             (char a_id, char a_src);                      <*/
+/*> char        yMACRO_to_reg           (char a_id, char a_reg);                      <*/
+/*> char        yMACRO_from_reg         (char a_id, char a_reg);                      <*/
 char        yMACRO_central          (char a_id, char *a_string);
 
 
@@ -114,6 +115,7 @@ char        yMACRO_rec_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_exe_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_mex_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_mac_status       (char a_size, short a_wide, char *a_list);
+char        yMACRO_scrp_status      (char a_size, short a_wide, char *a_list);
 
 
 
@@ -132,7 +134,6 @@ char        yMACRO_script_start     (char *a_name);
 char        yMACRO_script_follow    (char *a_name);
 char        yMACRO_script_playback  (char *a_name);
 char        yMACRO_script_blitz     (char *a_name);
-char        yMACRO_script_status    (char *a_list);
 
 
 
