@@ -36,8 +36,8 @@
 
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.1-, complex macros"
-#define     P_VERNUM    "2.1b"
-#define     P_VERTXT    "updated with gyges testing and changes to other libraries"
+#define     P_VERNUM    "2.1c"
+#define     P_VERTXT    "full unit testing working again"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -74,10 +74,20 @@
 #include    <yLOG.h>              /* heatherly program logging                */
 #include    <ySTR.h>              /* heatherly string processing              */
 /*---(custom vikeys)---------------------*/
-#include    <yMODE.h>             /* heatherly vi/vim mode processing         */
-#include    <yKEYS.h>             /* heatherly vi/vim mode processing         */
+#include    <yMODE.h>             /* heatherly vi-keys mode processing        */
+#include    <yKEYS.h>             /* heatherly vi-keys mode processing        */
+#include    <yFILE.h>             /* heatherly vi-keys content file handling  */
 /*---(custom other)----------------------*/
 #include    <yPARSE.h>            /* heatherly file reading and writing       */
+
+/*
+ * metis § mv8·· § macro keys to check current char against expected and act if true      § M2865o §  · §
+ *
+ * metis § yg8·· § force exact range with ® operator followed by range and ¦              § M2M1u5 §  · §
+ * metis § yg8·· § char check with š···¦ (match) or ™···¦ (not) then ¢´ replace if match  § M2M1ur §  · §
+ * metis § yg8·· § use ä (for each) operator to do something over selected area           § M2M1wI §  · §
+ *
+ */
 
 
 #define      S_MACRO_MAX      75
@@ -87,6 +97,7 @@ extern char  S_MACRO_LIST   [S_MACRO_MAX];
 typedef    struct    cMY    tMY;
 struct cMY {
    /*---(execution)------------*/
+   short       erepeat;
    char        emode;                       /* run, playback, delay, etc      */
    char        ename;           
    char        ecurr;           
@@ -107,6 +118,7 @@ struct cMY {
    char        rname;           
    char        rcurr;           
    uchar       rkeys     [LEN_RECD];
+   uchar       modes     [LEN_RECD];
    short       rlen;
    short       rpos;
    uchar       rcur;
@@ -129,6 +141,7 @@ struct cMACRO {
    /*---(contents)----------*/
    short       len;                         /* number of keys                 */
    uchar      *keys;                        /* keystrokes                     */
+   uchar      *modes;                       /* expected modes                 */
    /*---(execute)-----------*/
    short       pos;                         /* current position               */
    uchar       cur;                         /* current key                    */
@@ -217,7 +230,7 @@ char        ymacro_rec_set          (uchar a_abbr);
 char        ymacro_rec_reset        (void);
 char        ymacro_rec_clear        (void);
 char        ymacro_rec_beg          (uchar a_name);
-char        yMACRO_rec_key          (char a_key);
+char        yMACRO_rec_key          (uchar a_key, uchar a_mode);
 char        ymacro_rec_str          (char *a_keys);
 char        yMACRO_rec_end          (void);
 char        yMACRO_direct           (char *a_string);
@@ -226,6 +239,7 @@ char        yMACRO_direct           (char *a_string);
 
 /*===[[ yMACRO_file.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        ymacro_file_handlers    (void);
 /*---(saving)---------------*/
 char        ymacro_save             (void);
 char        ymacro_fetch            (void);
@@ -242,7 +256,7 @@ char        ymacro_exe_set          (uchar a_abbr);
 char        ymacro_exe_reset        (void);
 char        yMACRO_exe_pos          (char *a_name, short *a_pos);
 char        yMACRO_exe_repos        (int a_pos);
-char        ymacro_exe_beg          (char a_name);
+char        ymacro_exe_beg          (uchar a_name);
 char        ymacro_exe_skips        (void);
 char        ymacro_exe_adv          (uchar a_play);
 char        ymacro_exe_key          (void);
@@ -287,6 +301,7 @@ char        ymacro_keys_repos       (int a_pos);
 /*===[[ yMACRO_rptg.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len, char *a_list);
+char        ymacro_dump             (FILE *f);
 
 
 

@@ -3,7 +3,12 @@
 #include    "yMACRO.h"
 #include    "yMACRO_priv.h"
 
-
+/*
+ * metis § dn2<· § macro execution is not taking repeat/count for times                   § M2K6RX §  · §
+ *
+ *
+ *
+ */
 
 tMY         myMACRO;
 
@@ -81,6 +86,7 @@ char
 yMACRO_global_init      (void)
 {
    /*---(clear execution)----------------*/
+   myMACRO.erepeat   =   0;
    myMACRO.emode     = '-';
    myMACRO.ename     = '-';
    myMACRO.ecurr     =  -1;
@@ -88,15 +94,14 @@ yMACRO_global_init      (void)
    myMACRO.epos      =  -1;
    myMACRO.edelay    = MACRO_BLITZ;
    myMACRO.eupdate   = MACRO_NORMAL;
-   myMACRO.ddelay    = MACRO_BLITZ;
-   myMACRO.dupdate   = MACRO_NORMAL;
    myMACRO.pauses    =  0;
    myMACRO.nskip     =  0;
    myMACRO.cskip     =  0;
    myMACRO.blitz     = '-';
    myMACRO.blitzing  = '-';
-   myMACRO.edepth    =  0;   
-   myMACRO.estack [0]= '\0';
+   /*---(playback)-------------*/
+   myMACRO.ddelay    = MACRO_BLITZ;
+   myMACRO.dupdate   = MACRO_NORMAL;
    /*---(clear recording)----------------*/
    myMACRO.rmode     = '-';
    myMACRO.rname     = '-';
@@ -105,6 +110,9 @@ yMACRO_global_init      (void)
    myMACRO.rlen      =   0;
    myMACRO.rpos      =   0;
    myMACRO.rcur      = '-';
+   /*---(stack)----------------*/
+   myMACRO.edepth    =  0;   
+   myMACRO.estack [0]= '\0';
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -116,11 +124,11 @@ yMACRO_init             (void)
    char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_check_prep  (SMOD_MACRO)) {
-      DEBUG_PROG   yLOG_note    ("status is not ready for init");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("status is not ready for init");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(macro abbrev list)--------------*/
@@ -129,7 +137,7 @@ yMACRO_init             (void)
    strlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, "."        , S_MACRO_MAX);
-   DEBUG_PROG   yLOG_info    ("LIST"      , S_MACRO_LIST);
+   DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
    g_nmacro = strlen (S_MACRO_LIST);
    /*---(clear globals)------------------*/
    yMACRO_global_init ();
@@ -139,17 +147,14 @@ yMACRO_init             (void)
    /*---(clear data)---------------------*/
    ymacro_purge (MACRO_ALL);
    /*> strlcpy (myVIKEYS.m_script, "", LEN_DESC);                                     <*/
-   /*---(file handlers)------------------*/
-   rc = yPARSE_handler_max (SMOD_MACRO   , "macro"     , 7.3, "cO----------", -1, yMACRO_reader, yMACRO_writer, "------------" , "a,keys", "keyboard macros"           );
-   DEBUG_FILE   yLOG_value   ("macro"     , rc);
-   /*---(status)-------------------------*/
-   /*> yVIKEYS_view_optionX (YVIKEYS_STATUS, "macro"  , yvikeys_macro_estatus , "details of macro playback"                );   <* 
-    *> yVIKEYS_view_optionX (YVIKEYS_STATUS, "record" , yvikeys_macro_rstatus , "details of macro recording"               );   <*/
+   /*---(other updates)------------------*/
+   rc = yFILE_dump_add ("macros"    , "mac", "inventory of macros"         , ymacro_dump        );
+   ymacro_file_handlers ();
    /*---(update status)------------------*/
-   DEBUG_PROG   yLOG_note    ("update status");
+   DEBUG_YMACRO   yLOG_note    ("update status");
    yMODE_init_set   (SMOD_MACRO, NULL, ymacro_smode);
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -158,23 +163,24 @@ yMACRO_config           (void *a_loader, void *a_saver)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_check_needs  (SMOD_MACRO)) {
-      DEBUG_SCRP   yLOG_note    ("init must complete before config");
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("init must complete before config");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(save)---------------------------*/
    if (a_loader != NULL) myMACRO.e_loader = a_loader;
-   DEBUG_SCRP   yLOG_point   ("loader"    , myMACRO.e_loader);
+   DEBUG_YMACRO   yLOG_point   ("loader"    , myMACRO.e_loader);
    if (a_saver  != NULL) myMACRO.e_saver  = a_saver;
-   DEBUG_SCRP   yLOG_point   ("saver"     , myMACRO.e_saver);
+   DEBUG_YMACRO   yLOG_point   ("saver"     , myMACRO.e_saver);
    /*---(update status)------------------*/
    yMODE_conf_set   (SMOD_MACRO, '1');
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -255,30 +261,30 @@ ymacro_clear            (uchar a_abbr)
    char        n           =   -1;
    int         i           =    0;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
-   DEBUG_PROG   yLOG_schar   (a_abbr);
+   DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_schar   (a_abbr);
    /*---(defense)------------------------*/
    n = ymacro_index (a_abbr);
-   DEBUG_PROG   yLOG_sint    (n);
+   DEBUG_YMACRO   yLOG_sint    (n);
    if (n < 0) {
-      DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, n);
+      DEBUG_YMACRO   yLOG_sexitr  (__FUNCTION__, n);
       return n;
    }
    /*---(running)------------------------*/
-   DEBUG_PROG   yLOG_snote   ("runby");
+   DEBUG_YMACRO   yLOG_snote   ("runby");
    g_macros [n].runby     =   -1;
    /*---(contents)-----------------------*/
-   DEBUG_PROG   yLOG_snote   ("data");
+   DEBUG_YMACRO   yLOG_snote   ("data");
    if (g_macros [n].keys != g_stub)  free (g_macros [n].keys);
    g_macros [n].keys      = g_stub;
    g_macros [n].len       =    0;
    /*---(execute)------------------------*/
-   DEBUG_PROG   yLOG_snote   ("exec");
+   DEBUG_YMACRO   yLOG_snote   ("exec");
    g_macros [n].pos       =   -1;
    g_macros [n].cur       =    0;
    g_macros [n].repeat    =    0;
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -288,25 +294,25 @@ ymacro_wipe             (uchar a_abbr)
    /*---(locals)-----------+-----+-----+-*/
    char        n           =   -1;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
-   DEBUG_PROG   yLOG_schar   (a_abbr);
+   DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_schar   (a_abbr);
    /*---(defense)------------------------*/
    n = ymacro_index (a_abbr);
-   DEBUG_PROG   yLOG_sint    (n);
+   DEBUG_YMACRO   yLOG_sint    (n);
    if (n < 0) {
-      DEBUG_PROG   yLOG_sexitr  (__FUNCTION__, n);
+      DEBUG_YMACRO   yLOG_sexitr  (__FUNCTION__, n);
       return n;
    }
    /*---(running)------------------------*/
-   DEBUG_PROG   yLOG_snote   ("runby");
+   DEBUG_YMACRO   yLOG_snote   ("runby");
    g_macros [n].runby     =   -1;
    /*---(execute)------------------------*/
-   DEBUG_PROG   yLOG_snote   ("exec");
+   DEBUG_YMACRO   yLOG_snote   ("exec");
    g_macros [n].pos       =   -1;
    g_macros [n].cur       =    0;
    g_macros [n].repeat    =    0;
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -318,22 +324,22 @@ ymacro_purge            (char a_scope)
    char        i           =    0;
    char        x_abbr      =  '-';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(turn off)-----------------------*/
    SET_MACRO_IGNORE;
    SET_MACRO_STOP;
    /*---(defense)------------------------*/
-   DEBUG_SCRP   yLOG_char    ("a_scope"   , a_scope);
+   DEBUG_YMACRO   yLOG_char    ("a_scope"   , a_scope);
    --rce;  switch (a_scope) {
    case YMACRO_LOWER  : case YMACRO_NUMBER :
    case YMACRO_GREEK  : case YMACRO_FULL   :
       break;
    default :
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(clear)--------------------------*/
-   DEBUG_SCRP   yLOG_value   ("g_nmacro"  , g_nmacro);
+   DEBUG_YMACRO   yLOG_value   ("g_nmacro"  , g_nmacro);
    for (i = 0; i < g_nmacro; ++i) {
       x_abbr = S_MACRO_LIST [i];
       if (a_scope == YMACRO_LOWER  && strchr (YSTR_LOWER , x_abbr) == NULL)  continue;
@@ -349,7 +355,7 @@ ymacro_purge            (char a_scope)
    myMACRO.rname = '-';
    myMACRO.rcurr = -1;
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -360,11 +366,11 @@ yMACRO_reset_all        (void)
    int         i           =    0;
    char        x_abbr      =  '-';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_senter  (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
    /*---(mode)---------------------------*/
    ymacro_rec_reset ();
    ymacro_exe_reset ();
-   DEBUG_SCRP   yLOG_snote   ("macro_off");
+   DEBUG_YMACRO   yLOG_snote   ("macro_off");
    SET_MACRO_IGNORE;
    SET_MACRO_STOP;
    /*---(reset positions)----------------*/
@@ -379,7 +385,7 @@ yMACRO_reset_all        (void)
    myMACRO.rcur      = '-';
    myMACRO.rcurr     = -1;
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -388,6 +394,7 @@ yMACRO_hmode            (uchar a_major, uchar a_minor)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =   -1;
+   int         x_repeat    =    0;
    /*---(quick out)----------------------*/
    if (a_major != G_KEY_SPACE)  return 0;
    /*---(header)-------------------------*/
@@ -396,11 +403,15 @@ yMACRO_hmode            (uchar a_major, uchar a_minor)
    switch (a_minor) {
    case '@'      :
       DEBUG_USER   yLOG_note    ("macro execution");
+      myMACRO.erepeat = yKEYS_repeats ();
+      yKEYS_repeat_reset ();
+      DEBUG_USER   yLOG_value   ("erepeat"   , myMACRO.erepeat);
       yMODE_enter  (SMOD_MACRO   );
       DEBUG_USER   yLOG_exit    (__FUNCTION__);
       return a_minor;
       break;
    case 'q'      :
+      yKEYS_repeat_reset ();
       IF_MACRO_RECORDING {
          DEBUG_USER   yLOG_note    ("end macro recording");
          rc = yMACRO_rec_end ();
@@ -414,6 +425,7 @@ yMACRO_hmode            (uchar a_major, uchar a_minor)
       break;
    case 'Q'      :
       DEBUG_USER   yLOG_note    ("reset macro recording");
+      yKEYS_repeat_reset ();
       rc = yMACRO_reset_all ();
       DEBUG_USER   yLOG_exit    (__FUNCTION__);
       return rc;
@@ -479,6 +491,7 @@ ymacro_smode            (uchar a_major, uchar a_minor)
          a_minor = myMACRO.ename;
       }
       /*---(execute)---------------------*/
+      DEBUG_USER   yLOG_note    ("running stored macro");
       yMODE_exit  ();
       rc = ymacro_exe_beg  (a_minor);
       if (rc < 0) {
@@ -497,132 +510,6 @@ ymacro_smode            (uchar a_major, uchar a_minor)
    /*---(complete)-----------------------*/
    DEBUG_USER   yLOG_exitr   (__FUNCTION__, rce);
    return rce;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                         unit testing                         ----===*/
-/*====================------------------------------------====================*/
-static void  o___UNIT_TEST_______o () { return; }
-
-char          unit_answer [LEN_FULL];
-
-char       /*----: set up program urgents/debugging --------------------------*/
-ymacro__unit_quiet      (void)
-{
-   int         x_narg       = 1;
-   char       *x_args [20]  = {"yMACRO_unit" };
-   yPARSE_init  ('y', NULL, '-');
-   yPARSE_delimiters  ("");
-   /*> yURG_logger   (x_narg, x_args);                                                <*/
-   /*> yURG_urgs     (x_narg, x_args);                                                <*/
-   yMODE_init (MODE_MAP);
-   yMODE_handler_setup ();
-   yMACRO_init ();
-   yMACRO_config (NULL, NULL);
-   return 0;
-}
-
-char       /*----: set up program urgents/debugging --------------------------*/
-ymacro__unit_loud       (void)
-{
-   int         x_narg       = 1;
-   char       *x_args [20]  = {"yMACRO_unit" };
-   yPARSE_init  ('y', NULL, '-');
-   yPARSE_delimiters  ("");
-   yURG_logger   (x_narg, x_args);
-   yURG_urgs     (x_narg, x_args);
-   yURG_name  ("kitchen"      , YURG_ON);
-   yURG_name  ("ystr"         , YURG_ON);
-   yURG_name  ("yparse"       , YURG_ON);
-   yURG_name  ("keys"         , YURG_ON);
-   DEBUG_SCRP   yLOG_info     ("yMACRO"     , yMACRO_version   ());
-   yMODE_init (MODE_MAP);
-   yMODE_handler_setup ();
-   yMACRO_init ();
-   yMACRO_config (NULL, NULL);
-   return 0;
-}
-
-char       /*----: stop logging ----------------------------------------------*/
-ymacro__unit_end        (void)
-{
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*> yVIKEYS_wrap ();                                                               <*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-   yLOGS_end    ();
-   return 0;
-}
-
-char*        /*-> tbd --------------------------------[ leaf   [gs.520.202.40]*/ /*-[01.0000.00#.#]-*/ /*-[--.---.---.--]-*/
-yMACRO__unit            (char *a_question, uchar a_abbr)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        n           =    0;
-   char        x_list      [LEN_RECD];
-   char        t           [LEN_RECD];
-   int         c           =    0;
-   int         x_len       =    0;
-   int         i           =    0;
-   /*---(preprare)-----------------------*/
-   strcpy  (unit_answer, "MACRO unit       : question not understood");
-   /*---(simple questions)---------------*/
-   if      (strcmp (a_question, "rec"            )   == 0) {
-      if (myMACRO.rcurr < 0) snprintf (unit_answer, LEN_RECD, "MACRO rec    (%c) : macro pointer grounded", myMACRO.rname);
-      else {
-         sprintf (t, "[%-.33s]", myMACRO.rkeys);
-         if (myMACRO.rlen > 33)  t [34] = '>';
-         snprintf (unit_answer, LEN_RECD, "MACRO rec    (%c) : %c %2d %2d%s", myMACRO.rname, myMACRO.rmode, myMACRO.rpos, myMACRO.rlen, t);
-      }
-      return unit_answer;
-   }
-   else if (strcmp (a_question, "exec"           )   == 0) {
-      if (myMACRO.ecurr < 0)  snprintf (unit_answer, LEN_RECD, "MACRO exec   (%c) : macro pointer grounded", myMACRO.ename);
-      else              snprintf (unit_answer, LEN_RECD, "MACRO exec   (%c) : %c %c %3d %02x %3d[%-.30s]", myMACRO.ename, myMACRO.emode, myMACRO.ddelay, g_macros [myMACRO.ecurr].pos, (uchar) g_macros [myMACRO.ecurr].cur, g_macros [myMACRO.ecurr].len, g_macros [myMACRO.ecurr].keys);
-      return unit_answer;
-   }
-   /*> else if (strcmp (a_question, "keys"           )   == 0) {                                             <* 
-    *>    snprintf (unit_answer, LEN_RECD, "MACRO keys   (%c) : %-.45s", a_abbr, g_macros [myMACRO.ecurr].keys);   <* 
-    *>    return unit_answer;                                                                                <* 
-    *> }                                                                                                     <*/
-   else if (strcmp (a_question, "list"           )   == 0) {
-      c = yMACRO_list (',', x_list);
-      snprintf (unit_answer, LEN_RECD, "MACRO list       : %2d %s", c, x_list);
-      return unit_answer;
-   }
-   /*> else if (strcmp (a_question, "speed"          )   == 0) {                                                                                                                                                                                      <* 
-    *>    snprintf (unit_answer, LEN_RECD, "MACRO speed    %c : %8.6fd %5.3fu %2d/%2ds, deb %c/%c, exe %c/%c, %2dp", g_blitzing, myVIKEYS.delay, myVIKEYS.update, myMACRO.cskip, myMACRO.nskip, myMACRO.ddelay, myMACRO.dupdate, myMACRO.edelay, myMACRO.eupdate, myMACRO.pauses);   <* 
-    *>    return unit_answer;                                                                                                                                                                                                                         <* 
-    *> }                                                                                                                                                                                                                                              <*/
-   /*> else if (strcmp (a_question, "clip"           )   == 0) {                                  <* 
-    *>    yvikeys_dump_read (a_abbr, t, &x_len);                                                  <* 
-    *>    snprintf (unit_answer, LEN_RECD, "MACRO clip  (%2d) : %2d[%.40s]", a_abbr, x_len, t);   <* 
-    *>    return unit_answer;                                                                     <* 
-    *> }                                                                                          <*/
-   /*---(complex questions)--------------*/
-   n = ymacro_index (a_abbr);
-   if (n < 0) {
-      strcpy  (unit_answer, "MACRO unit       : not a valid macro name");
-      return unit_answer;
-   }
-   else if (strcmp (a_question, "saved"          )   == 0) {
-      if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO saved  (%c) : not a valid macro name", a_abbr);
-      else {
-         sprintf (t, "å%-.33sæ", g_macros [n].keys);
-         if (g_macros [n].len > 33)  t [34] = '>';
-         snprintf (unit_answer, LEN_RECD, "MACRO saved  (%c) : %2d%-35.35s %2d %2d %2d", a_abbr, g_macros [n].len, t, g_macros [n].pos, g_macros [n].runby, g_macros [n].repeat);
-      }
-   }
-   /*> else if (strcmp (a_question, "full"           )   == 0) {                                                <* 
-    *>    if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : not a valid macro name", a_abbr);   <* 
-    *>    else        snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : %s", a_abbr, g_macros [n].keys);    <* 
-    *> }                                                                                                        <*/
-   else if (strcmp (a_question, "repeat"       )  == 0) {
-      snprintf (unit_answer, LEN_FULL, "MACRO repeat     : %d", yKEYS_repeats ());
-   }
-   /*---(complete)-----------------------*/
-   return unit_answer;
 }
 
 

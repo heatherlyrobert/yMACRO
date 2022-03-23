@@ -13,48 +13,50 @@ static void  o___MENUS___________o () { return; }
 char
 yMACRO_menu_beg         (void)
 {
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
-   /*> IF_MACRO_PLAYING  {                                                            <* 
-    *>    DEBUG_SCRP   yLOG_char    ("emode bef" , s_emode);                          <* 
-    *>    s_esave = s_emode;                                                          <* 
-    *>    DEBUG_SCRP   yLOG_char    ("esave"     , s_esave);                          <* 
-    *>    yvikeys_macro_set2blitz ();                                                 <* 
-    *>    SET_MACRO_STOP;                                                             <* 
-    *>    DEBUG_SCRP   yLOG_char    ("emode aft" , s_emode);                          <* 
-    *> } else {                                                                       <* 
-    *>    DEBUG_SCRP   yLOG_note    ("nothing to do");                                <* 
-    *> }                                                                              <*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   IF_MACRO_PLAYING  {
+      DEBUG_YMACRO   yLOG_char    ("emode bef" , myMACRO.emode);
+      myMACRO.esave = myMACRO.emode;
+      DEBUG_YMACRO   yLOG_char    ("esave"     , myMACRO.esave);
+      ymacro_set2blitz ();
+      SET_MACRO_STOP;
+      DEBUG_YMACRO   yLOG_char    ("emode aft" , myMACRO.emode);
+   } else {
+      DEBUG_YMACRO   yLOG_note    ("nothing to do");
+   }
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
 yMACRO_menu_end         (void)
 {
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
-   /*> if (s_esave != '?') {                                                          <* 
-    *>    DEBUG_SCRP   yLOG_char    ("emode bef" , s_emode);                          <* 
-    *>    DEBUG_SCRP   yLOG_char    ("esave"     , s_esave);                          <* 
-    *>    s_emode = s_esave;                                                          <* 
-    *>    DEBUG_SCRP   yLOG_char    ("emode aft" , s_emode);                          <* 
-    *>    switch (s_emode) {                                                          <* 
-    *>    case MACRO_RUN      :                                                       <* 
-    *>       if      (s_blitz    == 'y')  yvikeys_macro_set2blitz ();                 <* 
-    *>       else if (s_blitzing == 'y')  yvikeys_macro_set2blitz ();                 <* 
-    *>       else                         yvikeys_macro_set2run   ();                 <* 
-    *>       break;                                                                   <* 
-    *>    case MACRO_DELAY    :                                                       <* 
-    *>       yvikeys_macro_set2delay ();                                              <* 
-    *>       break;                                                                   <* 
-    *>    case MACRO_PLAYBACK :                                                       <* 
-    *>       yvikeys_macro_set2play  ();                                              <* 
-    *>       break;                                                                   <* 
-    *>    }                                                                           <* 
-    *> } else {                                                                       <* 
-    *>    DEBUG_SCRP   yLOG_note    ("nothing to do");                                <* 
-    *> }                                                                              <* 
-    *> s_esave = '?';                                                                 <*/
-   /*> DEBUG_SCRP   yLOG_char    ("esave aft" , s_esave);                             <*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   if (myMACRO.esave != '?') {
+      DEBUG_YMACRO   yLOG_char    ("emode bef" , myMACRO.emode);
+      DEBUG_YMACRO   yLOG_char    ("esave"     , myMACRO.esave);
+      myMACRO.emode = myMACRO.esave;
+      DEBUG_YMACRO   yLOG_char    ("emode aft" , myMACRO.emode);
+      switch (myMACRO.emode) {
+      case MACRO_RUN      :
+         if      (myMACRO.blitz    == 'y')  ymacro_set2blitz ();
+         else if (myMACRO.blitzing == 'y')  ymacro_set2blitz ();
+         else                               ymacro_set2run   ();
+         break;
+      case MACRO_DELAY    :
+         ymacro_set2delay ();
+         break;
+      case MACRO_PLAYBACK :
+         ymacro_set2play  ();
+         break;
+      }
+   } else {
+      DEBUG_YMACRO   yLOG_note    ("nothing to do");
+   }
+   myMACRO.esave = '?';
+   DEBUG_YMACRO   yLOG_char    ("esave aft" , myMACRO.esave);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+

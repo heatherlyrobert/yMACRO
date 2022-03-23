@@ -8,7 +8,7 @@ NAME_BASE  = yMACRO
 # additional standard and outside libraries
 LIB_STD    = 
 # all heatherly libraries used, debug versions whenever available
-LIB_MINE   = -lyMODE_debug -lyKEYS_debug -lySTR_debug -lyPARSE_debug
+LIB_MINE   = -lyMODE_debug -lyKEYS_debug -lyFILE_debug -lySTR_debug -lyPARSE_debug
 # directory for production code, no trailing slash
 INST_DIR   = 
 

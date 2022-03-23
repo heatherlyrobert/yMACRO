@@ -106,7 +106,7 @@ yMACRO_dump             (void *a_file)
     *> char        c           =    0;                                                                                                                                                                                                                               <* 
     *> int         x_len       =    0;                                                                                                                                                                                                                               <* 
     *> /+---(header)-------------------------+//+  27 + 20 + 5 = 52 +/                                                                                                                                                                                               <* 
-    *> DEBUG_OUTP   yLOG_enter   (__FUNCTION__);                                                                                                                                                                                                                     <* 
+    *> DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);                                                                                                                                                                                                                     <* 
     *> /+---(prepare)------------------------+/                                                                                                                                                                                                                      <* 
     *> x_end = strlen (S_MACRO_LIST);                                                                                                                                                                                                                                <* 
     *> x_len = 80 - 52 - strlen (myVIKEYS.s_prog);                                                                                                                                                                                                                   <* 
@@ -119,7 +119,7 @@ yMACRO_dump             (void *a_file)
     *> }                                                                                                                                                                                                                                                             <* 
     *> fprintf (a_file, "##===[[ end-of-dump (%2d recs) ]]==============================================##\n", c);                                                                                                                                                   <* 
     *> /+---(complete)-----------------------+/                                                                                                                                                                                                                      <* 
-    *> DEBUG_OUTP  yLOG_exit    (__FUNCTION__);                                                                                                                                                                                                                      <* 
+    *> DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);                                                                                                                                                                                                                      <* 
     *> return c;                                                                                                                                                                                                                                                     <*/
 }
 
@@ -140,7 +140,7 @@ char
 ymacro_status__sizes    (char *a_size, short *a_wide, short *w)
 {
    /*---(output)-------------------------*/
-   DEBUG_SCRP   yLOG_complex ("request"   , "%c %3d %3d", *a_size, *a_wide, *w);
+   DEBUG_YMACRO   yLOG_complex ("request"   , "%c %3d %3d", *a_size, *a_wide, *w);
    /*---(check size)---------------------*/
    if (*a_size == '-') {
       if (*a_wide < 20)  *a_size = 'u';
@@ -157,7 +157,7 @@ ymacro_status__sizes    (char *a_size, short *a_wide, short *w)
    case 'g'  :  *a_wide = 220; break;
    }
    /*---(output)-------------------------*/
-   DEBUG_SCRP   yLOG_complex ("revised"   , "%c %3d %3d", *a_size, *a_wide, *w);
+   DEBUG_YMACRO   yLOG_complex ("revised"   , "%c %3d %3d", *a_size, *a_wide, *w);
 }
 
 char
@@ -172,7 +172,7 @@ yMACRO_mac_status       (char a_size, short a_wide, char *a_list)
    uchar       x_mid       [LEN_RECD]  = "";
    char        x_over      =  ' ';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(fix sizes)----------------------*/
    if (strchr ("hg", a_size) != NULL)  a_size = 'l';
    if (a_size == '-') { /* no adapt option */
@@ -232,7 +232,7 @@ yMACRO_mac_status       (char a_size, short a_wide, char *a_list)
    /*---(concatenate)--------------------*/
    sprintf (a_list, "%s %s", x_pre, x_mid);
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -252,7 +252,7 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
    uchar       x_mid       [LEN_RECD]  = "";
    int         x_beg       =   0;
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(get size)-----------------------*/
    ymacro_status__sizes (&a_size, &a_wide, &w);
    w =  a_wide - 20;
@@ -265,9 +265,9 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
       if (x_len > 0)  x_curr = x_keys [x_len - 1];
       sprintf (x_lenstr, "%3d", x_len);
    }
-   DEBUG_SCRP   yLOG_info    ("x_keys"    , x_keys);
-   DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);
-   DEBUG_SCRP   yLOG_value   ("x_curr"    , x_curr);
+   DEBUG_YMACRO   yLOG_info    ("x_keys"    , x_keys);
+   DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
+   DEBUG_YMACRO   yLOG_value   ("x_curr"    , x_curr);
    /*---(prefix)-------------------------*/
    switch (a_size) {
    case 'u'  : case 't'  :
@@ -301,7 +301,7 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
    /*---(concatenate)--------------------*/
    sprintf (a_list, "%s %s", x_pre, x_mid);
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -366,7 +366,7 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
    char        n           =    0;
    uchar       x_runby     =  '-';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(get size)-----------------------*/
    if (a_size == '-') { /* no adapt option */
       if      (a_wide <  20)  a_size = 'u';
@@ -422,7 +422,7 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
       break;
    }
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -453,7 +453,7 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
    uchar       x_abbr      =  '-';
    int         i           =    0;
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(get size)-----------------------*/
    if (a_size == '-') { /* no adapt option */
       if      (a_wide <  20)  a_size = 'u';
@@ -478,7 +478,7 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
    if (a_size == 'u') {
       if (myMACRO.edepth > 0)  sprintf (a_list, "mex %-5.5s´", myMACRO.estack);
       else              sprintf (a_list, "mex %-5.5s´", "-");
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(prefix)-------------------------*/
@@ -558,7 +558,7 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
       break;
    }
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -573,9 +573,9 @@ yMACRO_scrp_status      (char a_size, short a_wide, char *a_list)
     *> int         n           =   0;                                                                              <* 
     *> /+---(sizing)-------------------------+/                                                                    <* 
     *> yVIKEYS_view_size   (YVIKEYS_STATUS, NULL, &x_wide, NULL, NULL, NULL);                                      <* 
-    *> DEBUG_SCRP   yLOG_value   ("x_wide"    , x_wide);                                                           <* 
+    *> DEBUG_YMACRO   yLOG_value   ("x_wide"    , x_wide);                                                           <* 
     *> w = x_wide - 36;                                                                                            <* 
-    *> DEBUG_SCRP   yLOG_value   ("w"         , w);                                                                <* 
+    *> DEBUG_YMACRO   yLOG_value   ("w"         , w);                                                                <* 
     *> /+---(not active)---------------------+/                                                                    <* 
     *> n = yvikeys_macro__index ('.');                                                                             <* 
     *> if (s_script == NULL || n < 0) {                                                                            <* 
@@ -590,4 +590,27 @@ yMACRO_scrp_status      (char a_size, short a_wide, char *a_list)
     *> /+---(complete)-----------------------+/                                                                    <* 
     *> return 0;                                                                                                   <*/
 }
+
+char
+ymacro_dump             (FILE *f)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   char        x_end       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   x_end = strlen (S_MACRO_LIST);
+   /*---(clear)--------------------------*/
+   for (i = 0; i <= x_end; ++i) {
+      if (g_macros [i].len <= 0)  continue;
+      fprintf (f, "%c  %4d  å%sæ\n", S_MACRO_LIST [i],
+            g_macros [i].len, g_macros [i].keys);
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 

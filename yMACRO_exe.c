@@ -4,6 +4,21 @@
 #include    "yMACRO_priv.h"
 
 
+/*
+ * four execution modes...
+ *
+ *   blitz       runs all out, as fast as possible
+ *
+ *   normal      runs at configurable speed, no playback controls
+ *
+ *   delay       temporarily slowed down to observe, can use playback controls
+ *
+ *   playback    stepwise execution, must use playback controls
+ *
+ *
+ *
+ */
+
 
 /*> char    g_depth  =   0;                                                           <*/
 /*> char    g_stack [LEN_LABEL] = "";                                                 <*/
@@ -40,14 +55,14 @@ ymacro_exe_reset        (void)
 char
 yMACRO_exe_pos              (char *a_name, short *a_pos)
 {
-   DEBUG_SCRP   yLOG_senter  (__FUNCTION__);
-   DEBUG_SCRP   yLOG_schar   (myMACRO.ename);
-   DEBUG_SCRP   yLOG_spoint  (a_name);
+   DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_schar   (myMACRO.ename);
+   DEBUG_YMACRO   yLOG_spoint  (a_name);
    if (a_name != NULL)  *a_name = myMACRO.ename;
-   DEBUG_SCRP   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
-   DEBUG_SCRP   yLOG_spoint  (a_pos);
+   DEBUG_YMACRO   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
+   DEBUG_YMACRO   yLOG_spoint  (a_pos);
    if (a_pos  != NULL)  *a_pos  = g_macros [myMACRO.ecurr].pos;
-   DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -68,6 +83,7 @@ ymacro_exe__repeater    (void)
    --(g_macros [myMACRO.ecurr].repeat);
    /*---(globals)------------------------*/
    myMACRO.epos = -1;
+   DEBUG_YMACRO  yLOG_complex ("repeater"  , "%3d pos, %c cur, %3d rep, %3d  epos", g_macros [myMACRO.ecurr].pos, g_macros [myMACRO.ecurr].cur, g_macros [myMACRO.ecurr].repeat, myMACRO.epos);
    /*---(complete)-----------------------*/
    return 1;
 }
@@ -87,7 +103,8 @@ ymacro_exe__return      (void)
    /*---(globals)------------------------*/
    myMACRO.ecurr = x_runby;
    myMACRO.ename = S_MACRO_LIST [myMACRO.ecurr];
-   myMACRO.epos  = g_macros [myMACRO.ecurr].pos;
+   /*> myMACRO.epos  = g_macros [myMACRO.ecurr].pos;                                  <*/
+   myMACRO.epos  = g_macros [myMACRO.ecurr].pos - 1;
    /*---(check halt)---------------------*/
    if (g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos] == G_CHAR_HALT) {
       g_macros [myMACRO.ecurr].pos--;
@@ -95,6 +112,7 @@ ymacro_exe__return      (void)
    /*---(update stack)---------------------*/
    --(myMACRO.edepth);
    myMACRO.estack [myMACRO.edepth] = '\0';
+   DEBUG_YMACRO  yLOG_complex ("return"    , "%3d pos, %c cur, %3d rep, %3d  epos", g_macros [myMACRO.ecurr].pos, g_macros [myMACRO.ecurr].cur, g_macros [myMACRO.ecurr].repeat, myMACRO.epos);
    /*---(complete)-----------------------*/
    return 1;
 }
@@ -127,15 +145,15 @@ ymacro_exe__script      (void)
    /*---(check next)-----*/
    rc = ymacro_script__read ();
    if (rc < 0) {
-      DEBUG_SCRP   yLOG_note    ("full script complete");
+      DEBUG_YMACRO   yLOG_note    ("full script complete");
       ymacro_exe__done ();
    } else {
-      DEBUG_SCRP   yLOG_note    ("script line complete");
+      DEBUG_YMACRO   yLOG_note    ("script line complete");
       myMACRO.estack [0] = '\0';
       myMACRO.edepth     = 0;
    }
-   DEBUG_SCRP   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
-   DEBUG_SCRP   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
+   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
+   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
    /*---(complete)-----------------------*/
    return 1;
 }
@@ -144,45 +162,45 @@ char
 ymacro_exe_done         (void)
 {
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(decision makers)----------------*/
-   DEBUG_SCRP   yLOG_char    ("ename"     , myMACRO.ename);
-   DEBUG_SCRP   yLOG_value   ("ecurr"     , myMACRO.ecurr);
-   DEBUG_SCRP   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
-   DEBUG_SCRP   yLOG_char    ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
+   DEBUG_YMACRO   yLOG_value   ("ecurr"     , myMACRO.ecurr);
+   DEBUG_YMACRO   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
+   DEBUG_YMACRO   yLOG_char    ("runby"     , g_macros [myMACRO.ecurr].runby);
    /*---(repeat)-------------------------*/
    if (g_macros [myMACRO.ecurr].repeat > 0) {
-      DEBUG_SCRP   yLOG_note    ("repeats left, so restart");
+      DEBUG_YMACRO   yLOG_note    ("repeats left, so restart");
       ymacro_exe__repeater ();
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 1;
       /*---(done)-----------*/
    }
    /*---(return to higher level)---------*/
    if (g_macros [myMACRO.ecurr].runby >= 0) {
-      DEBUG_SCRP   yLOG_note    ("return to caller/runby");
+      DEBUG_YMACRO   yLOG_note    ("return to caller/runby");
       ymacro_exe__return   ();
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 1;
       /*---(done)-----------*/
    }
    /*---(really done)--------------------*/
    if (myMACRO.ename != '.') {
-      DEBUG_SCRP   yLOG_note    ("macro really complete");
+      DEBUG_YMACRO   yLOG_note    ("macro really complete");
       ymacro_exe__done     ();
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return G_KEY_NOOP;
       /*---(done)-----------*/
    }
    /*---(check script)-----------*/
    ymacro_exe__script   ();
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return G_KEY_NOOP;
 }
 
 char         /*-> prepare a macro execution ----------[ ------ [ge.832.122.52]*/ /*-[01.0000.112.5]-*/ /*-[--.---.---.--]-*/
-ymacro_exe_beg          (char a_name)
+ymacro_exe_beg          (uchar a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -191,65 +209,73 @@ ymacro_exe_beg          (char a_name)
    int         x_curr      =   -1;
    uchar       x_lower     =  '-';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_SCRP   yLOG_char    ("a_name"    , a_name);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_char    ("a_name"    , a_name);
+   DEBUG_YMACRO   yLOG_value   ("erepeat"   , myMACRO.erepeat);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_operational (SMOD_MACRO)) {
-      DEBUG_SCRP   yLOG_note    ("can not execute until operational");
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("can not execute until operational");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check macro name)------------*/
    x_curr  = myMACRO.ecurr;
    /*---(check macro name)------------*/
    x_lower = tolower (a_name);
-   DEBUG_SCRP   yLOG_char    ("x_lower"   , x_lower);
+   DEBUG_YMACRO   yLOG_char    ("x_lower"   , x_lower);
    n = ymacro_index  (x_lower);
-   DEBUG_SCRP   yLOG_value   ("n"         , n);
+   DEBUG_YMACRO   yLOG_value   ("n"         , n);
    if (n <  0)  {
       yKEYS_set_lock ();
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check for empty)-------------*/
+   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [n].len);
+   --rce;  if (g_macros [n].len <= 0) {
+      DEBUG_YMACRO   yLOG_note    ("macro is empty/null");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(check for illegal)-----------*/
-   DEBUG_SCRP   yLOG_value   ("myMACRO.rcurr"   , myMACRO.rcurr);
+   DEBUG_YMACRO   yLOG_value   ("rcurr"     , myMACRO.rcurr);
    --rce;  if (n == myMACRO.rcurr) {
-      DEBUG_SCRP   yLOG_note    ("this macro is currently recording");
+      DEBUG_YMACRO   yLOG_note    ("this macro is currently recording");
       yKEYS_set_lock ();
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_note    ("this macro verified as not currently recording");
-   DEBUG_SCRP   yLOG_value   ("ecurr"   , myMACRO.ecurr);
+   DEBUG_YMACRO   yLOG_note    ("this macro verified as not currently recording");
+   DEBUG_YMACRO   yLOG_value   ("ecurr"   , myMACRO.ecurr);
    --rce;  if (n == myMACRO.ecurr) {
-      DEBUG_SCRP   yLOG_note    ("this macro is currently executing");
+      DEBUG_YMACRO   yLOG_note    ("this macro is currently executing");
       yKEYS_set_lock ();
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_note    ("this macro verified as not currently executing");
-   DEBUG_SCRP   yLOG_value   ("pos"       , g_macros [n].pos);
+   DEBUG_YMACRO   yLOG_note    ("this macro verified as not currently executing");
+   DEBUG_YMACRO   yLOG_value   ("pos"       , g_macros [n].pos);
    --rce;  if (g_macros [n].pos >= 0) {
-      DEBUG_SCRP   yLOG_note    ("this macro is active");
+      DEBUG_YMACRO   yLOG_note    ("this macro is active");
       yKEYS_set_lock ();
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_note    ("this macro verified as not executing anywhere");
-   DEBUG_SCRP   yLOG_value   ("runby"     , g_macros [n].runby);
+   DEBUG_YMACRO   yLOG_note    ("this macro verified as not executing anywhere");
+   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [n].runby);
    --rce;  if (g_macros [n].runby >= 0) {
-      DEBUG_SCRP   yLOG_note    ("this macro is running higher");
+      DEBUG_YMACRO   yLOG_note    ("this macro is running higher");
       yKEYS_set_lock ();
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_note    ("this macro verified as not executing higher up");
+   DEBUG_YMACRO   yLOG_note    ("this macro verified as not executing higher up");
    /*---(set as current)--------------*/
    rc = ymacro_exe_set (x_lower);
-   DEBUG_SCRP   yLOG_value   ("exe_set"   , rc);
+   DEBUG_YMACRO   yLOG_value   ("exe_set"   , rc);
    --rce;  if (rc <  0)  {
       yKEYS_set_lock ();
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(execution style)-------------*/
@@ -259,13 +285,13 @@ ymacro_exe_beg          (char a_name)
       myMACRO.edepth     = 0;
       /*---(normal)-------------------*/
       if (a_name == x_lower && a_name != ',') {
-         DEBUG_SCRP   yLOG_note    ("set normal/delay execution");
+         DEBUG_YMACRO   yLOG_note    ("set normal/delay execution");
          if (myMACRO.ddelay != MACRO_BLITZ)  SET_MACRO_DELAY;
          IF_MACRO_OFF                        SET_MACRO_RUN;
       }
       /*---(debugging/playback)-------*/
       else {
-         DEBUG_SCRP   yLOG_note    ("set debug/playback execution");
+         DEBUG_YMACRO   yLOG_note    ("set debug/playback execution");
          SET_MACRO_PLAYBACK;
       }
    }
@@ -273,7 +299,7 @@ ymacro_exe_beg          (char a_name)
    myMACRO.estack [myMACRO.edepth] = x_lower;
    ++myMACRO.edepth;
    myMACRO.estack [myMACRO.edepth] = '\0';
-   DEBUG_SCRP   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
+   DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    /*---(get macro)-------------------*/
    ymacro_fetch ();
    /*---(update settings)-------------*/
@@ -283,13 +309,13 @@ ymacro_exe_beg          (char a_name)
    ymacro_exe_reset ();
    if (strchr (".,", a_name) == NULL)  ymacro_exe_adv (0);
    g_macros [myMACRO.ecurr].runby  = x_curr;
-   g_macros [myMACRO.ecurr].repeat = yKEYS_repeats ();
-   yKEYS_repeat_reset ();
+   DEBUG_YMACRO   yLOG_value   ("erepeat"   , myMACRO.erepeat);
    yMACRO_zero  ();
-   DEBUG_USER   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
+   g_macros [myMACRO.ecurr].repeat = myMACRO.erepeat;
+   DEBUG_YMACRO   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
    /*---(reset main delay)---------------*/
-   DEBUG_SCRP   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
-   DEBUG_SCRP   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
+   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
+   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
    if (myMACRO.blitz == 'y')   ymacro_set2blitz ();
    else {
       IF_MACRO_RUN             ymacro_set2run   ();
@@ -297,7 +323,7 @@ ymacro_exe_beg          (char a_name)
       else                     ymacro_set2delay ();
    }
    /*---(complete)--------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -305,10 +331,10 @@ char
 ymacro_exe_skips        (void)
 {
    ++myMACRO.cskip;
-   DEBUG_SCRP   yLOG_sint    (myMACRO.cskip);
-   DEBUG_SCRP   yLOG_sint    (myMACRO.nskip);
+   DEBUG_YMACRO   yLOG_sint    (myMACRO.cskip);
+   DEBUG_YMACRO   yLOG_sint    (myMACRO.nskip);
    if (myMACRO.cskip < myMACRO.nskip) {
-      DEBUG_SCRP   yLOG_snote   ("no position update due yet");
+      DEBUG_YMACRO   yLOG_snote   ("no position update due yet");
       return -1;
    }
    myMACRO.cskip = 0;
@@ -322,69 +348,69 @@ ymacro_exe_adv          (uchar a_play)
    uchar       x_ch        =    0;
    /*---(header)-------------------------*/
    IF_MACRO_OFF   return 0;
-   DEBUG_SCRP   yLOG_senter  (__FUNCTION__);
-   DEBUG_SCRP   yLOG_sint    (a_play);
+   DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_sint    (a_play);
    /*---(defense)------------------------*/
-   DEBUG_SCRP   yLOG_sint    (myMACRO.ecurr);
+   DEBUG_YMACRO   yLOG_sint    (myMACRO.ecurr);
    if (myMACRO.ecurr < 0) {
-      DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
-   DEBUG_SCRP   yLOG_schar   (S_MACRO_LIST [myMACRO.ecurr]);
+   DEBUG_YMACRO   yLOG_schar   (S_MACRO_LIST [myMACRO.ecurr]);
    /*---(defense)------------------------*/
-   DEBUG_SCRP   yLOG_schar   (myMACRO.emode);
+   DEBUG_YMACRO   yLOG_schar   (myMACRO.emode);
    switch (myMACRO.emode) {
    case MACRO_STOP     :
-      DEBUG_SCRP   yLOG_snote   ("stopped, get out");
-      DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_snote   ("stopped, get out");
+      DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
       return 0;
       break;
    case MACRO_DELAY    :
-      DEBUG_SCRP   yLOG_snote   ("delay mode");
+      DEBUG_YMACRO   yLOG_snote   ("delay mode");
       if (ymacro_exe_skips () < 0) {
-         DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
          return 0;
       }
       break;
    case MACRO_PLAYBACK :
-      DEBUG_SCRP   yLOG_snote   ("playback mode");
-      DEBUG_SCRP   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
+      DEBUG_YMACRO   yLOG_snote   ("playback mode");
+      DEBUG_YMACRO   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
       x_ch = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos];
-      DEBUG_SCRP   yLOG_schar   (x_ch);
+      DEBUG_YMACRO   yLOG_schar   (x_ch);
       if (a_play != 0) {
-         DEBUG_SCRP   yLOG_snote   ("play character, no position update requested");
-         DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_snote   ("play character, no position update requested");
+         DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
          return 0;
       }
       break;
    case MACRO_RUN      :
       if (ymacro_exe_skips () < 0) {
-         DEBUG_SCRP   yLOG_snote   ("normal mode, in a skip cycle");
-         DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_snote   ("normal mode, in a skip cycle");
+         DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
          return 0;
       }
-      DEBUG_SCRP   yLOG_snote   ("normal run mode");
+      DEBUG_YMACRO   yLOG_snote   ("normal run mode");
       break;
    }
    /*---(next key)-----------------------*/
    if (yKEYS_repeating ()) {
-      DEBUG_LOOP   yLOG_snote   ("older keys");
+      DEBUG_YMACRO   yLOG_snote   ("older keys");
       g_macros [myMACRO.ecurr].cur = yKEYS_current ();
       yKEYS_repos (yKEYS_position + 1);
    } else if (myMACRO.pauses > 0) {
-      DEBUG_LOOP   yLOG_snote   ("pausing");
-      DEBUG_SCRP   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
+      DEBUG_YMACRO   yLOG_snote   ("pausing");
+      DEBUG_YMACRO   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
       --myMACRO.pauses;
    } else {
-      DEBUG_LOOP   yLOG_snote   ("new keystroke");
+      DEBUG_YMACRO   yLOG_snote   ("new keystroke");
       ++g_macros [myMACRO.ecurr].pos;
       if (g_macros [myMACRO.ecurr].pos < 0)  g_macros [myMACRO.ecurr].cur = 0;
       else                             g_macros [myMACRO.ecurr].cur = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos];
-      DEBUG_SCRP   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
+      DEBUG_YMACRO   yLOG_sint    (g_macros [myMACRO.ecurr].pos);
    }
-   DEBUG_SCRP   yLOG_schar   (g_macros [myMACRO.ecurr].cur);
+   DEBUG_YMACRO   yLOG_schar   (g_macros [myMACRO.ecurr].cur);
    /*---(complete)--------------------*/
-   DEBUG_SCRP   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -400,37 +426,29 @@ ymacro_exe_key          (void)
    char        x_last      =  '-';
    /*---(header)-------------------------*/
    IF_MACRO_OFF   return 0;
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   DEBUG_SCRP   yLOG_value   ("ecurr"   , myMACRO.ecurr);
-   DEBUG_SCRP   yLOG_char    ("abbr"      , S_MACRO_LIST [myMACRO.ecurr]);
-   DEBUG_SCRP   yLOG_value   ("pos"       , g_macros [myMACRO.ecurr].pos);
+   DEBUG_YMACRO   yLOG_value   ("ecurr"     , myMACRO.ecurr);
+   DEBUG_YMACRO   yLOG_char    ("abbr"      , S_MACRO_LIST [myMACRO.ecurr]);
+   DEBUG_YMACRO   yLOG_value   ("pos"       , g_macros [myMACRO.ecurr].pos);
    /*---(handle playback/delay)----------*/
-   DEBUG_SCRP   yLOG_value   ("epos"      , myMACRO.epos);
+   DEBUG_YMACRO   yLOG_value   ("epos"      , myMACRO.epos);
    if (g_macros [myMACRO.ecurr].pos == myMACRO.epos) {
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return G_KEY_NOOP;  /* return a no-action */
    }
    /*---(handle end of macro)------------*/
-   DEBUG_SCRP   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
-   DEBUG_SCRP   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
    --rce;  if (g_macros [myMACRO.ecurr].pos >= g_macros [myMACRO.ecurr].len - 1) {
       rc = ymacro_exe_done ();
       if (rc == 0) {
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_NOOP;
       }
-      /*---(restart)------------------------*/
-      /*> if (g_macros [myMACRO.ecurr].repeat > 0) {                                  <* 
-       *>    DEBUG_SCRP   yLOG_note    ("repeats left, so restart");                  <* 
-       *>    g_macros [myMACRO.ecurr].pos    =  0;                                    <* 
-       *>    myMACRO.epos = -1;                                                       <* 
-       *>    g_macros [myMACRO.ecurr].cur    = '·';                                   <* 
-       *>    --g_macros [myMACRO.ecurr].repeat;                                       <* 
-       *> }                                                                           <*/
       /*---(pop)----------------------------*/
       /*> else if (g_macros [myMACRO.ecurr].runby >= 0) {                                         <* 
-       *>    DEBUG_SCRP   yLOG_note    ("return to caller/runby");                                <* 
+       *>    DEBUG_YMACRO   yLOG_note    ("return to caller/runby");                                <* 
        *>    /+---(reset current)----+/                                                           <* 
        *>    g_macros [myMACRO.ecurr].pos    = -1;                                                <* 
        *>    myMACRO.epos = -1;                                                                   <* 
@@ -449,25 +467,25 @@ ymacro_exe_key          (void)
        *>    --(myMACRO.edepth);                                                                  <* 
        *>    myMACRO.estack [myMACRO.edepth] = '\0';                                              <* 
        *>    /+---(output)-----------+/                                                           <* 
-       *>    DEBUG_SCRP   yLOG_value   ("ecurr"     , myMACRO.ecurr);                             <* 
-       *>    DEBUG_SCRP   yLOG_char    ("abbr"      , S_MACRO_LIST [myMACRO.ecurr]);              <* 
-       *>    DEBUG_SCRP   yLOG_value   ("pos"       , g_macros [myMACRO.ecurr].pos);              <* 
-       *>    DEBUG_SCRP   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);            <* 
-       *>    DEBUG_SCRP   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);           <* 
+       *>    DEBUG_YMACRO   yLOG_value   ("ecurr"     , myMACRO.ecurr);                             <* 
+       *>    DEBUG_YMACRO   yLOG_char    ("abbr"      , S_MACRO_LIST [myMACRO.ecurr]);              <* 
+       *>    DEBUG_YMACRO   yLOG_value   ("pos"       , g_macros [myMACRO.ecurr].pos);              <* 
+       *>    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);            <* 
+       *>    DEBUG_YMACRO   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);           <* 
        *> }                                                                                       <*/
       /*---(reset)--------------------------*/
       /*> else {                                                                                      <* 
-       *>    DEBUG_SCRP   yLOG_note    ("macro complete");                                            <* 
+       *>    DEBUG_YMACRO   yLOG_note    ("macro complete");                                            <* 
        *>    /+---(check script)-----------+/                                                         <* 
        *>    x_last = myMACRO.ename;                                                                  <* 
-       *>    DEBUG_SCRP   yLOG_char    ("x_last"     , x_last);                                       <* 
+       *>    DEBUG_YMACRO   yLOG_char    ("x_last"     , x_last);                                       <* 
        *>    ymacro_set2stop ();                                                                      <* 
        *>    if (x_last == '.')  {                                                                    <* 
        *>       rc = ymacro_script__read ();                                                          <* 
        *>       if (rc < 0)  myMACRO.blitz = '-';                                                     <* 
        *>    } else myMACRO.blitz = '-';                                                              <* 
-       *>    DEBUG_SCRP   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);                           <* 
-       *>    DEBUG_SCRP   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);                        <* 
+       *>    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);                           <* 
+       *>    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);                        <* 
        *>    /+> g_macros [myMACRO.ecurr].pos    = -1;                                          <*    <* 
        *>     *> g_macros [myMACRO.ecurr].cur    = '·';                                         <*    <* 
        *>     *> g_macros [myMACRO.ecurr].repeat =  0;                                          <+/   <* 
@@ -475,41 +493,41 @@ ymacro_exe_key          (void)
        *>    myMACRO.estack [0] = '\0';                                                               <* 
        *>    myMACRO.edepth     = 0;                                                                  <* 
        *>    /+---(done)---------------------+/                                                       <* 
-       *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                                <* 
+       *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                                <* 
        *>    return G_KEY_NOOP;                                                                       <* 
        *> }                                                                                           <*/
    }
    /*---(get next key)-------------------*/
    x_uch = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos];
-   DEBUG_SCRP   yLOG_value   ("x_uch"     , x_uch);
+   DEBUG_YMACRO   yLOG_value   ("x_uch"     , x_uch);
    /*---(check key)----------------------*/
    if (x_uch == G_CHAR_SPACE) {
       if (yMODE_curr () == UMOD_INPUT) {
-         DEBUG_SCRP   yLOG_note    ("found a spacer (·) in input mode");
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in input mode");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_SPACE;
       }
       else if (yMODE_curr () == UMOD_SENDKEYS) {
-         DEBUG_SCRP   yLOG_note    ("found a spacer (·) in sendkeys mode");
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in sendkeys mode");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          /*> return G_CHAR_STORAGE;                                                   <*/
          return G_KEY_NOOP;
       }
       IF_MACRO_RUN {
-         DEBUG_SCRP   yLOG_note    ("found a spacer (·) in macro run mode");
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in macro run mode");
          myMACRO.cskip = myMACRO.nskip;
          ++myMACRO.epos;
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_SKIP;
       } else {
-         DEBUG_SCRP   yLOG_note    ("found a spacer (·) in macro playback/debug mode");
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in macro playback/debug mode");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_NOOP;
       }
    }
    /*---(translate)----------------------*/
    x_uch = chrworking (x_uch);
-   DEBUG_SCRP   yLOG_char    ("x_uch"     , x_uch);
+   DEBUG_YMACRO   yLOG_char    ("x_uch"     , x_uch);
    /*---(handle controls)-------------*/
    if (x_uch < 0 || x_uch > 127) {
       x_uch = ymacro_exe_control (x_uch);
@@ -517,7 +535,7 @@ ymacro_exe_key          (void)
    /*---(next)------------------------*/
    myMACRO.epos = g_macros [myMACRO.ecurr].pos;   /* x_pos is static, so this is key */
    /*---(complete)--------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return x_uch;
 }
 
@@ -526,92 +544,92 @@ ymacro_exe_control      (uchar a_key)
 {
    float       x_delay     =  0.0;
    if (a_key >= 0 && a_key <= 127)  return 0;
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_SCRP   yLOG_value   ("a_key"     , a_key);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_value   ("a_key"     , a_key);
    switch (a_key) {
    case G_CHAR_SLBRACK :
-      DEBUG_SCRP   yLOG_note    ("blitz (º)");
+      DEBUG_YMACRO   yLOG_note    ("blitz (º)");
       IF_MACRO_RUN {
          ymacro_set2blitz ();
          myMACRO.blitzing = 'y';
       }
-      else  DEBUG_SCRP   yLOG_note    ("blitzing not active in debug/playback");
+      else  DEBUG_YMACRO   yLOG_note    ("blitzing not active in debug/playback");
       a_key = G_KEY_SKIP;
       break;
    case  G_CHAR_SRBRACK :
-      DEBUG_SCRP   yLOG_note    ("unblitz (»)");
+      DEBUG_YMACRO   yLOG_note    ("unblitz (»)");
       IF_MACRO_RUN {
          if (myMACRO.blitz != 'y') {
             myMACRO.blitzing = '-';
             ymacro_set2run   ();
          }
       }
-      else  DEBUG_SCRP   yLOG_note    ("blitzing not active in debug/playback");
+      else  DEBUG_YMACRO   yLOG_note    ("blitzing not active in debug/playback");
       a_key = G_KEY_SKIP;
       break;
    case  G_CHAR_BIGDOT  :
-      DEBUG_SCRP   yLOG_note    ("wait one tick/beat (´)");
+      DEBUG_YMACRO   yLOG_note    ("wait one tick/beat (´)");
       if (yMODE_curr () != UMOD_INPUT)  a_key = G_KEY_NOOP;
       break;
    case G_CHAR_HUGEDOT :
       IF_MACRO_RUN {
-         DEBUG_SCRP   yLOG_note    ("wait five tick/beat (Ï), pause only in run");
+         DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), pause only in run");
          myMACRO.pauses =  4;
       } else {
-         DEBUG_SCRP   yLOG_note    ("wait five tick/beat (Ï), becomes one beat in playback/debug");
+         DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), becomes one beat in playback/debug");
          myMACRO.pauses =  0;
       }
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_WAIT    :
-      DEBUG_SCRP   yLOG_note    ("wait («)");
-      /*> DEBUG_SCRP   yLOG_double  ("delay"     , myVIKEYS.delay);                   <*/
-      DEBUG_SCRP   yLOG_value   ("skip"      , myMACRO.nskip);
+      DEBUG_YMACRO   yLOG_note    ("wait («)");
+      /*> DEBUG_YMACRO   yLOG_double  ("delay"     , myVIKEYS.delay);                   <*/
+      DEBUG_YMACRO   yLOG_value   ("skip"      , myMACRO.nskip);
       /*> x_delay = myVIKEYS.delay * (1 + myMACRO.nskip);                                   <*/
-      DEBUG_SCRP   yLOG_double  ("x_delay"   , x_delay);
+      DEBUG_YMACRO   yLOG_double  ("x_delay"   , x_delay);
       IF_MACRO_NOT_RUN {
-         DEBUG_SCRP   yLOG_note    ("pauses not useful in debug/playback");
+         DEBUG_YMACRO   yLOG_note    ("pauses not useful in debug/playback");
          myMACRO.pauses =  0;
       } else if (x_delay >= 0.500) {
-         DEBUG_SCRP   yLOG_note    ("running too slow, pauses not required");
+         DEBUG_YMACRO   yLOG_note    ("running too slow, pauses not required");
          myMACRO.pauses =  0;
       } else if (x_delay < 0.009) {
-         DEBUG_SCRP   yLOG_note    ("running too fast, pauses are proportional");
+         DEBUG_YMACRO   yLOG_note    ("running too fast, pauses are proportional");
          myMACRO.pauses = 19;       /* for total of 20 loops in main */
       } else {
-         DEBUG_SCRP   yLOG_note    ("sweet spot, pauses are exactly 0.5s");
+         DEBUG_YMACRO   yLOG_note    ("sweet spot, pauses are exactly 0.5s");
          /*> myMACRO.pauses = trunc (0.5 / x_delay) - 1;                                     <*/
       }
-      DEBUG_SCRP   yLOG_value   ("myMACRO.pauses"   , myMACRO.pauses);
+      DEBUG_YMACRO   yLOG_value   ("myMACRO.pauses"   , myMACRO.pauses);
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_BREAK   :
-      DEBUG_SCRP   yLOG_note    ("break (ª)");
+      DEBUG_YMACRO   yLOG_note    ("break (ª)");
       ymacro_set2play ();
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_DISPLAY :
-      DEBUG_SCRP   yLOG_note    ("display (©)");
+      DEBUG_YMACRO   yLOG_note    ("display (©)");
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_SPACE   :
-      DEBUG_SCRP   yLOG_note    ("macro spacer (·), fast skip only in run");
+      DEBUG_YMACRO   yLOG_note    ("macro spacer (·), fast skip only in run");
       IF_MACRO_RUN  a_key = G_KEY_SKIP;
       else          a_key = G_KEY_NOOP;
       break;
    case G_CHAR_HALT    :
-      DEBUG_SCRP   yLOG_note    ("halt (³)");
+      DEBUG_YMACRO   yLOG_note    ("halt (³)");
       ymacro_set2stop ();
       ymacro_script__close ();
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return -1;
       break;
    default             :
-      DEBUG_SCRP   yLOG_note    ("other key, pass through");
+      DEBUG_YMACRO   yLOG_note    ("other key, pass through");
       break;
    }
-   DEBUG_SCRP   yLOG_value   ("a_key"     , a_key);
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_value   ("a_key"     , a_key);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return a_key;
 }
 
@@ -620,48 +638,48 @@ ymacro_exe_play         (uchar a_key)
 {
    char        rc          =    1;
    IF_MACRO_OFF   return 0;
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
-   DEBUG_SCRP   yLOG_char    ("a_key"     , a_key);
-   DEBUG_SCRP   yLOG_value   ("a_key"     , a_key);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_char    ("a_key"     , a_key);
+   DEBUG_YMACRO   yLOG_value   ("a_key"     , a_key);
    switch (a_key) {
    case '0' : case '1' : case '2' : case '3' : case '4' :
    case '5' : case '6' : case '7' : case '8' : case '9' :
    case '-'      : case '+'      :
-      DEBUG_SCRP   yLOG_note    ("reqested change to delay");
+      DEBUG_YMACRO   yLOG_note    ("reqested change to delay");
       yMACRO_ddelay (a_key);
       break;
    case 'n' : case 's' : case 'b' : case 'p' : case 'd' :
-      DEBUG_SCRP   yLOG_note    ("reqested change to update");
+      DEBUG_YMACRO   yLOG_note    ("reqested change to update");
       myMACRO.dupdate = a_key;
       break;
    case ',' :
-      DEBUG_SCRP   yLOG_note    ("reqested delay mode");
+      DEBUG_YMACRO   yLOG_note    ("reqested delay mode");
       ymacro_set2delay ();
       break;
    case '.' :
-      DEBUG_SCRP   yLOG_note    ("reqested playback mode");
+      DEBUG_YMACRO   yLOG_note    ("reqested playback mode");
       ymacro_set2play ();
       break;
    case G_KEY_ESCAPE : case G_CHAR_ESCAPE :
-      DEBUG_SCRP   yLOG_note    ("reqested termination with escape");
+      DEBUG_YMACRO   yLOG_note    ("reqested termination with escape");
       ymacro_set2stop ();
       ymacro_script__close ();
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return -1;
       break;
    case G_KEY_RETURN : case G_KEY_ENTER  : case G_CHAR_RETURN :
-      DEBUG_SCRP   yLOG_note    ("reqested normal run with return");
+      DEBUG_YMACRO   yLOG_note    ("reqested normal run with return");
       ymacro_set2run   ();
       break;
    case G_KEY_SPACE  : case G_CHAR_SPACE :
-      DEBUG_SCRP   yLOG_note    ("requested step macro forward");
+      DEBUG_YMACRO   yLOG_note    ("requested step macro forward");
       rc = 0;
       break;
    default  :
-      DEBUG_SCRP   yLOG_note    ("unknown playback key");
+      DEBUG_YMACRO   yLOG_note    ("unknown playback key");
       break;
    }
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -673,46 +691,46 @@ yMACRO_exec             (uchar a_play)
    char        rc          =    0;
    uchar       x_key       =  ' ';
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(playback)-----------------------*/
-   DEBUG_SCRP   yLOG_note    ("handle playback control");
-   DEBUG_SCRP   yLOG_value   ("a_play"    , a_play);
+   DEBUG_YMACRO   yLOG_note    ("handle playback control");
+   DEBUG_YMACRO   yLOG_value   ("a_play"    , a_play);
    --rce;  IF_MACRO_MOVING {
       if (a_play == G_KEY_ESCAPE || a_play ==  G_CHAR_ESCAPE) {
-         DEBUG_SCRP   yLOG_note    ("reqested termination with escape");
+         DEBUG_YMACRO   yLOG_note    ("reqested termination with escape");
          ymacro_set2stop ();
          ymacro_script__close ();
-         DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
    } else IF_MACRO_PLAYBACK {
       a_play = ymacro_exe_play (a_play);
-      DEBUG_SCRP   yLOG_value   ("play"      , rc);
+      DEBUG_YMACRO   yLOG_value   ("play"      , rc);
       if (rc < 0) {
-         DEBUG_SCRP   yLOG_note    ("terminated, do not execute next key");
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_note    ("terminated, do not execute next key");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return 0;
       }
       if (rc > 0) {
-         DEBUG_SCRP   yLOG_note    ("playback key, no impact on macro");
-         DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+         DEBUG_YMACRO   yLOG_note    ("playback key, no impact on macro");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return 0;
       }
    }
    /*---(not-repeating)------------------*/
-   DEBUG_SCRP   yLOG_note    ("macro running, delay, or playback");
+   DEBUG_YMACRO   yLOG_note    ("macro running, delay, or playback");
    x_key = (uchar) ymacro_exe_key ();
-   DEBUG_SCRP   yLOG_value   ("x_key"     , x_key);
+   DEBUG_YMACRO   yLOG_value   ("x_key"     , x_key);
    IF_MACRO_OFF {
-      DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return x_key;
    }
    /*---(advance)------------------------*/
-   DEBUG_SCRP   yLOG_note    ("advance");
+   DEBUG_YMACRO   yLOG_note    ("advance");
    ymacro_exe_adv (0);
    /*> ymacro_exe_adv (0);                                                            <*/
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return x_key;
 }
 

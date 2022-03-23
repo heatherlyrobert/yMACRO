@@ -74,7 +74,7 @@ char        yMACRO_hmode            (uchar a_major, uchar a_minor);
 /*===[[ yMACRO_rec.c ]]=======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 char        yMACRO_rec_mode         (void);
-char        yMACRO_rec_key          (char a_key);
+char        yMACRO_rec_key          (uchar a_key, uchar a_mode);
 char        yMACRO_rec_end          (void);
 char        yMACRO_direct           (char *a_string);
 

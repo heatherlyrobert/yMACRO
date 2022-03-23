@@ -6,6 +6,28 @@
 
 
 /*====================------------------------------------====================*/
+/*===----                        program level                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___PROGRAM_________o () { return; }
+
+char
+ymacro_file_handlers    (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(handlers)-----------------------*/
+   rc = yPARSE_handler_max (SMOD_MACRO   , "macro"     , 7.3, "cO----------", -1, yMACRO_reader, yMACRO_writer, "------------" , "a,keys", "keyboard macros"           );
+   DEBUG_YMACRO   yLOG_value   ("macro"     , rc);
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                       saving and fetching                    ----===*/
 /*====================------------------------------------====================*/
 static void  o___SAVING__________o () { return; }
@@ -18,11 +40,11 @@ ymacro_save             (void)
    int         x_len       =    0;
    char        x_keys      [LEN_RECD]  = "";
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_SCRP   yLOG_value   ("myMACRO.rcurr"    , myMACRO.rcurr);
+   DEBUG_YMACRO   yLOG_value   ("myMACRO.rcurr"    , myMACRO.rcurr);
    --rce;  if (myMACRO.rcurr < 0) {
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(free existing)------------------*/
@@ -40,7 +62,7 @@ ymacro_save             (void)
    /*---(clear)--------------------------*/
    yMACRO_zero  ();
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -55,11 +77,11 @@ ymacro_fetch             (void)
    /*---(quick out)----------------------*/
    if (myMACRO.ename == '.')  return 0;
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(prefetch)--------------------*/
    if (myMACRO.e_loader != NULL) {
-      DEBUG_SCRP   yLOG_value   ("ecurr"    , myMACRO.ecurr);
-      DEBUG_SCRP   yLOG_char    ("ename"     , myMACRO.ename);
+      DEBUG_YMACRO   yLOG_value   ("ecurr"    , myMACRO.ecurr);
+      DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
       ymacro_wipe (myMACRO.ename);
       myMACRO.e_loader (myMACRO.ename, g_macros [myMACRO.ecurr].keys);
       if (g_macros [myMACRO.ecurr].keys != NULL) {
@@ -72,13 +94,13 @@ ymacro_fetch             (void)
       }
    }
    /*---(information)-----------------*/
-   DEBUG_SCRP   yLOG_info    ("macro"     , g_macros [myMACRO.ecurr].keys);
-   DEBUG_SCRP   yLOG_value   ("len"       , g_macros [myMACRO.ecurr].len);
+   DEBUG_YMACRO   yLOG_info    ("macro"     , g_macros [myMACRO.ecurr].keys);
+   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [myMACRO.ecurr].len);
    /*---(set globals)-----------------*/
    if (g_macros [myMACRO.ecurr].pos < 0)  g_macros [myMACRO.ecurr].cur = 0;
    else                             g_macros [myMACRO.ecurr].cur = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos];
    /*---(complete)--------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -98,38 +120,38 @@ ymacro__writer          (int c, uchar a_abbr)
    char        n           =    0;
    char        x_keys      [LEN_RECD ];
    /*---(header)-------------------------*/
-   DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_operational (SMOD_MACRO)) {
-      DEBUG_OUTP   yLOG_note    ("can not execute until operational");
-      DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("can not execute until operational");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(clear output)-------------------*/
    yPARSE_outclear  ();
    /*---(defense)------------------------*/
-   DEBUG_OUTP   yLOG_char    ("a_abbr"    , a_abbr);
+   DEBUG_YMACRO   yLOG_char    ("a_abbr"    , a_abbr);
    n  = ymacro_index (a_abbr);
-   DEBUG_OUTP   yLOG_value   ("index"     , n);
+   DEBUG_YMACRO   yLOG_value   ("index"     , n);
    --rce; if (n  < 0) { 
-      DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(label)--------------------------*/
-   DEBUG_OUTP   yLOG_value   ("len"       , g_macros [n].len);
+   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [n].len);
    if (g_macros [n].len <= 0)  {
-      DEBUG_OUTP   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(keys)---------------------------*/
    strlcpy (x_keys, g_macros [n].keys, LEN_RECD);
    x_keys [g_macros [n].len - 1] = G_KEY_NULL;
-   DEBUG_OUTP   yLOG_info    ("x_keys"    , x_keys);
+   DEBUG_YMACRO   yLOG_info    ("x_keys"    , x_keys);
    /*---(write)-----------------------*/
    rc = yPARSE_vprintf (c, "macro", a_abbr, x_keys);
-   DEBUG_OUTP   yLOG_value   ("vprintf"   , rc);
+   DEBUG_YMACRO   yLOG_value   ("vprintf"   , rc);
    /*---(complete)-----------------------*/
-   DEBUG_OUTP  yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
    return 1;
 }
 
@@ -143,11 +165,11 @@ yMACRO_writer           (void)
    int         i           =    0;
    char        c           =    0;
    /*---(header)-------------------------*/
-   DEBUG_OUTP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_operational (SMOD_MACRO)) {
-      DEBUG_OUTP   yLOG_note    ("can not execute until operational");
-      DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("can not execute until operational");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(prepare)------------------------*/
@@ -163,7 +185,7 @@ yMACRO_writer           (void)
    /*---(wrap-up)------------------------*/
    /*> yPARSE_verb_end   (c);                                                         <*/
    /*---(complete)-----------------------*/
-   DEBUG_OUTP  yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
    return c;
 }
 
@@ -178,42 +200,42 @@ yMACRO_reader           (int n, char *a_verb)
    int         m           =    0;
    char        x_keys      [LEN_RECD];
    /*---(header)-------------------------*/
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    --rce;  if (!yMODE_operational (SMOD_MACRO)) {
-      DEBUG_INPT   yLOG_note    ("can not execute until operational");
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("can not execute until operational");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_point   ("a_verb"    , a_verb);
+   DEBUG_YMACRO   yLOG_point   ("a_verb"    , a_verb);
    --rce;  if (a_verb == NULL || strcmp (a_verb, "macro") != 0) {
-      DEBUG_INPT   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_INPT   yLOG_info    ("a_verb"    , a_verb);
+   DEBUG_YMACRO   yLOG_info    ("a_verb"    , a_verb);
    /*---(label)--------------------------*/
    rc = yPARSE_popchar (&x_abbr);
-   DEBUG_INPT   yLOG_value   ("pop abbr"  , rc);
-   DEBUG_INPT   yLOG_char    ("abbr"      , x_abbr);
+   DEBUG_YMACRO   yLOG_value   ("pop abbr"  , rc);
+   DEBUG_YMACRO   yLOG_char    ("abbr"      , x_abbr);
    m  = ymacro_index (x_abbr);
-   DEBUG_INPT   yLOG_char    ("m"         , m);
+   DEBUG_YMACRO   yLOG_char    ("m"         , m);
    --rce; if (m < 0) {
-      DEBUG_OUTP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(get command)--------------------*/
    rc = yPARSE_popstr (x_keys);
-   DEBUG_INPT   yLOG_value   ("pop keys"  , rc);
-   DEBUG_INPT   yLOG_info    ("x_keys"    , x_keys);
+   DEBUG_YMACRO   yLOG_value   ("pop keys"  , rc);
+   DEBUG_YMACRO   yLOG_info    ("x_keys"    , x_keys);
    /*---(save)---------------------------*/
-   DEBUG_INPT   yLOG_note    ("saving values");
+   DEBUG_YMACRO   yLOG_note    ("saving values");
    ymacro_clear (x_abbr);
    if (x_keys [strlen (x_keys) - 1] != '³')   strlcat (x_keys, "³"   , LEN_RECD );
    g_macros [m].keys = strdup (x_keys);
    g_macros [m].len  = strlen (x_keys);
    if (myMACRO.e_saver != NULL)  myMACRO.e_saver (x_abbr, x_keys);
    /*---(complete)-----------------------*/
-   DEBUG_INPT  yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
    return 1;
 }
 
@@ -225,17 +247,17 @@ yMACRO_export           (char a_abbr)
    char        rc          =    0;
    char        n           =   -1;
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    n = ymacro_index (a_abbr);
    --rce;  if (n <  0)  {
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(write)--------------------------*/
    rc = strlexport (0, g_macros [n].keys);
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -248,22 +270,22 @@ yMACRO_import           (char a_abbr)
    char        x_recd      [LEN_RECD];
    char        x_direct    [LEN_RECD];
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(read)---------------------------*/
    rc = strlimport  (0, x_recd, NULL);
-   DEBUG_SCRP   yLOG_value   ("read"      , rc);
+   DEBUG_YMACRO   yLOG_value   ("read"      , rc);
    --rce;  if (rc < 0) {
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SCRP   yLOG_info    ("x_recd"    , x_recd);
+   DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
    /*---(add)----------------------------*/
    sprintf (x_direct, "%c=%s", a_abbr, x_recd);
-   DEBUG_SCRP   yLOG_info    ("x_direct"  , x_direct);
+   DEBUG_YMACRO   yLOG_info    ("x_direct"  , x_direct);
    rc = ymacro_rec_full (x_direct);
-   DEBUG_SCRP   yLOG_value   ("full"      , rc);
+   DEBUG_YMACRO   yLOG_value   ("full"      , rc);
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -278,32 +300,32 @@ yMACRO_import           (char a_abbr)
  *>    int         x_len       =    0;                                                <* 
  *>    char        x_direct    [LEN_RECD];                                            <* 
  *>    /+---(header)-------------------------+/                                       <* 
- *>    DEBUG_SCRP   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);                                      <* 
  *>    /+---(defense)------------------------+/                                       <* 
- *>    DEBUG_SCRP   yLOG_char    ("a_abbr"      , a_abbr);                            <* 
- *>    DEBUG_SCRP   yLOG_char    ("a_src"     , a_src);                               <* 
+ *>    DEBUG_YMACRO   yLOG_char    ("a_abbr"      , a_abbr);                            <* 
+ *>    DEBUG_YMACRO   yLOG_char    ("a_src"     , a_src);                               <* 
  *>    s = ymacro_index (a_src);                                                      <* 
- *>    DEBUG_SCRP   yLOG_value   ("s"         , s);                                   <* 
+ *>    DEBUG_YMACRO   yLOG_value   ("s"         , s);                                   <* 
  *>    --rce;  if (s <  0) {                                                          <* 
- *>       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);                              <* 
  *>       return rce;                                                                 <* 
  *>    }                                                                              <* 
  *>    /+---(copy)---------------------------+/                                       <* 
  *>    strlcpy (x_recd, s_macros [s].keys, LEN_RECD);                                 <* 
  *>    x_len = strlen (x_recd);                                                       <* 
- *>    DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);                               <* 
+ *>    DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);                               <* 
  *>    --rce;  if (x_len <=  0) {                                                     <* 
- *>       DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);                              <* 
  *>       return rce;                                                                 <* 
  *>    }                                                                              <* 
- *>    DEBUG_SCRP   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));     <* 
+ *>    DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));     <* 
  *>    if (x_recd [x_len - 1] == '³' )  x_recd [--x_len] = '\0';                      <* 
  *>    sprintf (x_direct, "%c=%s", a_abbr, x_recd);                                   <* 
- *>    DEBUG_SCRP   yLOG_info    ("x_direct"  , x_direct);                            <* 
+ *>    DEBUG_YMACRO   yLOG_info    ("x_direct"  , x_direct);                            <* 
  *>    rc = yvikeys_macro__recdir (a_abbr, x_direct);                                 <* 
- *>    DEBUG_SCRP   yLOG_value   ("recdir"    , rc);                                  <* 
+ *>    DEBUG_YMACRO   yLOG_value   ("recdir"    , rc);                                  <* 
  *>    /+---(complete)-----------------------+/                                       <* 
- *>    DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                      <* 
  *>    return rc;                                                                     <* 
  *> }                                                                                 <*/
 
@@ -317,29 +339,29 @@ yMACRO_import           (char a_abbr)
  *>     *> char        x_recd      [LEN_RECD];                                            <*        <* 
  *>     *> int         x_len       =    0;                                                <*        <* 
  *>     *> /+---(header)-------------------------+/                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_enter   (__FUNCTION__);                                      <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);                                      <*        <* 
  *>     *> /+---(defense)------------------------+/                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_char    ("a_abbr"      , a_abbr);                                <*    <* 
+ *>     *> DEBUG_YMACRO   yLOG_char    ("a_abbr"      , a_abbr);                                <*    <* 
  *>     *> n = yvikeys_macro__index (a_abbr);                                               <*      <* 
- *>     *> DEBUG_SCRP   yLOG_value   ("n"         , n);                                   <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_value   ("n"         , n);                                   <*        <* 
  *>     *> --rce;  if (n <  0) {                                                          <*        <* 
- *>     *>    DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);                              <*        <* 
+ *>     *>    DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);                              <*        <* 
  *>     *>    return rce;                                                                 <*        <* 
  *>     *> }                                                                              <*        <* 
  *>     *> /+---(copy)---------------------------+/                                       <*        <* 
  *>     *> strlcpy (x_recd, s_macros [n].keys, LEN_RECD);                                 <*        <* 
  *>     *> x_len = strlen (x_recd);                                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);                               <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);                               <*        <* 
  *>     *> --rce;  if (x_len <=  0) {                                                     <*        <* 
- *>     *>    DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);                              <*        <* 
+ *>     *>    DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);                              <*        <* 
  *>     *>    return rce;                                                                 <*        <* 
  *>     *> }                                                                              <*        <* 
- *>     *> DEBUG_SCRP   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));     <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));     <*        <* 
  *>     *> if (x_recd [x_len - 1] == '³' )  x_recd [--x_len] = '\0';                      <*        <* 
  *>     *> rc = yvikeys_sreg_push       (a_reg, x_recd);                                  <*        <* 
- *>     *> DEBUG_SCRP   yLOG_value   ("push"      , rc);                                  <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_value   ("push"      , rc);                                  <*        <* 
  *>     *> /+---(complete)-----------------------+/                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                      <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                      <*        <* 
  *>     *> return rc;                                                                     <+/       <* 
  *> }                                                                                               <*/
 
@@ -353,22 +375,22 @@ yMACRO_import           (char a_abbr)
  *>     *> int         x_len       =    0;                                                <*        <* 
  *>     *> char        x_direct    [LEN_RECD];                                            <*        <* 
  *>     *> /+---(header)-------------------------+/                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_enter   (__FUNCTION__);                                      <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);                                      <*        <* 
  *>     *> /+---(defense)------------------------+/                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_char    ("a_abbr"      , a_abbr);                                <*    <* 
+ *>     *> DEBUG_YMACRO   yLOG_char    ("a_abbr"      , a_abbr);                                <*    <* 
  *>     *> /+---(copy)---------------------------+/                                       <*        <* 
  *>     *> rc = yvikeys_sreg_pop        (a_reg, x_recd);                                  <*        <* 
- *>     *> DEBUG_SCRP   yLOG_value   ("pop"       , rc);                                  <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_value   ("pop"       , rc);                                  <*        <* 
  *>     *> --rce;  if (rc <   0) {                                                        <*        <* 
- *>     *>    DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);                              <*        <* 
+ *>     *>    DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);                              <*        <* 
  *>     *>    return rce;                                                                 <*        <* 
  *>     *> }                                                                              <*        <* 
  *>     *> sprintf (x_direct, "%c=%s", a_abbr, x_recd);                                     <*      <* 
- *>     *> DEBUG_SCRP   yLOG_info    ("x_direct"  , x_direct);                            <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_info    ("x_direct"  , x_direct);                            <*        <* 
  *>     *> rc = yvikeys_macro__recdir (a_abbr, x_direct);                                   <*      <* 
- *>     *> DEBUG_SCRP   yLOG_value   ("recdir"    , rc);                                  <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_value   ("recdir"    , rc);                                  <*        <* 
  *>     *> /+---(complete)-----------------------+/                                       <*        <* 
- *>     *> DEBUG_SCRP   yLOG_exit    (__FUNCTION__);                                      <*        <* 
+ *>     *> DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                      <*        <* 
  *>     *> return rc;                                                                     <+/       <* 
  *> }                                                                                               <*/
 
@@ -388,21 +410,21 @@ yMACRO_central          (char a_abbr, char *a_string)
    int         c           =    0;
    char       *p           = NULL;
    /*---(header)-------------------------*/
-   DEBUG_SCRP   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
    strlcpy (x_seek, a_string + 2, 42);
    x_len = strlen (x_seek);
-   DEBUG_SCRP   yLOG_info    ("x_seek"    , x_seek);
+   DEBUG_YMACRO   yLOG_info    ("x_seek"    , x_seek);
    /*---(read)---------------------------*/
    f = fopen (MACRO_REPO, "rt");
-   DEBUG_SCRP   yLOG_point   ("f"         , f);
+   DEBUG_YMACRO   yLOG_point   ("f"         , f);
    --rce;  if (f == NULL) {
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    --rce;  while (x_found == '-') {
       if (feof (f)) {
-         DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       fgets (x_recd, LEN_RECD, f);
@@ -411,7 +433,7 @@ yMACRO_central          (char a_abbr, char *a_string)
       if (x_recd [0] == '\n')         continue;
       if (x_recd [0] == '#')          continue;
       if (x_recd [0] == ' ')          continue;
-      DEBUG_SCRP   yLOG_info    ("x_recd"    , x_recd);
+      DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
       if (x_recd [0] != x_seek [0])  continue;
       if (x_len == 6)  sprintf (x_key, "%2.2s%2.2s%2.2s", x_recd, x_recd + 15, x_recd + 30);
       else {
@@ -419,31 +441,31 @@ yMACRO_central          (char a_abbr, char *a_string)
          strldchg (x_key, '', '.', LEN_RECD);
          strltrim (x_key, ySTR_MAX, LEN_RECD);
       }
-      DEBUG_SCRP   yLOG_info    ("x_key"     , x_key);
+      DEBUG_YMACRO   yLOG_info    ("x_key"     , x_key);
       if (strcmp (x_seek, x_key) != 0)  continue;
       x_found = 'y';
    }
    fclose (f);
-   DEBUG_SCRP   yLOG_value   ("c"         , c);
-   DEBUG_SCRP   yLOG_char    ("x_found"   , x_found);
+   DEBUG_YMACRO   yLOG_value   ("c"         , c);
+   DEBUG_YMACRO   yLOG_char    ("x_found"   , x_found);
    --rce;  if (x_found != 'y') {
-      DEBUG_SCRP   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    p = x_recd + 98;
    x_len = strlen (p);
-   DEBUG_SCRP   yLOG_value   ("x_len"     , x_len);
-   DEBUG_SCRP   yLOG_char    ("tail"      , chrvisible (p [x_len - 1]));
+   DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
+   DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (p [x_len - 1]));
    if (p [x_len - 1] == '\n')  p [--x_len] = '\0';
-   DEBUG_SCRP   yLOG_char    ("tail"      , chrvisible (p [x_len - 1]));
+   DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (p [x_len - 1]));
    if (p [x_len - 1] == '³' )  p [--x_len] = '\0';
-   DEBUG_SCRP   yLOG_info    ("p"         , p);
+   DEBUG_YMACRO   yLOG_info    ("p"         , p);
    sprintf (x_direct, "%c=%s", a_abbr, p);
-   DEBUG_SCRP   yLOG_info    ("x_direct"  , x_direct);
+   DEBUG_YMACRO   yLOG_info    ("x_direct"  , x_direct);
    rc = ymacro_rec_full (x_direct);
-   DEBUG_SCRP   yLOG_value   ("recdir"    , rc);
+   DEBUG_YMACRO   yLOG_value   ("recdir"    , rc);
    /*---(complete)-----------------------*/
-   DEBUG_SCRP   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
