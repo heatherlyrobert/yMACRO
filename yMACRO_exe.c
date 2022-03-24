@@ -135,32 +135,37 @@ ymacro_exe__done        (void)
    return 1;
 }
 
-char
-ymacro_exe__script      (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rc          =    0;
-   /*---(clear mode)-----*/
-   ymacro_set2stop ();
-   /*---(check next)-----*/
-   rc = ymacro_script__read ();
-   if (rc < 0) {
-      DEBUG_YMACRO   yLOG_note    ("full script complete");
-      ymacro_exe__done ();
-   } else {
-      DEBUG_YMACRO   yLOG_note    ("script line complete");
-      myMACRO.estack [0] = '\0';
-      myMACRO.edepth     = 0;
-   }
-   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
-   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
-   /*---(complete)-----------------------*/
-   return 1;
-}
+/*> char                                                                              <* 
+ *> ymacro_exe__script      (void)                                                    <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    /+---(header)-------------------------+/                                       <* 
+ *>    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);                                    <* 
+ *>    /+---(clear mode)-----+/                                                       <* 
+ *>    ymacro_set2stop ();                                                            <* 
+ *>    /+---(check next)-----+/                                                       <* 
+ *>    rc = ymacro_script__read ();                                                   <* 
+ *>    if (rc < 0) {                                                                  <* 
+ *>       DEBUG_YMACRO   yLOG_note    ("full script complete");                       <* 
+ *>       ymacro_exe__done ();                                                        <* 
+ *>    } else {                                                                       <* 
+ *>       DEBUG_YMACRO   yLOG_note    ("script line complete");                       <* 
+ *>       myMACRO.estack [0] = '\0';                                                  <* 
+ *>       myMACRO.edepth     = 0;                                                     <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);               <* 
+ *>    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);            <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                    <* 
+ *>    return 1;                                                                      <* 
+ *> }                                                                                 <*/
 
 char
 ymacro_exe_done         (void)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(decision makers)----------------*/
@@ -193,7 +198,17 @@ ymacro_exe_done         (void)
       /*---(done)-----------*/
    }
    /*---(check script)-----------*/
-   ymacro_exe__script   ();
+   if (myMACRO.ename == '.') {
+      DEBUG_YMACRO   yLOG_note    ("check script for next");
+      rc = ymacro_script_next   ();
+      DEBUG_YMACRO   yLOG_value   ("__script"  , rc);
+      if (rc < 0) {
+         DEBUG_YMACRO   yLOG_note    ("script is fully done");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      DEBUG_YMACRO   yLOG_note    ("script advanced to next line");
+   }
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return G_KEY_NOOP;

@@ -4,7 +4,7 @@
 #include    "yMACRO_priv.h"
 
 /*
- * metis § dn2<· § macro execution is not taking repeat/count for times                   § M2K6RX §  · §
+ * metis § dn2#· § macro execution is not taking repeat/count for times                   § M2K6RX §  1 §
  *
  *
  *

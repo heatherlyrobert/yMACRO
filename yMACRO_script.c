@@ -3,6 +3,12 @@
 #include    "yMACRO.h"
 #include    "yMACRO_priv.h"
 
+/*
+ * metis § dn2·· § new script lines all appear to cause null/skip first key (wrong)       § M2N2RY §  · §
+ *
+ *
+ *
+ */
 
 
 static  char   s_name   [LEN_FULL]  = "";
@@ -44,6 +50,7 @@ ymacro_script__open     (char *a_name)
    }
    /*---(save name)----------------------*/
    strlcpy (s_name, x_name, LEN_DESC);
+   s_line = 0;
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -99,15 +106,27 @@ ymacro_script__read     (void)
    }
    /*---(next line)----------------------*/
    --rce;  while (1) {
+      strlcpy (x_recd, "", LEN_RECD); /* clear it */
       /*---(done with line)-----------------*/
       DEBUG_YMACRO   yLOG_value   ("feof"      , feof (s_script));
       if (feof (s_script)) {
+         DEBUG_YMACRO   yLOG_note    ("at end of script");
          ymacro_script__close ();
          DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       /*---(process line)-------------------*/
       fgets (x_recd, LEN_RECD, s_script);
+      /*---(done with line)-----------------*/
+      DEBUG_YMACRO   yLOG_value   ("feof"      , feof (s_script));
+      if (feof (s_script) && strlen (x_recd) <= 0) {
+         DEBUG_YMACRO   yLOG_note    ("at end of script");
+         ymacro_script__close ();
+         DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      /*---(process line)-------------------*/
+      DEBUG_YMACRO   yLOG_value   ("line"      , s_line);
       ++s_line;
       if (x_recd [0] <  ' ') {
          DEBUG_YMACRO   yLOG_note    ("blank leader, skipping");
@@ -153,6 +172,32 @@ ymacro_script__read     (void)
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char
+ymacro_script_next      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(clear mode)-----*/
+   ymacro_set2stop ();
+   /*---(check next)-----*/
+   rc = ymacro_script__read ();
+   if (rc < 0) {
+      DEBUG_YMACRO   yLOG_note    ("full script complete");
+      ymacro_exe__done ();
+   } else {
+      DEBUG_YMACRO   yLOG_note    ("script line complete");
+      myMACRO.estack [0] = '\0';
+      myMACRO.edepth     = 0;
+   }
+   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
+   DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 1;
 }
 
 char
