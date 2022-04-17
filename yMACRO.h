@@ -83,6 +83,7 @@ char        yMACRO_direct           (char *a_string);
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 char        yMACRO_exe_mode         (void);
 char        yMACRO_exe_pos          (char *a_name, short *a_pos);
+char        yMACRO_exe_current      (uchar *a_abbr, short *a_len, short *a_pos, uchar *a_prev, uchar *a_curr);
 char        yMACRO_exe_repos        (int a_pos);
 uchar       yMACRO_exec             (uchar a_play);
 

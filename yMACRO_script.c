@@ -4,7 +4,7 @@
 #include    "yMACRO_priv.h"
 
 /*
- * metis § dn2·· § new script lines all appear to cause null/skip first key (wrong)       § M2N2RY §  · §
+ * metis § dn2#· § new script lines all appear to cause null/skip first key (wrong)       § M2N2RY §  1 § true, this is to keep key processing simple §
  *
  *
  *
@@ -128,15 +128,17 @@ ymacro_script__read     (void)
       /*---(process line)-------------------*/
       DEBUG_YMACRO   yLOG_value   ("line"      , s_line);
       ++s_line;
+      x_len = strlen (x_recd);
       if (x_recd [0] <  ' ') {
          DEBUG_YMACRO   yLOG_note    ("blank leader, skipping");
          continue;
       }
-      if (x_recd [0] == '#') {
-         DEBUG_YMACRO   yLOG_note    ("comment marker, skipping");
-         continue;
+      if (x_len >= 2 && x_recd [0] == '#') {
+         if (strchr ("#!>@", x_recd [1]) != NULL) {
+            DEBUG_YMACRO   yLOG_note    ("blank leader, skipping");
+            continue;
+         }
       }
-      x_len = strlen (x_recd);
       if (x_recd [x_len - 1] == '\n')  x_recd [--x_len] = '\0';
       DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
       /*---(functions)----------------------*/

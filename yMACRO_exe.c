@@ -67,6 +67,26 @@ yMACRO_exe_pos              (char *a_name, short *a_pos)
 }
 
 char
+yMACRO_exe_current          (uchar *a_abbr, short *a_len, short *a_pos, uchar *a_prev, uchar *a_curr)
+{
+   char        rce         =  -10;
+   if (a_abbr != NULL)  *a_abbr = '-';
+   if (a_len  != NULL)  *a_len  =  -1;
+   if (a_pos  != NULL)  *a_pos  =  -1;
+   if (a_prev != NULL)  *a_abbr = ' ';
+   if (a_curr != NULL)  *a_abbr = ' ';
+   --rce;  IF_MACRO_NOT_PLAYING                   return  rce;
+   --rce;  if (myMACRO.ename == '-')              return rce;
+   if (a_abbr != NULL)  *a_abbr = myMACRO.ename;
+   if (a_len  != NULL)  *a_len  = g_macros [myMACRO.ecurr].len;
+   if (a_pos  != NULL)  *a_pos  = g_macros [myMACRO.ecurr].pos;
+   --rce;  if (g_macros [myMACRO.ecurr].pos < 0)  return rce;
+   if (a_prev != NULL && myMACRO.epos >= 1)  *a_prev = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos - 1];
+   if (a_curr != NULL && myMACRO.epos >= 0)  *a_curr = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos];
+   return 0;
+}
+
+char
 yMACRO_exe_repos            (int a_pos)
 {
    g_macros [myMACRO.ecurr].pos = a_pos;
@@ -525,7 +545,6 @@ ymacro_exe_key          (void)
       else if (yMODE_curr () == UMOD_SENDKEYS) {
          DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in sendkeys mode");
          DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
-         /*> return G_CHAR_STORAGE;                                                   <*/
          return G_KEY_NOOP;
       }
       IF_MACRO_RUN {
@@ -584,6 +603,7 @@ ymacro_exe_control      (uchar a_key)
       break;
    case  G_CHAR_BIGDOT  :
       DEBUG_YMACRO   yLOG_note    ("wait one tick/beat (´)");
+      /*> if (yMODE_curr () != UMOD_INPUT)  a_key = G_KEY_NOOP;                       <*/
       if (yMODE_curr () != UMOD_INPUT)  a_key = G_KEY_NOOP;
       break;
    case G_CHAR_HUGEDOT :
@@ -594,6 +614,7 @@ ymacro_exe_control      (uchar a_key)
          DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), becomes one beat in playback/debug");
          myMACRO.pauses =  0;
       }
+      /*> a_key = G_KEY_NOOP;                                                         <*/
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_WAIT    :
