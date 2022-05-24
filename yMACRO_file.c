@@ -48,7 +48,8 @@ ymacro_save             (void)
       return rce;
    }
    /*---(free existing)------------------*/
-   ymacro_clear (myMACRO.rname);
+   /*> ymacro_clear (myMACRO.rname);                                                  <*/
+   ymacro_reset (myMACRO.rname);
    /*---(save to macro)------------------*/
    if (myMACRO.rlen == 0)   g_macros [myMACRO.rcurr].keys  = g_stub;
    else               g_macros [myMACRO.rcurr].keys  = strdup (myMACRO.rkeys);
@@ -82,7 +83,8 @@ ymacro_fetch             (void)
    if (myMACRO.e_loader != NULL) {
       DEBUG_YMACRO   yLOG_value   ("ecurr"    , myMACRO.ecurr);
       DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
-      ymacro_wipe (myMACRO.ename);
+      /*> ymacro_wipe  (myMACRO.ename);                                               <*/
+      ymacro_reset (myMACRO.ename);
       myMACRO.e_loader (myMACRO.ename, g_macros [myMACRO.ecurr].keys);
       if (g_macros [myMACRO.ecurr].keys != NULL) {
          g_macros [myMACRO.ecurr].len = strlen (g_macros [myMACRO.ecurr].keys);

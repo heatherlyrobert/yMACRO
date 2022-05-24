@@ -19,35 +19,9 @@ char    S_MACRO_LIST   [S_MACRO_MAX];
 tMACRO  g_macros    [S_MACRO_MAX];
 int     g_nmacro    =    0;
 
-/*> char    g_emode     =  '-';          /+ run, playback, delay, etc      +/         <*/
-/*> char    g_ename     =  '-';                                                       <*/
-/*> char    g_ecurr     =   -1;                                                       <*/
-/*> char    g_esave     =  '-';          /+ saved mode for menus           +/         <*/
-/*> short   g_epos      =   -1;                                                       <*/
-
-/*> char    g_edelay    = MACRO_BLITZ;   /+ execution delay between steps  +/         <*/
-/*> char    g_ddelay    = MACRO_BLITZ;   /+ debug delay between steps      +/         <*/
-/*> char    g_eupdate   = MACRO_NORMAL;  /+ execution sceen update speed   +/         <*/
-/*> char    g_dupdate   = MACRO_NORMAL;  /+ debug sceen update speed       +/         <*/
-/*> char    myMACRO.pauses     =    0;                                                <*/
-/*> char    myMACRO.nskip     =    0;          /+ skips requested                +/   <*/
-/*> char    myMACRO.cskip     =    0;          /+ current skip count             +/   <*/
-/*> char    myMACRO.blitzing  =  '-';          /+ macro blitzing mode º´´´»      +/   <*/
-/*> char    myMACRO.blitz     =  '-';          /+ stay in blitz mode (duration)  +/         <*/
-
-/*> char    myMACRO.rmode     =  '-';          /+ recording or not               +/   <*/
-/*> char    myMACRO.rname     =  '-';                                                 <*/
-/*> char    myMACRO.rcurr     =   -1;                                                 <*/
-/*> char   *s_rbackup   = NULL;                                                <*/
-/*> uchar   myMACRO.rkeys     [LEN_RECD];                                             <*/
-/*> short   myMACRO.rlen      =    0;                                                 <*/
-/*> short   myMACRO.rpos      =    0;                                                 <*/
-/*> uchar   myMACRO.rcur      =  '-';                                                 <*/
 
 uchar   *g_stub     = "";
 
-/*> char    (*g_loader) (char a_name, char *a_keys);                                  <*/
-/*> char    (*g_saver ) (char a_name, char *a_keys);                                  <*/
 
 
 
@@ -99,6 +73,7 @@ yMACRO_global_init      (void)
    myMACRO.cskip     =  0;
    myMACRO.blitz     = '-';
    myMACRO.blitzing  = '-';
+   yMACRO_unskip  ();
    /*---(playback)-------------*/
    myMACRO.ddelay    = MACRO_BLITZ;
    myMACRO.dupdate   = MACRO_NORMAL;
@@ -136,7 +111,7 @@ yMACRO_init             (void)
    strlcat (S_MACRO_LIST, YSTR_NUMBER, S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, "."        , S_MACRO_MAX);
+   strlcat (S_MACRO_LIST, ". "       , S_MACRO_MAX);
    DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
    g_nmacro = strlen (S_MACRO_LIST);
    /*---(clear globals)------------------*/
@@ -150,6 +125,8 @@ yMACRO_init             (void)
    /*---(other updates)------------------*/
    rc = yFILE_dump_add ("macros"    , "mac", "inventory of macros"         , ymacro_dump        );
    ymacro_file_handlers ();
+   /*---(agrios)-------------------------*/
+   ymacro_agrios_init   ();
    /*---(update status)------------------*/
    DEBUG_YMACRO   yLOG_note    ("update status");
    yMODE_init_set   (SMOD_MACRO, NULL, ymacro_smode);
@@ -278,6 +255,31 @@ ymacro_clear            (uchar a_abbr)
    if (g_macros [n].keys != g_stub)  free (g_macros [n].keys);
    g_macros [n].keys      = g_stub;
    g_macros [n].len       =    0;
+   /*---(execute)------------------------*/
+   DEBUG_YMACRO   yLOG_snote   ("exec");
+   g_macros [n].pos       =   -1;
+   g_macros [n].cur       =    0;
+   g_macros [n].repeat    =    0;
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char         /*-> fully reset a macro ----------------[ leaf   [gz.532.011.00]*/ /*-[00.0000.183.!]-*/ /*-[--.---.---.--]-*/
+ymacro_reset            (uchar a_abbr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        n           =   -1;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_schar   (a_abbr);
+   /*---(defense)------------------------*/
+   n = ymacro_index (a_abbr);
+   DEBUG_YMACRO   yLOG_sint    (n);
+   if (n < 0) {
+      DEBUG_YMACRO   yLOG_sexitr  (__FUNCTION__, n);
+      return n;
+   }
    /*---(execute)------------------------*/
    DEBUG_YMACRO   yLOG_snote   ("exec");
    g_macros [n].pos       =   -1;

@@ -145,7 +145,7 @@ ymacro_rec_beg          (uchar a_name)
       return rce;
    }
    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [n].runby);
-   --rce;  if (g_macros [n].runby >= 0) {
+   --rce;  if (g_macros [n].runby >= 0 && n != 61) {
       DEBUG_YMACRO   yLOG_note    ("this macro is running higher in tree");
       yKEYS_set_lock ();
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
@@ -171,7 +171,7 @@ ymacro_rec_beg          (uchar a_name)
    myMACRO.rlen = strlen (myMACRO.rkeys);
    myMACRO.rpos = myMACRO.rlen - 2;
    /*---(turn on record)--------------*/
-   DEBUG_YMACRO   yLOG_value   ("keys"      , myMACRO.rkeys);
+   DEBUG_YMACRO   yLOG_info    ("keys"      , myMACRO.rkeys);
    SET_MACRO_RECORD;
    DEBUG_YMACRO   yLOG_char    ("myMACRO.rmode"   , myMACRO.rmode);
    /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "record");          <*/
@@ -184,6 +184,7 @@ char         /*-> add a key to a macro ---------------[ leaf   [gc.440.102.10]*/
 yMACRO_rec_key          (uchar a_key, uchar a_mode)
 {
    IF_MACRO_RECORDING {
+      DEBUG_YMACRO   yLOG_senter  (__FUNCTION__);
       switch (a_key) {
       case G_KEY_RETURN  :  a_key  = G_CHAR_RETURN;  break;  /* return char           */
       case G_KEY_ENTER   :  a_key  = G_CHAR_RETURN;  break;  /* return char           */
@@ -200,6 +201,9 @@ yMACRO_rec_key          (uchar a_key, uchar a_mode)
       /*> myMACRO.modes [myMACRO.rlen    ] = G_KEY_NULL;                              <*/
       ++myMACRO.rlen;
       myMACRO.rpos                     = myMACRO.rlen - 2;
+      DEBUG_YMACRO   yLOG_sint    (myMACRO.rlen);
+      DEBUG_YMACRO   yLOG_snote   (myMACRO.rkeys);
+      DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    }
    return 0;
 }
@@ -244,14 +248,16 @@ yMACRO_rec_end          (void)
          myMACRO.rkeys [myMACRO.rlen - 1] = G_KEY_NULL;
          --myMACRO.rlen;
          ymacro_save ();
-         ymacro_wipe (myMACRO.rname);
+         /*> ymacro_wipe (myMACRO.rname);                                             <*/
       } else if (myMACRO.rlen == 2 && myMACRO.rkeys [myMACRO.rlen - 2] == 'q') {
          myMACRO.rkeys [0] = G_KEY_NULL;
          myMACRO.rlen      = 0;
          ymacro_save ();
-         ymacro_wipe (myMACRO.rname);
+         /*> ymacro_wipe (myMACRO.rname);                                             <*/
       }
-      ymacro_rec_clear ();
+      DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.rcurr].runby);
+      /*> ymacro_rec_clear ();                                                        <*/
+      ymacro_rec_reset  ();
       /*> myMACRO.rkeys [0] = G_KEY_NULL;                                             <* 
        *> myMACRO.rlen      = 0;                                                      <* 
        *> myMACRO.rpos      = 0;                                                      <* 
@@ -259,6 +265,7 @@ yMACRO_rec_end          (void)
       SET_MACRO_IGNORE;
       myMACRO.rcurr = -1;
    }
+   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.rcurr].runby);
    return 0;
 }
 

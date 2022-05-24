@@ -115,6 +115,7 @@ ymacro_exe__return      (void)
    char        x_runby     =   -1;
    /*---(save)---------------------------*/
    x_runby = g_macros [myMACRO.ecurr].runby;
+   DEBUG_YMACRO  yLOG_value   ("x_runby"   , x_runby);
    /*---(locals)-------------------------*/
    g_macros [myMACRO.ecurr].pos    = -1;
    g_macros [myMACRO.ecurr].cur    = '·';
@@ -132,7 +133,7 @@ ymacro_exe__return      (void)
    /*---(update stack)---------------------*/
    --(myMACRO.edepth);
    myMACRO.estack [myMACRO.edepth] = '\0';
-   DEBUG_YMACRO  yLOG_complex ("return"    , "%3d pos, %c cur, %3d rep, %3d  epos", g_macros [myMACRO.ecurr].pos, g_macros [myMACRO.ecurr].cur, g_macros [myMACRO.ecurr].repeat, myMACRO.epos);
+   DEBUG_YMACRO  yLOG_complex ("return"    , "%3d pos, %c cur, %3d rep, %3d  epos", g_macros [myMACRO.ecurr].pos, chrvisible (g_macros [myMACRO.ecurr].cur), g_macros [myMACRO.ecurr].repeat, myMACRO.epos);
    /*---(complete)-----------------------*/
    return 1;
 }
@@ -192,7 +193,18 @@ ymacro_exe_done         (void)
    DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
    DEBUG_YMACRO   yLOG_value   ("ecurr"     , myMACRO.ecurr);
    DEBUG_YMACRO   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
-   DEBUG_YMACRO   yLOG_char    ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("g_level"   , myMACRO.g_level);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   /*---(check agrios)-----------*/
+   if (myMACRO.ename == ' ') {
+      rc = ymacro_agrios_next ();
+      if (rc > 0) {
+         DEBUG_YMACRO   yLOG_note    ("continuing agrios");
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+         return G_KEY_NOOP;
+      }
+      DEBUG_YMACRO   yLOG_note    ("agrios complete");
+   }
    /*---(repeat)-------------------------*/
    if (g_macros [myMACRO.ecurr].repeat > 0) {
       DEBUG_YMACRO   yLOG_note    ("repeats left, so restart");
@@ -204,19 +216,20 @@ ymacro_exe_done         (void)
    /*---(return to higher level)---------*/
    if (g_macros [myMACRO.ecurr].runby >= 0) {
       DEBUG_YMACRO   yLOG_note    ("return to caller/runby");
+      DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
       ymacro_exe__return   ();
-      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
-      return 1;
+      DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
+      DEBUG_YMACRO   yLOG_value   ("pos"       , g_macros [myMACRO.ecurr].pos);
+      if (g_macros [myMACRO.ecurr].pos >= 0) {
+         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+         return G_KEY_NOOP;
+      }
       /*---(done)-----------*/
    }
-   /*---(really done)--------------------*/
-   if (myMACRO.ename != '.') {
-      DEBUG_YMACRO   yLOG_note    ("macro really complete");
-      ymacro_exe__done     ();
-      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
-      return G_KEY_NOOP;
-      /*---(done)-----------*/
-   }
+   /*---(check script)-----------*/
+   DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
+   DEBUG_YMACRO   yLOG_value   ("ename"     , myMACRO.ename);
+   DEBUG_YMACRO   yLOG_value   (" "         , ' ');
    /*---(check script)-----------*/
    if (myMACRO.ename == '.') {
       DEBUG_YMACRO   yLOG_note    ("check script for next");
@@ -228,6 +241,14 @@ ymacro_exe_done         (void)
          return 0;
       }
       DEBUG_YMACRO   yLOG_note    ("script advanced to next line");
+   }
+   /*---(really done)--------------------*/
+   else {
+      DEBUG_YMACRO   yLOG_note    ("macro really complete");
+      ymacro_exe__done     ();
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+      return G_KEY_NOOP;
+      /*---(done)-----------*/
    }
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
@@ -255,6 +276,8 @@ ymacro_exe_beg          (uchar a_name)
    }
    /*---(check macro name)------------*/
    x_curr  = myMACRO.ecurr;
+   DEBUG_YMACRO   yLOG_value   ("x_curr"    , x_curr);
+   DEBUG_YMACRO   yLOG_char    ("x_curr"    , myMACRO.ename);
    /*---(check macro name)------------*/
    x_lower = tolower (a_name);
    DEBUG_YMACRO   yLOG_char    ("x_lower"   , x_lower);
@@ -314,10 +337,11 @@ ymacro_exe_beg          (uchar a_name)
       return rce;
    }
    /*---(execution style)-------------*/
+   DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    IF_MACRO_OFF {
       /*---(reset stack)--------------*/
-      myMACRO.estack [0] = '\0';
-      myMACRO.edepth     = 0;
+      /*> myMACRO.estack [0] = '\0';                                                  <* 
+       *> myMACRO.edepth     = 0;                                                     <*/
       /*---(normal)-------------------*/
       if (a_name == x_lower && a_name != ',') {
          DEBUG_YMACRO   yLOG_note    ("set normal/delay execution");
@@ -330,10 +354,13 @@ ymacro_exe_beg          (uchar a_name)
          SET_MACRO_PLAYBACK;
       }
    }
+   DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    /*---(update stack)----------------*/
-   myMACRO.estack [myMACRO.edepth] = x_lower;
-   ++myMACRO.edepth;
-   myMACRO.estack [myMACRO.edepth] = '\0';
+   if (myMACRO.edepth <= 0 || (uchar) myMACRO.estack [myMACRO.edepth - 1] != (uchar) x_lower) {
+      myMACRO.estack [myMACRO.edepth] = x_lower;
+      ++myMACRO.edepth;
+      myMACRO.estack [myMACRO.edepth] = '\0';
+   }
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    /*---(get macro)-------------------*/
    ymacro_fetch ();
@@ -342,12 +369,15 @@ ymacro_exe_beg          (uchar a_name)
    myMACRO.pauses =  0;
    myMACRO.cskip  =  0;
    ymacro_exe_reset ();
-   if (strchr (".,", a_name) == NULL)  ymacro_exe_adv (0);
+   if (strchr (" .,", a_name) == NULL)  ymacro_exe_adv (0);
    g_macros [myMACRO.ecurr].runby  = x_curr;
+   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
    DEBUG_YMACRO   yLOG_value   ("erepeat"   , myMACRO.erepeat);
    yMACRO_zero  ();
    g_macros [myMACRO.ecurr].repeat = myMACRO.erepeat;
    DEBUG_YMACRO   yLOG_value   ("repeat"    , g_macros [myMACRO.ecurr].repeat);
+   myMACRO.erepeat = 0;  /* reset */
    /*---(reset main delay)---------------*/
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);

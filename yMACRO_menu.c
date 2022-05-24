@@ -16,7 +16,9 @@ yMACRO_menu_beg         (void)
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    IF_MACRO_PLAYING  {
       DEBUG_YMACRO   yLOG_char    ("emode bef" , myMACRO.emode);
-      myMACRO.esave = myMACRO.emode;
+      myMACRO.esave     = myMACRO.emode;
+      myMACRO.eblitz    = myMACRO.blitz;
+      myMACRO.eblitzing = myMACRO.blitzing;
       DEBUG_YMACRO   yLOG_char    ("esave"     , myMACRO.esave);
       ymacro_set2blitz ();
       SET_MACRO_STOP;
@@ -35,7 +37,9 @@ yMACRO_menu_end         (void)
    if (myMACRO.esave != '?') {
       DEBUG_YMACRO   yLOG_char    ("emode bef" , myMACRO.emode);
       DEBUG_YMACRO   yLOG_char    ("esave"     , myMACRO.esave);
-      myMACRO.emode = myMACRO.esave;
+      myMACRO.emode     = myMACRO.esave;
+      myMACRO.blitz     = myMACRO.eblitz;
+      myMACRO.blitzing  = myMACRO.eblitzing;
       DEBUG_YMACRO   yLOG_char    ("emode aft" , myMACRO.emode);
       switch (myMACRO.emode) {
       case MACRO_RUN      :

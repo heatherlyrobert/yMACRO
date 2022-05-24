@@ -36,8 +36,8 @@
 
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.1-, complex macros"
-#define     P_VERNUM    "2.1e"
-#define     P_VERTXT    "re-fixed macro noop vs skip, but not unit tested again"
+#define     P_VERNUM    "2.1g"
+#define     P_VERTXT    "fixed menu use over-riding post-menu speed to blitz"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -77,6 +77,7 @@
 #include    <yMODE.h>             /* heatherly vi-keys mode processing        */
 #include    <yKEYS.h>             /* heatherly vi-keys mode processing        */
 #include    <yFILE.h>             /* heatherly vi-keys content file handling  */
+#include    <yMAP.h>              /* heatherly vi-keys location management    */
 /*---(custom other)----------------------*/
 #include    <yPARSE.h>            /* heatherly file reading and writing       */
 
@@ -93,6 +94,7 @@
 #define      S_MACRO_MAX      75
 extern char  S_MACRO_LIST   [S_MACRO_MAX];
 #define      MACRO_REPO          "/home/shared/yVIKEYS/repository.macro"
+#define      MAX_AGRIOS       20
 
 typedef    struct    cMY    tMY;
 struct cMY {
@@ -102,6 +104,8 @@ struct cMY {
    char        ename;           
    char        ecurr;           
    char        esave;                       /* saved mode for menus           */
+   char        eblitz;                      /* saved blitz for menus          */
+   char        eblitzing;                   /* saved blitzing for menus       */
    short       epos;
    uchar       edelay;                      /* execution delay between steps  */
    uchar       eupdate;                     /* execution sceen update         */
@@ -110,6 +114,7 @@ struct cMY {
    char        cskip;           
    char        blitzing;                    /* macro blitzing mode º´´´»      */
    char        blitz;                       /* stay in blitz mode (duration)  */
+   char        ignore;
    /*---(playback)-------------*/
    uchar       ddelay;                      /* playback/delay between steps   */
    uchar       dupdate;                     /* playback/debug screen update   */
@@ -128,6 +133,14 @@ struct cMY {
    /*---(functions)------------*/
    char      (*e_loader) (char a_name, char *a_keys);
    char      (*e_saver ) (char a_name, char *a_keys);
+   /*---(agrios)---------------*/
+   char      (*e_getter) (char a_type, char *r_label, char *r_content, char *r_next);
+   char      (*e_forcer) (char a_type, char *a_target, char *a_contents);
+   char      (*e_pusher) (char a_dir , char  a_level, char *a_args);
+   char        g_level;
+   char        g_curr    [MAX_AGRIOS][LEN_LABEL];
+   char        g_code    [MAX_AGRIOS][LEN_RECD];
+   char        g_next    [MAX_AGRIOS][LEN_LABEL];
    /*---(done)-----------------*/
 };
 extern tMY         myMACRO;
@@ -150,38 +163,9 @@ struct cMACRO {
 extern tMACRO  g_macros    [S_MACRO_MAX];
 extern int     g_nmacro;           
 
-/*> extern char    g_emode;                     /+ run, playback, delay, etc      +/   <*/
-/*> extern char    g_ename;                                                           <*/
-/*> extern char    g_ecurr;                                                           <*/
-/*> extern char    g_esave;                     /+ saved mode for menus           +/   <*/
-/*> extern short   g_epos;           ;                                                <*/
-
-/*> extern char    g_edelay;                    /+ execution delay between steps  +/   <*/
-/*> extern char    g_ddelay;                    /+ debug delay between steps      +/   <*/
-/*> extern char    g_eupdate;                   /+ execution sceen update speed   +/   <*/
-/*> extern char    g_dupdate;                   /+ debug sceen update speed       +/   <*/
-/*> extern char    myMACRO.pauses;                                                           <*/
-/*> extern char    myMACRO.nskip;                                                     <*/
-/*> extern char    myMACRO.cskip;                                                     <*/
-/*> extern char    myMACRO.blitzing;                  /+ macro blitzing mode º´´´»      +/   <*/
-/*> extern char    myMACRO.blitz;                     /+ stay in blitz mode (duration)  +/   <*/
-
-/*> extern char    myMACRO.rmode;                     /+ recording or not               +/   <*/
-/*> extern char    myMACRO.rname;                                                     <*/
-/*> extern char    myMACRO.rcurr;                                                     <*/
-/*> extern char   *s_rbackup   = NULL;                                                <*/
-/*> extern uchar   myMACRO.rkeys     [LEN_RECD];                                      <*/
-/*> extern short   myMACRO.rlen;                                                      <*/
-/*> extern short   myMACRO.rpos;                                                      <*/
-/*> extern uchar   myMACRO.rcur;                                                      <*/
-
-/*> extern char    g_depth;                                                           <*/
-/*> extern char    g_stack    [LEN_LABEL];                                            <*/
 
 extern uchar  *g_stub;
 
-/*> extern char    (*g_loader) (char a_name, char *a_keys);                           <*/
-/*> extern char    (*g_saver ) (char a_name, char *a_keys);                           <*/
 
 
 
@@ -207,6 +191,7 @@ char*       yMACRO_version          (void);
 char        yMACRO_init             (void);
 char        yMACRO_config           (void *a_loader, void *a_saver);
 char        ymacro_clear            (uchar a_abbr);
+char        ymacro_reset            (uchar a_abbr);
 char        ymacro_wipe             (uchar a_abbr);
 char        ymacro_purge            (char a_scope);
 /*---(modes)----------------*/
@@ -307,6 +292,9 @@ char        ymacro_dump             (FILE *f);
 
 /*===[[ yMACRO_script.c ]]====================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        yMACRO_skip             (void);
+char        yMACRO_unskip           (void);
+char        yMACRO_skipping         (void);
 char        ymacro_script__open     (char *a_name);
 char        ymacro_script__close    (void);
 char        ymacro_script__read     (void);
@@ -314,5 +302,14 @@ char        ymacro_script__start    (char *a_name, char a_style);
 
 
 char*       yMACRO__unit            (char *a_question, uchar a_abbr);
+
+
+
+/*===[[ yMACRO_agrios.c ]]====================================================*/
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        ymacro_agrios_init      (void);
+char        ymacro_agrios__read     (void);
+
+
 
 #endif

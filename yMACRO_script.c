@@ -16,6 +16,11 @@ static  FILE  *s_script = NULL;
 static  int    s_line   =    0;
 static  char   s_style  =  '.';
 
+char   yMACRO_skip       (void)   { myMACRO.ignore = 'y';  return 0; }
+char   yMACRO_unskip     (void)   { myMACRO.ignore = '-';  return 0; }
+char   yMACRO_skipping   (void)   { if (myMACRO.ignore == 'y') return 1;  return 0; }
+
+
 char
 ymacro_script__open     (char *a_name)
 {
@@ -96,6 +101,7 @@ ymacro_script__read     (void)
    uchar       x_recd      [LEN_RECD];
    uchar       x_ready     [LEN_RECD];
    int         x_len       =    0;
+   static char x_ignore    =  '-';
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -104,6 +110,7 @@ ymacro_script__read     (void)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   if (s_line == 0)  yMACRO_unskip ();
    /*---(next line)----------------------*/
    --rce;  while (1) {
       strlcpy (x_recd, "", LEN_RECD); /* clear it */
@@ -129,16 +136,26 @@ ymacro_script__read     (void)
       DEBUG_YMACRO   yLOG_value   ("line"      , s_line);
       ++s_line;
       x_len = strlen (x_recd);
+      /*---(check ignore status)------------*/
+      if (strncmp (x_recd, ":skip"        ,  5) == 0)   yMACRO_skip   ();
+      if (strncmp (x_recd, ":unskip"      ,  7) == 0)   yMACRO_unskip ();
+      if (yMACRO_skipping ())   continue;
+      /*---(filter comments/empties)--------*/
+      if (x_recd [0] <  '\0') {
+         DEBUG_YMACRO   yLOG_note    ("empty line, skipping");
+         continue;
+      }
       if (x_recd [0] <  ' ') {
          DEBUG_YMACRO   yLOG_note    ("blank leader, skipping");
          continue;
       }
       if (x_len >= 2 && x_recd [0] == '#') {
          if (strchr ("#!>@", x_recd [1]) != NULL) {
-            DEBUG_YMACRO   yLOG_note    ("blank leader, skipping");
+            DEBUG_YMACRO   yLOG_note    ("comment leader, skipping");
             continue;
          }
       }
+      /*---(fix end-of-line)----------------*/
       if (x_recd [x_len - 1] == '\n')  x_recd [--x_len] = '\0';
       DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
       /*---(functions)----------------------*/
@@ -181,6 +198,12 @@ ymacro_script_next      (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
+   /*---(quick re-route)-----------------*/
+   if (myMACRO.ename == ' ') {
+      rc = ymacro_agrios_next ();
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(clear mode)-----*/
@@ -192,8 +215,8 @@ ymacro_script_next      (void)
       ymacro_exe__done ();
    } else {
       DEBUG_YMACRO   yLOG_note    ("script line complete");
-      myMACRO.estack [0] = '\0';
-      myMACRO.edepth     = 0;
+      /*> myMACRO.estack [0] = '\0';                                                  <*/
+      /*> myMACRO.edepth     = 0;                                                     <*/
    }
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
@@ -231,14 +254,6 @@ ymacro_script__start    (char *a_name, char a_style)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> g_macros [myMACRO.ecurr].pos       =   -1;                                     <* 
-    *> rc = ymacro_exe_beg  ('.');                                                    <* 
-    *> DEBUG_YMACRO   yLOG_value   ("execute"   , rc);                                  <* 
-    *> --rce;  if (rc < 0) {                                                          <* 
-    *>    DEBUG_YMACRO   yLOG_note    ("can not execute");                              <* 
-    *>    DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);                              <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;

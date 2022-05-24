@@ -131,6 +131,9 @@ char        yMACRO_flatten          (uchar a_src);
 
 /*===[[ yMACRO_script.c ]]====================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
+char        yMACRO_skip             (void);
+char        yMACRO_unskip           (void);
+char        yMACRO_skipping         (void);
 char        yMACRO_script_start     (char *a_name);
 char        yMACRO_script_follow    (char *a_name);
 char        yMACRO_script_playback  (char *a_name);
@@ -152,6 +155,13 @@ char        yMACRO_ddelay           (char a_delay);
 char        yMACRO_eupdate          (char a_update);
 char        yMACRO_dupdate          (char a_update);
 
+
+
+/*===[[ yMACRO_agrios.c ]]====================================================*/
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
+char        yMACRO_agrios_config    (void *a_getter, void *a_forcer, void *a_pusher);
+char        yMACRO_agrios_hmode     (uchar a_major, uchar a_minor);
+char        yMACRO_agrios_start     (char *a_label);
 
 
 #endif
