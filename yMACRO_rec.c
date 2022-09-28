@@ -123,7 +123,8 @@ ymacro_rec_beg          (uchar a_name)
       return rce;
    }
    /*---(check for illegal)-----------*/
-   DEBUG_YMACRO   yLOG_value   ("myMACRO.rcurr"   , myMACRO.rcurr);
+   DEBUG_YMACRO   yLOG_value   ("rcurr"    , myMACRO.rcurr);
+   DEBUG_YMACRO   yLOG_char    ("rname"    , myMACRO.rname);
    --rce;  if (myMACRO.rcurr >= 0) {
       DEBUG_YMACRO   yLOG_note    ("already recording a macro");
       yKEYS_set_lock ();
@@ -361,6 +362,7 @@ yMACRO_direct           (char *a_string)
    char        x_abbr      =  '-';
    char        x_div       =  '-';
    char       *x_valid     = "*aA0è";
+   char        x_other     =  '-';
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -384,24 +386,58 @@ yMACRO_direct           (char *a_string)
    }
    x_abbr  = a_string [0];
    DEBUG_YMACRO   yLOG_char    ("x_abbr"      , x_abbr);
-   x_div = a_string [1];
-   DEBUG_YMACRO   yLOG_char    ("x_div"     , x_div);
    /*---(check for purge)----------------*/
-   --rce;  if (x_len == 1) {
-      rc = ymacro_purge  (x_abbr);
+   --rce;  if (strcmp (a_string, "purge") == 0) {
+      rc = yMACRO_reset_all ();
+      rc = ymacro_purge (MACRO_ALL);
       DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return rc;
    }
+   /*---(check for reset)----------------*/
+   --rce;  if (strcmp (a_string, "reset") == 0) {
+      rc = yMACRO_reset_all ();
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(check for one-letter)-----------*/
+   --rce;  if (x_len == 1) {
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(multi-character)----------------*/
+   x_div = a_string [1];
+   DEBUG_YMACRO   yLOG_char    ("x_div"     , x_div);
    /*---(check for shorts)---------------*/
    --rce;  if (x_len == 2) {
       DEBUG_YMACRO   yLOG_char    ("x_div"     , x_div);
       switch (x_div) {
-      case '#' : rc = ymacro_clear     (x_abbr);        break;
-      case '-' : rc = yMACRO_export    (x_abbr);        break;
-      case '+' : rc = yMACRO_import    (x_abbr);        break;
-      /*> case '>' : rc = yMACRO_to_reg    (x_abbr, '"');   break;                    <*/
-      /*> case '<' : rc = yMACRO_from_reg  (x_abbr, '"');   break;                    <*/
-      /*> default  : rc = yMACRO_copy      (x_abbr, x_div); break;                    <*/
+      case '-' :
+         rc = yMACRO_export      (x_abbr);
+         break;
+      case '+' :
+         rc = yMACRO_import      (x_abbr);
+         break;
+      case 'x' : case 'd' : case '#' :
+         rc = ymacro_clear       (x_abbr);
+         break;
+      case 'y' :
+         rc = yMACRO_yank        (x_abbr, "");
+         break;
+      case 'p' :
+         rc = yMACRO_paste       (x_abbr, "");
+         break;
+      case '~' :
+         rc = yMACRO_to_sreg     (x_abbr, '"');
+         break;
+      case '/' :
+         rc = yMACRO_flatten     (x_abbr);   /* to 0 */
+         break;
+      case '*' :
+         rc = yMACRO_install     (x_abbr);   /* to 0 */
+         break;
+      case '=' :
+         rc = ymacro_rec_full   (a_string);
+         break;
       default  :
          DEBUG_YMACRO   yLOG_note    ("two-char action not understood");
          DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
@@ -410,17 +446,44 @@ yMACRO_direct           (char *a_string)
       DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return rc;
    }
-   /*---(copy)---------------------------*/
-   /*> --rce;  if (x_len == 3 && x_div == '>') {                                      <* 
-    *>    rc = yMACRO_to_reg     (x_abbr, a_string [2]);                              <* 
-    *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                   <* 
-    *>    return rc;                                                                  <* 
-    *> }                                                                              <*/
-   /*> --rce;  if (x_len == 3 && x_div == '<') {                                      <* 
-    *>    rc = yMACRO_from_reg   (x_abbr, a_string [2]);                              <* 
-    *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                                   <* 
-    *>    return rc;                                                                  <* 
-    *> }                                                                              <*/
+   /*---(normals)------------------------*/
+   x_other = a_string [2];
+   DEBUG_YMACRO   yLOG_char    ("x_other"   , x_other);
+   --rce;  if (x_len == 3) {
+      DEBUG_YMACRO   yLOG_char    ("x_div"     , x_div);
+      switch (x_div) {
+      case '>' :
+         rc = yMACRO_copy        (x_abbr, x_other);
+         break;
+      case ']' :
+         rc = yMACRO_copy        (x_abbr, x_other);
+         rc = ymacro_clear       (x_abbr);
+         break;
+      case ')' :
+         rc = yMACRO_copy        (x_abbr , '¤');
+         rc = yMACRO_copy        (x_other, x_abbr);
+         rc = yMACRO_copy        ('¤'    , x_other);
+         break;
+      case '/' :
+         rc = yMACRO_flatten_at  (x_abbr, x_other);
+         break;
+      case '*' :
+         rc = yMACRO_install_at  (x_abbr, x_other);
+         break;
+      case '~' :
+         rc = yMACRO_to_sreg     (x_abbr, x_other);
+         break;
+      case '=' :
+         rc = ymacro_rec_full   (a_string);
+         break;
+      default  :
+         DEBUG_YMACRO   yLOG_note    ("three-char action not understood");
+         DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
    /*---(recording)----------------------*/
    --rce;  if (x_len >  2 && x_div == '=') {
       rc = ymacro_rec_full   (a_string);

@@ -111,7 +111,7 @@ yMACRO_init             (void)
    strlcat (S_MACRO_LIST, YSTR_NUMBER, S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, ".а"       , S_MACRO_MAX);
+   strlcat (S_MACRO_LIST, ".ад"      , S_MACRO_MAX);
    DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
    g_nmacro = strlen (S_MACRO_LIST);
    /*---(clear globals)------------------*/
@@ -400,41 +400,41 @@ yMACRO_hmode            (uchar a_major, uchar a_minor)
    /*---(quick out)----------------------*/
    if (a_major != G_KEY_SPACE)  return 0;
    /*---(header)-------------------------*/
-   DEBUG_USER   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(macros modes)-------------------*/
    switch (a_minor) {
    case '@'      :
-      DEBUG_USER   yLOG_note    ("macro execution");
+      DEBUG_YMACRO   yLOG_note    ("macro execution");
       myMACRO.erepeat = yKEYS_repeats ();
       yKEYS_repeat_reset ();
-      DEBUG_USER   yLOG_value   ("erepeat"   , myMACRO.erepeat);
+      DEBUG_YMACRO   yLOG_value   ("erepeat"   , myMACRO.erepeat);
       yMODE_enter  (SMOD_MACRO   );
-      DEBUG_USER   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return a_minor;
       break;
    case 'q'      :
       yKEYS_repeat_reset ();
       IF_MACRO_RECORDING {
-         DEBUG_USER   yLOG_note    ("end macro recording");
+         DEBUG_YMACRO   yLOG_note    ("end macro recording");
          rc = yMACRO_rec_end ();
       } else {
-         DEBUG_USER   yLOG_note    ("begin macro recording");
+         DEBUG_YMACRO   yLOG_note    ("begin macro recording");
          yMODE_enter  (SMOD_MACRO   );
          rc = a_minor;
       }
-      DEBUG_USER   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return rc;
       break;
    case 'Q'      :
-      DEBUG_USER   yLOG_note    ("reset macro recording");
+      DEBUG_YMACRO   yLOG_note    ("reset macro recording");
       yKEYS_repeat_reset ();
       rc = yMACRO_reset_all ();
-      DEBUG_USER   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return rc;
       break;
    }
    /*---(complete)-----------------------*/
-   DEBUG_USER   yLOG_exit    (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -447,61 +447,61 @@ ymacro_smode            (uchar a_major, uchar a_minor)
    char        x_majors    [LEN_LABEL] = "q@<>";
    char        x_keys      [LEN_RECD];
    /*---(header)-------------------------*/
-   DEBUG_USER   yLOG_enter   (__FUNCTION__);
-   DEBUG_USER   yLOG_char    ("a_major"   , a_major);
-   DEBUG_USER   yLOG_char    ("a_minor"   , a_minor);
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_char    ("a_major"   , a_major);
+   DEBUG_YMACRO   yLOG_char    ("a_minor"   , a_minor);
    /*---(defenses)-----------------------*/
-   DEBUG_USER   yLOG_char    ("mode"      , yMODE_curr ());
+   DEBUG_YMACRO   yLOG_char    ("mode"      , yMODE_curr ());
    --rce;  if (yMODE_not (SMOD_MACRO))  {
-      DEBUG_USER   yLOG_note    ("not the correct mode");
-      DEBUG_USER   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("not the correct mode");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_USER   yLOG_info    ("x_majors"   , x_majors);
+   DEBUG_YMACRO   yLOG_info    ("x_majors"   , x_majors);
    --rce;  if (strchr (x_majors, a_major) == 0) {
-      DEBUG_USER   yLOG_note    ("a_major is not valid");
-      DEBUG_USER   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YMACRO   yLOG_note    ("a_major is not valid");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(mode changes)-------------------*/
    if (a_minor == G_KEY_ESCAPE || a_minor == G_KEY_RETURN || a_minor == G_KEY_ENTER ) {
-      DEBUG_USER   yLOG_note    ("escape/return, nothing to do");
+      DEBUG_YMACRO   yLOG_note    ("escape/return, nothing to do");
       yMODE_exit  ();
-      DEBUG_USER   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(check for recording)------------*/
    --rce;  if (a_major == 'q') {
-      DEBUG_USER   yLOG_note    ("macro recording");
+      DEBUG_YMACRO   yLOG_note    ("macro recording");
       /*---(start recording)-------------*/
       yMODE_exit  ();
       rc = ymacro_rec_beg (a_minor);
       if (rc < 0) {
-         DEBUG_USER   yLOG_note    ("can not execute");
-         DEBUG_USER   yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_YMACRO   yLOG_note    ("can not execute");
+         DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      DEBUG_USER   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(check for execution)------------*/
    --rce;  if (a_major == '@') {
-      DEBUG_USER   yLOG_note    ("macro execution");
+      DEBUG_YMACRO   yLOG_note    ("macro execution");
       /*---(check for previous)----------*/
       if (a_minor == '@') {
-         DEBUG_USER   yLOG_note    ("rerun previously used macro");
+         DEBUG_YMACRO   yLOG_note    ("rerun previously used macro");
          a_minor = myMACRO.ename;
       }
       /*---(execute)---------------------*/
-      DEBUG_USER   yLOG_note    ("running stored macro");
+      DEBUG_YMACRO   yLOG_note    ("running stored macro");
       yMODE_exit  ();
       rc = ymacro_exe_beg  (a_minor);
       if (rc < 0) {
-         DEBUG_USER   yLOG_note    ("can not execute");
-         DEBUG_USER   yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_YMACRO   yLOG_note    ("can not execute");
+         DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      DEBUG_USER   yLOG_exit    (__FUNCTION__);
+      DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 0;
       /*---(done)------------------------*/
    }
@@ -510,7 +510,7 @@ ymacro_smode            (uchar a_major, uchar a_minor)
    ymacro_rec_reset ();
    ymacro_exe_reset ();
    /*---(complete)-----------------------*/
-   DEBUG_USER   yLOG_exitr   (__FUNCTION__, rce);
+   DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
    return rce;
 }
 

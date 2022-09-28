@@ -37,6 +37,7 @@
 #define     MACRO_DOUBLE       '8'
 #define     MACRO_TRIPLE       '9'
 /*---(updates)---------*/
+#define     MACRO_FAST         'f'  /* fast   updates */
 #define     MACRO_NORMAL       'n'  /* normal updates */
 #define     MACRO_SLOWER       's'  /* slower updates */
 #define     MACRO_BLINKS       'b'  /* stop action looking */
@@ -89,13 +90,14 @@ uchar       yMACRO_exec             (uchar a_play);
 
 /*===[[ yMACRO_file.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
+char        yMACRO_yank             (char a_abbr, char *a_label);
+char        yMACRO_paste            (char a_abbr, char *a_label);
 char        yMACRO_writer           (void);
 char        yMACRO_reader           (int n, char *a_verb);
 char        yMACRO_export           (char a_id);
 char        yMACRO_import           (char a_id);
-/*> char        yMACRO_copy             (char a_id, char a_src);                      <*/
-/*> char        yMACRO_to_reg           (char a_id, char a_reg);                      <*/
-/*> char        yMACRO_from_reg         (char a_id, char a_reg);                      <*/
+char        yMACRO_copy             (char a_id, char a_src);
+char        yMACRO_to_sreg          (char a_id, char a_reg);
 char        yMACRO_central          (char a_id, char *a_string);
 
 

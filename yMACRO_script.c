@@ -135,6 +135,7 @@ ymacro_script__read     (void)
       /*---(process line)-------------------*/
       DEBUG_YMACRO   yLOG_value   ("line"      , s_line);
       ++s_line;
+      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
       x_len = strlen (x_recd);
       /*---(check ignore status)------------*/
       if (strncmp (x_recd, ":skip"        ,  5) == 0)   yMACRO_skip   ();

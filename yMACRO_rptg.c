@@ -43,10 +43,10 @@ yMACRO_list             (char a_style, char *a_list)
    x_max = strlen (S_MACRO_LIST);
    switch (a_style) {
    case '*' :
-   case 'F' :  x_beg =  0; x_end = x_max - 2;  break;
+   case 'F' :  x_beg =  0; x_end = x_max - 4;  break;
    case '0' :  x_beg =  0; x_end = 9;          break;
    case 'a' :  x_beg = 10; x_end = 35;         break;
-   case 'è' :  x_beg = 36; x_end = x_max - 2;  break;
+   case 'è' :  x_beg = 36; x_end = x_max - 4;  break;
    }
    /*---(walk the list)------------------*/
    switch (a_style) {

@@ -146,6 +146,12 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
          snprintf (unit_answer, LEN_RECD, "MACRO saved  (%c) : %2d%-35.35s %2d %2d %2d", a_abbr, g_macros [n].len, t, g_macros [n].pos, g_macros [n].runby, g_macros [n].repeat);
       }
    }
+   else if (strcmp (a_question, "full"           )   == 0) {
+      if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : not a valid macro name", a_abbr);
+      else {
+         snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : %3då%-sæ", a_abbr, g_macros [n].len, g_macros [n].keys);
+      }
+   }
    else if (strcmp (a_question, "modes"          )   == 0) {
       if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO modes  (%c) : not a valid macro name", a_abbr);
       else {

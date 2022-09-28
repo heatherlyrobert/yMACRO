@@ -131,13 +131,24 @@ yMACRO_flatten_at       (uchar a_src, uchar a_dst)
    /*---(call on main)-------------------*/
    rc = ymacro__flatten (0, a_src, myMACRO.rkeys);
    DEBUG_YMACRO   yLOG_value   ("flatone"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YMACRO   yLOG_note    ("flatten failed, reset recording");
+      ymacro_rec_clear ();
+      myMACRO.rname = '-';
+      myMACRO.rcurr = -1;
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(save)---------------------------*/
    strlcat (myMACRO.rkeys, "³"   , LEN_RECD );
-   g_macros [x_dst].keys = strdup (myMACRO.rkeys);
-   g_macros [x_dst].len  = strlen (myMACRO.rkeys);
+   myMACRO.rlen  = strlen (myMACRO.rkeys);
+   myMACRO.rname = a_dst;
+   myMACRO.rcurr = x_dst;
+   ymacro_save ();
    /*---(clear)--------------------------*/
-   myMACRO.rkeys [0] = '\0';
-   myMACRO.rlen      = 0;
+   ymacro_rec_clear ();
+   myMACRO.rname = '-';
+   myMACRO.rcurr = -1;
    /*---(complete)-----------------------*/
    DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
    return rc;
@@ -154,9 +165,9 @@ ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)
    int         i           =    0;
    int         x_pos       =    0;
    int         x_len       =    0;
-   uchar       x_sub       [LEN_LABEL];
-   uchar       x_msg       [LEN_DESC];
-   uchar       x_keys      [LEN_RECD];
+   uchar       x_sub       [LEN_LABEL] = "";
+   uchar       x_msg       [LEN_DESC]  = "";
+   uchar       x_keys      [LEN_RECD]  = "";
    int         x_tmp       =    0;
    int         k           =    0;
    /*---(header)-------------------------*/
@@ -210,9 +221,14 @@ ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)
       /*---(done)------------------------*/
    }
    /*---(put in place)-------------------*/
-   ymacro_clear (S_MACRO_LIST [a_out]);
-   g_macros [a_out].keys = strdup (x_keys);
-   g_macros [a_out].len  = x_len;
+   strlcpy (myMACRO.rkeys, x_keys, LEN_RECD);
+   myMACRO.rlen  = strlen (myMACRO.rkeys);
+   myMACRO.rname = S_MACRO_LIST [a_out];
+   myMACRO.rcurr = a_out;
+   ymacro_save ();
+   /*> ymacro_clear (S_MACRO_LIST [a_out]);                                           <*/
+   /*> g_macros [a_out].keys = strdup (x_keys);                                       <*/
+   /*> g_macros [a_out].len  = x_len;                                                 <*/
    DEBUG_YMACRO  yLOG_complex ("final"     , "%3d/%c, %3d, å%sæ", a_out, S_MACRO_LIST [a_out], x_len, x_keys);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
@@ -255,7 +271,7 @@ yMACRO_install_at       (uchar a_src, uchar a_dst)
       return rce;
    }
    /*> ymacro_clear (x_dst);                                                          <*/
-   ymacro_purge (YMACRO_NUMBER);
+   /*> ymacro_purge (YMACRO_NUMBER);                                                  <*/
    /*---(prepare)------------------------*/
    s_index = 0;
    for (i = 0; i < S_MACRO_MAX; ++i)  s_abbrs [i] = -1;
