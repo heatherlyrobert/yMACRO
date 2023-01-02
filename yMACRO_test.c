@@ -22,7 +22,8 @@ ymacro__unit_quiet      (void)
    /*> yURG_logger   (x_narg, x_args);                                                <*/
    /*> yURG_urgs     (x_narg, x_args);                                                <*/
    yMODE_init (MODE_MAP);
-   yMODE_handler_setup ();
+   yMODE_unit_handlers ();
+   yKEYS_init  ();
    yMACRO_init ();
    yMACRO_config (NULL, NULL);
    return 0;
@@ -45,7 +46,8 @@ ymacro__unit_loud       (void)
    yURG_name  ("ymacro"       , YURG_ON);
    DEBUG_YMACRO   yLOG_info     ("yMACRO"     , yMACRO_version   ());
    yMODE_init (MODE_MAP);
-   yMODE_handler_setup ();
+   yMODE_unit_handlers ();
+   yKEYS_init  ();
    yMACRO_init ();
    yMACRO_config (NULL, NULL);
    return 0;

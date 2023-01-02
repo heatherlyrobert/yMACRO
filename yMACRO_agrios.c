@@ -121,7 +121,7 @@ ymacro_agrios__range    (void)
    strlcpy (x_beg, t    , LEN_TERSE);
    strlcpy (x_end, p + 2, LEN_TERSE);
    /*---(call range setting)-------------*/
-   rc = yMAP_range (x_beg, x_end);
+   rc = yVIHUB_yMAP_range (x_beg, x_end);
    DEBUG_YMACRO   yLOG_value   ("range"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);

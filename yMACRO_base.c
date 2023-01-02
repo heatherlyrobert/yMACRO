@@ -115,6 +115,7 @@ yMACRO_init             (void)
    DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
    g_nmacro = strlen (S_MACRO_LIST);
    /*---(clear globals)------------------*/
+   yVIHUB_from_yMACRO (yMACRO_hmode, yMACRO_rec_mode, yMACRO_rec_key, yMACRO_exec, yMACRO_exe_mode, yMACRO_exe_pos, yMACRO_exe_current, yMACRO_exe_repos);
    yMACRO_global_init ();
    /*---(clear pointers)-----------------*/
    myMACRO.e_loader  = NULL;
@@ -123,7 +124,7 @@ yMACRO_init             (void)
    ymacro_purge (MACRO_ALL);
    /*> strlcpy (myVIKEYS.m_script, "", LEN_DESC);                                     <*/
    /*---(other updates)------------------*/
-   rc = yFILE_dump_add ("macros"    , "mac", "inventory of macros"         , ymacro_dump        );
+   /*> rc = yFILE_dump_add ("macros"    , "mac", "inventory of macros"         , ymacro_dump        );   <*/
    ymacro_file_handlers ();
    /*---(agrios)-------------------------*/
    ymacro_agrios_init   ();

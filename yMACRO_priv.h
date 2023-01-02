@@ -14,7 +14,7 @@
 #define     P_SUBJECT   "macro processing"
 #define     P_PURPOSE   ""
 
-#define     P_NAMESAKE  "pan-agrios (god of the wilderness)"
+#define     P_NAMESAKE  "pan-agrios (god of the wilds)"
 #define     P_HERITAGE  ""
 #define     P_IMAGERY   ""
 #define     P_REASON    ""
@@ -35,9 +35,9 @@
 #define     P_CREATED   ""
 
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
-#define     P_VERMINOR  "2.1-, complex macros"
-#define     P_VERNUM    "2.1h"
-#define     P_VERTXT    "fixed « pause and indented script reading"
+#define     P_VERMINOR  "2.2-, better inter-library communication"
+#define     P_VERNUM    "2.2a"
+#define     P_VERTXT    "converted to yVIHUB and fixed some small issues"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -74,10 +74,9 @@
 #include    <yLOG.h>              /* heatherly program logging                */
 #include    <ySTR.h>              /* heatherly string processing              */
 /*---(custom vikeys)---------------------*/
+#include    <yVIHUB.h>
 #include    <yMODE.h>             /* heatherly vi-keys mode processing        */
 #include    <yKEYS.h>             /* heatherly vi-keys mode processing        */
-#include    <yFILE.h>             /* heatherly vi-keys content file handling  */
-#include    <yMAP.h>              /* heatherly vi-keys location management    */
 /*---(custom other)----------------------*/
 #include    <yPARSE.h>            /* heatherly file reading and writing       */
 
@@ -89,6 +88,58 @@
  * metis § yg8·· § use ä (for each) operator to do something over selected area           § M2M1wI §  · §
  *
  */
+
+
+/*---(mode)------------*/
+#define     MACRO_STOP         '-'      /* normal keyboard input              */
+#define     MACRO_RUN          'M'      /* macro running with redisplay       */
+#define     MACRO_DELAY        'D'      /* macro delay playback controls      */
+#define     MACRO_PLAYBACK     'P'      /* macro under playback controls      */
+/*---(conditions)------*/
+#define     IF_MACRO_OFF         if (yMACRO_exe_mode () == MACRO_STOP     ) 
+#define     IF_MACRO_RUN         if (yMACRO_exe_mode () == MACRO_RUN      ) 
+#define     IF_MACRO_NOT_RUN     if (yMACRO_exe_mode () != MACRO_RUN      ) 
+#define     IF_MACRO_DELAY       if (yMACRO_exe_mode () == MACRO_DELAY    ) 
+#define     IF_MACRO_PLAYBACK    if (yMACRO_exe_mode () == MACRO_PLAYBACK ) 
+#define     IF_MACRO_MOVING      if (yMACRO_exe_mode () == MACRO_RUN      || yMACRO_exe_mode () == MACRO_DELAY   ) 
+#define     IF_MACRO_NOT_MOVING  if (yMACRO_exe_mode () != MACRO_RUN      && yMACRO_exe_mode () != MACRO_DELAY   ) 
+#define     IF_MACRO_NOT_PLAYING if (yMACRO_exe_mode () == MACRO_STOP     )
+#define     IF_MACRO_PLAYING     if (yMACRO_exe_mode () != MACRO_STOP     )
+#define     IF_MACRO_ON          if (yMACRO_exe_mode () != MACRO_STOP     ) 
+/*---(setting)---------*/
+#define     SET_MACRO_OFF        yMACRO_modeset (MACRO_STOP);
+#define     SET_MACRO_STOP       yMACRO_modeset (MACRO_STOP);
+#define     SET_MACRO_RUN        yMACRO_modeset (MACRO_RUN);
+#define     SET_MACRO_PLAYBACK   yMACRO_modeset (MACRO_PLAYBACK);
+#define     SET_MACRO_DELAY      yMACRO_modeset (MACRO_DELAY);
+/*---(speeds)----------*/
+#define     MACRO_BLITZ        '0'
+#define     MACRO_FAST         '1'
+#define     MACRO_THOU         '2'
+#define     MACRO_HUND         '3'
+#define     MACRO_TWENTY       '4'
+#define     MACRO_TENTH        '5'
+#define     MACRO_HALF         '6'
+#define     MACRO_SEC          '7'
+#define     MACRO_DOUBLE       '8'
+#define     MACRO_TRIPLE       '9'
+/*---(updates)---------*/
+#define     MACRO_FAST         'f'  /* fast   updates */
+#define     MACRO_NORMAL       'n'  /* normal updates */
+#define     MACRO_SLOWER       's'  /* slower updates */
+#define     MACRO_BLINKS       'b'  /* stop action looking */
+#define     MACRO_PEEKS        'p'  /* very slow screen updates */
+#define     MACRO_BLIND        'd'  /* no screen updates */
+
+
+/*---(recording)-------*/
+#define     MACRO_IGNORE       'i'      /* no recording                       */
+#define     MACRO_RECORD       'r'      /* macro recording                    */
+#define     IF_MACRO_RECORDING   if (yMACRO_rec_mode () == MACRO_RECORD   ) 
+#define     SET_MACRO_RECORD     yMACRO_modeset (MACRO_RECORD);
+#define     SET_MACRO_IGNORE     yMACRO_modeset (MACRO_IGNORE);
+
+#define     CASE_MACRO_KEYS   '@' : case 'q' : case 'Q'
 
 
 #define      S_MACRO_MAX      75

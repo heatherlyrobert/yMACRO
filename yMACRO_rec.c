@@ -214,6 +214,9 @@ ymacro_rec_str          (char *a_keys)
 {
    int         i           = 0;
    char        x_ch        = '-';
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_char    ("rec_mode"  , yMACRO_rec_mode);
    IF_MACRO_RECORDING {
       /*---(look for suffix)----------------*/
       if (myMACRO.rkeys [myMACRO.rlen - 1] == G_CHAR_PLACE) {
@@ -237,13 +240,20 @@ ymacro_rec_str          (char *a_keys)
       /*> printf ("myMACRO.rkeys <<%s>>¦", myMACRO.rkeys);                                <*/
    }
    /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char         /*-> complete a macro recording ---------[ ------ [gz.420.001.21]*/ /*-[02.0000.113.5]-*/ /*-[--.---.---.--]-*/
 yMACRO_rec_end          (void)
 {
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   DEBUG_YMACRO   yLOG_char    ("rec_mode"  , yMACRO_rec_mode);
    IF_MACRO_RECORDING {
+      DEBUG_YMACRO   yLOG_note    ("recording, so save");
+      DEBUG_YMACRO   yLOG_value   ("rlen"      , myMACRO.rlen);
+      DEBUG_YMACRO   yLOG_char    ("last char" , myMACRO.rkeys [myMACRO.rlen - 2]);
       if (myMACRO.rlen > 2 && myMACRO.rkeys [myMACRO.rlen - 2] == 'q') {
          myMACRO.rkeys [myMACRO.rlen - 2] = G_CHAR_HALT;
          myMACRO.rkeys [myMACRO.rlen - 1] = G_KEY_NULL;
@@ -265,8 +275,12 @@ yMACRO_rec_end          (void)
        *> myMACRO.rcur      = '-';                                                    <*/
       SET_MACRO_IGNORE;
       myMACRO.rcurr = -1;
+   } else {
+      DEBUG_YMACRO   yLOG_note    ("not recording, nothing to do");
    }
    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.rcurr].runby);
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

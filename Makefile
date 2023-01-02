@@ -6,9 +6,9 @@
 # basename of executable, header, and all code files
 NAME_BASE  = yMACRO
 # additional standard and outside libraries
-LIB_STD    = 
+LIB_STD    = -lm
 # all heatherly libraries used, debug versions whenever available
-LIB_MINE   = -lyMODE_debug -lyKEYS_debug -lyFILE_debug -lyMAP_debug -lySTR_debug -lyPARSE_debug
+LIB_MINE   = -lySTR_debug   -lyVIHUB_debug -lyMODE_debug -lyKEYS_debug   -lyPARSE_debug
 # directory for production code, no trailing slash
 INST_DIR   = 
 
