@@ -3,67 +3,59 @@
 #define yMACRO_PRIV yes
 
 
-
-/*===[[ BEG_HEADER ]]=========================================================*/
-/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
-
-/*===[[ ONE_LINERS ]]=========================================================*/
-
+/*===[[ HEADER BEG ]]=========================================================*/
+/*                      ´·········1·········2·········3·········4·········5·········6·········7*/
+/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+/*········· ··········· ´·····························´········································*/
+#define     P_NAME      "yMACRO"
+/*········· ··········· ´·····························´········································*/
 #define     P_FOCUS     "RS (run-time support)"
 #define     P_NICHE     "us (user control)"
 #define     P_SUBJECT   "macro processing"
 #define     P_PURPOSE   ""
-
+/*········· ··········· ´·····························´········································*/
 #define     P_NAMESAKE  "pan-agrios (god of the wilds)"
+#define     P_PRONOUNCE ""
 #define     P_HERITAGE  ""
+#define     P_BRIEFLY   "god of the wilderness"
 #define     P_IMAGERY   ""
 #define     P_REASON    ""
-
+/*········· ··········· ´·····························´········································*/
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
-
+/*········· ··········· ´·····························´········································*/
+#define     P_HOMEDIR   "/home/system/yMACRO.standard_macro_processor"
 #define     P_BASENAME  "yMACRO"
 #define     P_FULLNAME  "/usr/local/lib64/libyMACRO"
 #define     P_SUFFIX    ""
 #define     P_CONTENT   ""
-
+/*········· ··········· ´·····························´········································*/
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
+#define     P_COMPILER  "gcc 11.3.0"
 #define     P_CODESIZE  "large       (appoximately 10,000 slocl)"
-#define     P_DEPENDS   "none"
-
+/*········· ··········· ´·····························´········································*/
+#define     P_DEPSTDC   "stdio,stdlib,string"
+#define     P_DEPEXTEND "···"
+#define     P_DEPCORE   "yURG,yLOG,ySTR"
+#define     P_DEPVIKEYS "yVIHUB,yMODE,yKEYS"
+#define     P_DEPOTHER  "yPARSE"
+/*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   ""
-
+/*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2a"
-#define     P_VERTXT    "converted to yVIHUB and fixed some small issues"
-
+#define     P_VERNUM    "2.2b"
+#define     P_VERTXT    "full unit test compliant again"
+/*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
 #define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
+/*········· ··········· ´·····························´········································*/
+/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+/*                      ´·········1·········2·········3·········4·········5·········6·········7*/
+/*===[[ HEADER END ]]=========================================================*/
 
-/*===[[ END_HEADER ]]=========================================================*/
-
-/*> /+---(ansi-c standard)-------------------+/                                        <* 
- *> #include    <stdio.h>             /+ clibc  standard input/output             +/   <* 
- *> #include    <stdlib.h>            /+ clibc  standard general purpose          +/   <* 
- *> #include    <string.h>            /+ clibc  standard string handling          +/   <* 
- *> #include    <math.h>              /+ clibc  standard math library             +/   <* 
- *> /+---(custom core)-----------------------+/                                        <* 
- *> #include    <yURG.h>              /+ heatherly urgent processing              +/   <* 
- *> #include    <yLOG.h>              /+ heatherly program logging                +/   <* 
- *> #include    <ySTR.h>              /+ heatherly string processing              +/   <* 
- *> /+---(custom vikeys)---------------------+/                                        <* 
- *> #include    <yKEYS.h>             /+ heatherly vikeys key handling            +/   <* 
- *> #include    <yMODE.h>             /+ heatherly vikeys mode tracking           +/   <* 
- *> #include    <yMACRO.h>            /+ heatherly vikeys macro processing        +/   <* 
- *> #include    <ySRC.h>              /+ heatherly vikeys source editing          +/   <* 
- *> #include    <yCMD.h>              /+ heatherly vikeys command processing      +/   <* 
- *> #include    <yVIEW.h>             /+ heatherly vikeys view management         +/   <* 
- *> /+---(custom other)----------------------+/                                        <* 
- *> #include    <yCOLOR.h>            /+ heatherly opengl color handling          +/   <* 
- *> #include    <yDLST_solo.h>        /+ heatherly double-double-list             +/   <*/
 
 /*---(ansi-c standard)-------------------*/
 #include    <stdio.h>             /* clibc  standard input/output             */
@@ -90,11 +82,6 @@
  */
 
 
-/*---(mode)------------*/
-#define     MACRO_STOP         '-'      /* normal keyboard input              */
-#define     MACRO_RUN          'M'      /* macro running with redisplay       */
-#define     MACRO_DELAY        'D'      /* macro delay playback controls      */
-#define     MACRO_PLAYBACK     'P'      /* macro under playback controls      */
 /*---(conditions)------*/
 #define     IF_MACRO_OFF         if (yMACRO_exe_mode () == MACRO_STOP     ) 
 #define     IF_MACRO_RUN         if (yMACRO_exe_mode () == MACRO_RUN      ) 

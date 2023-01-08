@@ -106,6 +106,8 @@ yMACRO_init             (void)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(hook to yVIHUB)-----------------*/
+   yVIHUB_from_yMACRO (yMACRO_hmode, yMACRO_rec_mode, yMACRO_rec_key, yMACRO_exec, yMACRO_exe_mode, yMACRO_exe_pos, yMACRO_exe_current, yMACRO_exe_repos, yMACRO_agrios_hmode);
    /*---(macro abbrev list)--------------*/
    strlcpy (S_MACRO_LIST, ""         , S_MACRO_MAX);
    strlcat (S_MACRO_LIST, YSTR_NUMBER, S_MACRO_MAX);
@@ -114,8 +116,6 @@ yMACRO_init             (void)
    strlcat (S_MACRO_LIST, ".ад"      , S_MACRO_MAX);
    DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
    g_nmacro = strlen (S_MACRO_LIST);
-   /*---(clear globals)------------------*/
-   yVIHUB_from_yMACRO (yMACRO_hmode, yMACRO_rec_mode, yMACRO_rec_key, yMACRO_exec, yMACRO_exe_mode, yMACRO_exe_pos, yMACRO_exe_current, yMACRO_exe_repos);
    yMACRO_global_init ();
    /*---(clear pointers)-----------------*/
    myMACRO.e_loader  = NULL;
@@ -124,13 +124,37 @@ yMACRO_init             (void)
    ymacro_purge (MACRO_ALL);
    /*> strlcpy (myVIKEYS.m_script, "", LEN_DESC);                                     <*/
    /*---(other updates)------------------*/
-   /*> rc = yFILE_dump_add ("macros"    , "mac", "inventory of macros"         , ymacro_dump        );   <*/
    ymacro_file_handlers ();
    /*---(agrios)-------------------------*/
    ymacro_agrios_init   ();
    /*---(update status)------------------*/
    DEBUG_YMACRO   yLOG_note    ("update status");
    yMODE_init_set   (SMOD_MACRO, NULL, ymacro_smode);
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yMACRO_init_after       (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(updates)------------------------*/
+   rc = yVIHUB_yFILE_dump_add ("macros"    , "mac", "inventory of macros"         , ymacro_dump        );
+   DEBUG_YMACRO   yLOG_value   ("dump_add"  , rc);
+   rc = yVIHUB_yVIEW_switch_add ('s', "rec"   , "record"       , yMACRO_rec_status      , "details of current macro recording"       );
+   DEBUG_YMACRO   yLOG_value   ("switch_add", rc);
+   rc = yVIHUB_yVIEW_switch_add ('s', "exe"   , "execute"      , yMACRO_exe_status      , "details of single macro playback"         );
+   DEBUG_YMACRO   yLOG_value   ("switch_add", rc);
+   rc = yVIHUB_yVIEW_switch_add ('s', "mex"   , "multiexe"     , yMACRO_mex_status      , "details of layered macro playback"        );
+   DEBUG_YMACRO   yLOG_value   ("switch_add", rc);
+   rc = yPARSE_handler_max (SMOD_MACRO   , "macro"     , 7.3, "cO----------", -1, yMACRO_reader, yMACRO_writer, "------------" , "a,keys", "keyboard macros"           );
+   DEBUG_YMACRO   yLOG_value   ("macro"     , rc);
+   yMODE_after_set  (SMOD_MACRO);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;

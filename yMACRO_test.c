@@ -15,16 +15,20 @@ char          unit_answer [LEN_FULL];
 char       /*----: set up program urgents/debugging --------------------------*/
 ymacro__unit_quiet      (void)
 {
+   char        rc           =    0;
    int         x_narg       = 1;
    char       *x_args [20]  = {"yMACRO_unit" };
    yPARSE_init  ('y', NULL, '-');
    yPARSE_delimiters  ("");
    /*> yURG_logger   (x_narg, x_args);                                                <*/
    /*> yURG_urgs     (x_narg, x_args);                                                <*/
-   yMODE_init (MODE_MAP);
-   yMODE_unit_handlers ();
+   rc = yMODE_init  (MODE_MAP);
+   rc = yMODE_init_after ();
+   yKEYS_unit_handlers ();
    yKEYS_init  ();
+   yKEYS_init_after ();
    yMACRO_init ();
+   yMACRO_init_after ();
    yMACRO_config (NULL, NULL);
    return 0;
 }
@@ -32,6 +36,7 @@ ymacro__unit_quiet      (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ymacro__unit_loud       (void)
 {
+   char        rc           =    0;
    int         x_narg       = 1;
    char       *x_args [20]  = {"yMACRO_unit" };
    yPARSE_init  ('y', NULL, '-');
@@ -45,10 +50,13 @@ ymacro__unit_loud       (void)
    yURG_name  ("ykeys"        , YURG_ON);
    yURG_name  ("ymacro"       , YURG_ON);
    DEBUG_YMACRO   yLOG_info     ("yMACRO"     , yMACRO_version   ());
-   yMODE_init (MODE_MAP);
+   rc = yMODE_init  (MODE_MAP);
+   rc = yMODE_init_after ();
    yMODE_unit_handlers ();
    yKEYS_init  ();
+   yKEYS_init_after ();
    yMACRO_init ();
+   yMACRO_init_after ();
    yMACRO_config (NULL, NULL);
    return 0;
 }
