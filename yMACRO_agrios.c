@@ -5,12 +5,16 @@
 
 
 
-static char   s_type          = '-';
-static uchar  s_active        = '-';
-static uchar  s_agrios        [LEN_RECD]  = "";
+static uchar  s_type          = '-';
 static char   s_jump          [LEN_LABEL] = "";
 
-static  char   s_style  =  '.';
+
+char
+ymacro_agrios_style     (char a_style)
+{
+   myMACRO.g_style = a_style;
+   return 0;
+}
 
 
 
@@ -32,6 +36,9 @@ ymacro_agrios_init      (void)
       strlcpy (myMACRO.g_code [i], "", LEN_RECD);
       strlcpy (myMACRO.g_next [i], "", LEN_LABEL);
    }
+   myMACRO.g_style  = '.';
+   myMACRO.g_active = '-';
+   strcpy (myMACRO.g_agrios, "");
    return 0;
 }
 
@@ -65,8 +72,8 @@ char
 ymacro_agrios__reset    (void)
 {
    yKEYS_repeat_reset ();
-   strcpy (s_agrios, "");
-   s_active = '-';
+   strcpy (myMACRO.g_agrios, "");
+   myMACRO.g_active = '-';
    strcpy (s_jump  , "");
    return 0;
 }
@@ -92,7 +99,7 @@ ymacro_agrios__range    (void)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   l = strlen (s_agrios);
+   l = strlen (myMACRO.g_agrios);
    DEBUG_YMACRO   yLOG_value   ("l"         , l);
    --rce;  if (l < 7) {
       DEBUG_YMACRO   yLOG_note    ("too short for all parts, ex. ¶®a1..b6¶");
@@ -104,13 +111,13 @@ ymacro_agrios__range    (void)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YMACRO   yLOG_char    ("prefix"    , s_agrios [0]);
-   --rce;  if (s_agrios [0] != (uchar) '®') {
+   DEBUG_YMACRO   yLOG_char    ("prefix"    , myMACRO.g_agrios [0]);
+   --rce;  if (myMACRO.g_agrios [0] != G_CHAR_SUMMARY) {
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(parse)--------------------------*/
-   strlcpy (t, s_agrios + 1, LEN_LABEL);
+   strlcpy (t, myMACRO.g_agrios + 1, LEN_LABEL);
    p = strstr (t, "..");
    DEBUG_YMACRO   yLOG_point   ("p"         , p);
    --rce;  if (p == NULL) {
@@ -123,118 +130,6 @@ ymacro_agrios__range    (void)
    /*---(call range setting)-------------*/
    rc = yVIHUB_yMAP_range (x_beg, x_end);
    DEBUG_YMACRO   yLOG_value   ("range"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-ymacro_agrios__force_OLD(void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   char        x_mode      =  '-';
-   char        x_type      =  '-';
-   char        x_comp      =  ' ';
-   int         l           =    0;
-   char        t           [LEN_RECD]  = "";
-   char        x_target    [LEN_TERSE] = "";
-   char        x_contents  [LEN_RECD]  = "";
-   char        x_final     [LEN_RECD]  = "";
-   char       *p           = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   l = strlen (s_agrios);
-   DEBUG_YMACRO   yLOG_value   ("l"         , l);
-   --rce;  if (l < 4) {
-      DEBUG_YMACRO   yLOG_note    ("too short for all parts, ex. ¶šs=0¶");
-      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   x_mode = s_agrios [0];
-   DEBUG_YMACRO   yLOG_char    ("x_mode"    , x_mode);
-   --rce;  switch (x_mode) {
-   case 'š'  :
-      DEBUG_YMACRO   yLOG_note    ("force value");
-      break;
-   case 'Ù'  :
-      DEBUG_YMACRO   yLOG_note    ("force formula");
-      break;
-   default   :
-      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-      break;
-   }
-   /*---(parse)--------------------------*/
-   strlcpy (t, s_agrios + 1, LEN_RECD);
-   DEBUG_YMACRO   yLOG_info    ("t"         , t);
-   l--;
-   DEBUG_YMACRO   yLOG_value   ("l"         , l);
-   p = strchr (t, '=');
-   DEBUG_YMACRO   yLOG_point   ("p (=)"     , p);
-   --rce;  if (p == NULL) {
-      p = strchr (t, '#');
-      DEBUG_YMACRO   yLOG_point   ("p (#)"     , p);
-      if (p == NULL) {
-         DEBUG_YMACRO   yLOG_info    ("suffix"    , t + l - 2);
-         if (strcmp (t + l - 2, "++") == 0) {
-            DEBUG_YMACRO   yLOG_note    ("found increment");
-            x_type = '=';
-            x_comp = '1';
-            t [l - 2] = '\0';
-         } else if (strcmp (t + l - 2, "--") == 0) {
-            DEBUG_YMACRO   yLOG_note    ("found decrement");
-            x_type = '=';
-            x_comp = '2';
-            t [l - 2] = '\0';
-         } else {
-            DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
-            return rce;
-         }
-      } else {
-         x_type = '#';
-         p [0] = '\0';
-         if (strchr ("#", p [ 1]) != NULL) {
-            DEBUG_YMACRO   yLOG_note    ("compound string");
-            x_comp = p [ 1];
-            p [ 1] = '\0';
-            p++;
-         }
-      }
-   } else {
-      x_type = '=';
-      p [0] = '\0';
-      if (strchr ("+-*/%", p [-1]) != NULL) {
-         DEBUG_YMACRO   yLOG_note    ("compound numeric");
-         x_comp = p [-1];
-         p [-1] = '\0';
-      }
-   }
-   /*---(check compound)-----------------*/
-   DEBUG_YMACRO   yLOG_note    ("make target");
-   strlcpy  (x_target  , t, LEN_TERSE);
-   strltrim (x_target  , ySTR_BOTH, LEN_TERSE);
-   DEBUG_YMACRO   yLOG_info    ("x_target"  , x_target);
-   DEBUG_YMACRO   yLOG_complex ("special"   , "%c %c", x_type, x_comp);
-   if      (x_comp == '1')   sprintf (x_contents, "%c %s + 1", x_type, x_target);
-   else if (x_comp == '2')   sprintf (x_contents, "%c %s - 1", x_type, x_target);
-   else if (x_comp != ' ')   sprintf (x_contents, "%c %s %c %s", x_type, x_target, x_comp, p + 1);
-   else                      sprintf (x_contents, "%c %s", x_type, p + 1);
-   DEBUG_YMACRO   yLOG_info    ("x_contents", x_contents);
-   /*---(force)--------------------------*/
-   DEBUG_YMACRO   yLOG_point   ("e_forcer"  , myMACRO.e_forcer);
-   --rce;  if (myMACRO.e_forcer == NULL) {
-      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   rc = myMACRO.e_forcer (x_mode, x_target, x_contents);
-   DEBUG_YMACRO   yLOG_point   ("forcer"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -297,7 +192,7 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
       DEBUG_YMACRO   yLOG_complex ("string"    , "%c at %d", p [0], p - a_sub);
       x_type = '#';
       p [0] = '\0';
-      if (strchr ("›", p [-1]) != NULL) {
+      if (strchr ("©", p [-1]) != NULL) {
          DEBUG_YMACRO   yLOG_complex ("compound"  , "%c at %d", p [1], p - 1 - a_sub);
          x_comp = p [-1];
          p [-1] = '\0';
@@ -372,7 +267,7 @@ ymacro_agrios__force    (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char        x_mode      =  '-';
+   uchar       x_mode      =  '-';
    char        x_type      =  '-';
    char        x_comp      =  ' ';
    int         l           =    0;
@@ -384,29 +279,31 @@ ymacro_agrios__force    (void)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   l = strlen (s_agrios);
+   l = strlen (myMACRO.g_agrios);
    DEBUG_YMACRO   yLOG_value   ("l"         , l);
    --rce;  if (l < 4) {
-      DEBUG_YMACRO   yLOG_note    ("too short for all parts, ex. ¶šs=0¶");
+      DEBUG_YMACRO   yLOG_note    ("too short for all parts, ex. ¶Ûs=0¶");
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_mode = s_agrios [0];
+   x_mode = myMACRO.g_agrios [0];
    DEBUG_YMACRO   yLOG_char    ("x_mode"    , x_mode);
+   DEBUG_YMACRO   yLOG_char    ("g_active"  , myMACRO.g_active);
    --rce;  switch (x_mode) {
-   case 'š'  :
+   case G_CHAR_TRUE   :
       DEBUG_YMACRO   yLOG_note    ("force value");
       break;
-   case 'Ù'  :
+   case G_CHAR_LIKELY :
       DEBUG_YMACRO   yLOG_note    ("force formula");
       break;
    default   :
+      DEBUG_YMACRO   yLOG_note    ("g_agrios not force type");
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
       break;
    }
    /*---(prepare)------------------------*/
-   strlcpy (t, s_agrios + 1, LEN_RECD);
+   strlcpy (t, myMACRO.g_agrios + 1, LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("t"         , t);
    /*---(recurse)------------------------*/
    rc = ymacro_agrios__recurse (x_mode, t);
@@ -426,7 +323,7 @@ ymacro_agrios__call     (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char        x_type      =  '-';
+   uchar       x_type      =  '-';
    int         l           =    0;
    char        x_recd      [LEN_RECD]  = "";
    char        x_target    [LEN_LABEL] = "";
@@ -437,29 +334,31 @@ ymacro_agrios__call     (void)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   l = strlen (s_agrios);
+   l = strlen (myMACRO.g_agrios);
    DEBUG_YMACRO   yLOG_value   ("l"         , l);
    --rce;  if (l < 2) {
       DEBUG_YMACRO   yLOG_note    ("too short for all parts, ex. ¶ a1¶");
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   x_type = s_agrios [0];
+   x_type = myMACRO.g_agrios [0];
    DEBUG_YMACRO   yLOG_char    ("x_type"    , x_type);
+   DEBUG_YMACRO   yLOG_char    ("g_active"  , myMACRO.g_active);
    --rce;  switch (x_type) {
-   case ' '  :
+   case G_CHAR_EMPTY    :
       DEBUG_YMACRO   yLOG_note    ("function call/push");
       break;
-   case '™'  :
+   case G_CHAR_FALSE    :
       DEBUG_YMACRO   yLOG_note    ("absolute branch/goto");
       break;
-   case 'Ø'  :
+   case G_CHAR_UNLIKELY :
       DEBUG_YMACRO   yLOG_note    ("relative branch/goto");
       break;
-   case 'ç'  :
+   case G_CHAR_RFIELD   :
       DEBUG_YMACRO   yLOG_note    ("self modification");
       break;
    default   :
+      DEBUG_YMACRO   yLOG_note    ("g_active not branch type");
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
       break;
@@ -474,7 +373,7 @@ ymacro_agrios__call     (void)
    DEBUG_YMACRO   yLOG_info    ("x_target"  , x_target);
    DEBUG_YMACRO   yLOG_info    ("x_args"    , x_args);
    /*---(parse)--------------------------*/
-   strlcpy  (x_recd, s_agrios + 1, LEN_RECD);
+   strlcpy  (x_recd, myMACRO.g_agrios + 1, LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
    strltrim (x_recd, ySTR_BOTH   , LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
@@ -486,7 +385,7 @@ ymacro_agrios__call     (void)
    }
    strlcpy (x_target, x_recd, LEN_LABEL);
    /*---(push onto stack)----------------*/
-   --rce;  if (x_type == ' ') {
+   --rce;  if (x_type == G_CHAR_EMPTY) {
       DEBUG_YMACRO   yLOG_note    ("push context onto stack for next level");
       yLOG_point   ("e_pusher"  , myMACRO.e_pusher);
       if (myMACRO.e_pusher == NULL) {
@@ -504,20 +403,20 @@ ymacro_agrios__call     (void)
    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    /*---(save jump for branch)-----------*/
-   --rce;  if (x_type == 'Ø') {
+   --rce;  if (x_type == G_CHAR_UNLIKELY) {
       strlcpy  (s_jump, x_target, LEN_LABEL);
       DEBUG_YMACRO   yLOG_info    ("s_jump"    , s_jump);
       strlcpy (x_target, myMACRO.g_curr [myMACRO.g_level], LEN_LABEL);
    }
    /*---(get next)-----------------------*/
-   if (x_type != 'ç') {
+   if (x_type != G_CHAR_RFIELD) {
       strlcpy (myMACRO.g_curr [myMACRO.g_level], x_target, LEN_LABEL);
       strlcpy (myMACRO.g_code [myMACRO.g_level], ""      , LEN_RECD);
       strlcpy (myMACRO.g_next [myMACRO.g_level], ""      , LEN_LABEL);
       s_type = x_type;
       DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
       DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
-      rc = ymacro_agrios__read ();
+      rc = ymacro_agrios__read ('-');
       g_macros [myMACRO.ecurr].runby = x_runby;
       DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
       DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
@@ -532,21 +431,28 @@ ymacro_agrios__execute  (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =   -1;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(dispatch)-----------------------*/
-   switch (s_active) {
-   case (uchar) '®'  :
+   DEBUG_YMACRO   yLOG_char    ("g_active"  , myMACRO.g_active);
+   switch (myMACRO.g_active) {
+   case G_CHAR_SUMMARY  :
+      DEBUG_YMACRO   yLOG_note    ("calling range");
       rc = ymacro_agrios__range   ();
       break;
-   case (uchar) 'š'  : case (uchar) 'Ù'  :
+   case G_CHAR_TRUE     : case G_CHAR_LIKELY   :
+      DEBUG_YMACRO   yLOG_note    ("calling force");
       rc = ymacro_agrios__force   ();
       break;
-   case (uchar) ' '  : case (uchar) '™'  : case (uchar) 'Ø'  :
+   case G_CHAR_EMPTY    : case G_CHAR_FALSE    : case G_CHAR_UNLIKELY :
+      DEBUG_YMACRO   yLOG_note    ("calling branching");
       rc = ymacro_agrios__call    ();
       break;
    }
    /*---(clean-up)-----------------------*/
    ymacro_agrios__reset ();
    /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -566,7 +472,7 @@ ymacro_agrios__biggies  (uchar a_major, uchar a_minor)
    char        x_pos       =    0;
    /*---(quick out)----------------------*/
    if (a_major  != G_KEY_SPACE)  return 0;
-   if (s_active == '-')          return 0;
+   if (myMACRO.g_active == '-')          return 0;
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(major keys)---------------------*/
@@ -578,7 +484,7 @@ ymacro_agrios__biggies  (uchar a_major, uchar a_minor)
       DEBUG_YMACRO   yLOG_note    ("escape, means forget and return to previous mode");
       ymacro_agrios__reset  ();
       break;
-   case (uchar) '˜' :
+   case G_CHAR_SUFFIX :
       DEBUG_YMACRO   yLOG_note    ("low-tick, means execute helper");
       ymacro_agrios__execute ();
       break;
@@ -602,25 +508,25 @@ ymacro_agrios__capture  (uchar a_major, uchar a_minor)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(begin)--------------------------*/
-   if (s_active == '-') {
+   if (myMACRO.g_active == '-') {
       switch (a_minor) {
-      case (uchar) 'š' :
+      case G_CHAR_TRUE     :
          DEBUG_YMACRO   yLOG_note    ("start a force value assignment");
          break;
-      case (uchar) 'Ù' :
+      case G_CHAR_LIKELY   :
          DEBUG_YMACRO   yLOG_note    ("start a force formula assignment");
          break;
-      case (uchar) '®' :
+      case G_CHAR_SUMMARY  :
          DEBUG_YMACRO   yLOG_note    ("start a range setting");
          break;
-      case (uchar) ' ' :
-         DEBUG_YMACRO   yLOG_note    ("execute a function call/push");
+      case G_CHAR_EMPTY    :
+         DEBUG_YMACRO   yLOG_note    ("start a function call/push");
          break;
-      case (uchar) '™' :
-         DEBUG_YMACRO   yLOG_note    ("execute a absolute branch/goto");
+      case G_CHAR_FALSE    :
+         DEBUG_YMACRO   yLOG_note    ("start a absolute branch/goto");
          break;
-      case (uchar) 'Ø' :
-         DEBUG_YMACRO   yLOG_note    ("execute a relative branch/goto");
+      case G_CHAR_UNLIKELY :
+         DEBUG_YMACRO   yLOG_note    ("start a relative branch/goto");
          break;
       default        :
          DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
@@ -628,12 +534,12 @@ ymacro_agrios__capture  (uchar a_major, uchar a_minor)
          break;
       }
       ymacro_agrios__reset  ();
-      s_active = a_minor;
+      myMACRO.g_active = a_minor;
    }
    /*---(add)----------------------------*/
    sprintf (t, "%c", a_minor);
-   strlcat (s_agrios, t, LEN_RECD);
-   DEBUG_YMACRO   yLOG_info    ("s_agrios"  , s_agrios);
+   strlcat (myMACRO.g_agrios, t, LEN_RECD);
+   DEBUG_YMACRO   yLOG_info    ("g_agrios"  , myMACRO.g_agrios);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -678,7 +584,7 @@ yMACRO_agrios_hmode     (uchar a_major, uchar a_minor)
 }
 
 char
-ymacro_agrios__read     (void)
+ymacro_agrios__read     (char a_first)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -718,7 +624,7 @@ ymacro_agrios__read     (void)
          DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      if (s_type == ' ') {
+      if (s_type == G_CHAR_EMPTY) {
          DEBUG_YMACRO   yLOG_note    ("function call, return quickly");
          strlcpy (x_contents, "·", LEN_RECD);
       }
@@ -761,13 +667,14 @@ ymacro_agrios__read     (void)
          }
          DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
          DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
-         rc = ymacro_exe_beg  (s_style);
+         rc = ymacro_exe_beg  (G_CHAR_EMPTY, myMACRO.g_style);
          DEBUG_YMACRO   yLOG_value   ("execute"   , rc);
          if (rc < 0) {
             DEBUG_YMACRO   yLOG_note    ("can not execute");
             DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
+         if (a_first == 'y')  ymacro_exe_adv (0);
          DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
          /*> g_macros [myMACRO.ecurr].runby = x_runby;                                <*/
          DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
@@ -802,7 +709,7 @@ ymacro_agrios_next      (void)
    strlcpy (myMACRO.g_curr [myMACRO.g_level], myMACRO.g_next [myMACRO.g_level], LEN_LABEL);
    strlcpy (myMACRO.g_code [myMACRO.g_level], ""            , LEN_RECD);
    strlcpy (myMACRO.g_next [myMACRO.g_level], ""            , LEN_LABEL);
-   rc = ymacro_agrios__read ();
+   rc = ymacro_agrios__read ('-');
    g_macros [myMACRO.ecurr].runby = x_runby;
    DEBUG_YMACRO   yLOG_value   ("read"      , rc);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
@@ -810,6 +717,7 @@ ymacro_agrios_next      (void)
    --rce;  if (rc < 0 && myMACRO.g_level <= 0) {
       DEBUG_YMACRO   yLOG_note    ("full agrios complete");
       /*> ymacro_exe_done ();                                                         <*/
+      rc = ymacro_clear       (G_CHAR_EMPTY);
       DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return G_KEY_NOOP;
    }
@@ -837,7 +745,7 @@ ymacro_agrios_next      (void)
 }
 
 char
-ymacro_agrios__start    (char *a_label, char a_style)
+ymacro_agrios__start    (char *a_label, uchar a_style)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -853,17 +761,25 @@ ymacro_agrios__start    (char *a_label, char a_style)
    DEBUG_YMACRO   yLOG_info    ("a_label"   , a_label);
    strlcpy (myMACRO.g_curr [myMACRO.g_level], a_label, LEN_LABEL);
    /*---(execution style)----------------*/
+   switch (a_style) {
+   case G_CHAR_EMPTY :
+      break;
+   case '!' :
+      break;
+   case ',' :
+      break;
+   }
    if (a_style == '!') {
       /*> yvikeys_sizes_switch ("status", "script");                                  <*/
-      a_style = ' ';
+      a_style = G_CHAR_EMPTY;
    }
-   s_style = a_style;
-   DEBUG_YMACRO   yLOG_char    ("s_style"   , s_style);
+   myMACRO.g_style = a_style;
+   DEBUG_YMACRO   yLOG_char    ("g_style"   , myMACRO.g_style);
    if (myMACRO.blitz == 'y')  myMACRO.blitzing = 'y';
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
    /*---(begin)--------------------------*/
-   rc = ymacro_agrios__read ();
+   rc = ymacro_agrios__read ('y');
    DEBUG_YMACRO   yLOG_value   ("read"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);

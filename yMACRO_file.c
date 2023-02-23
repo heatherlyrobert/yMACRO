@@ -371,7 +371,7 @@ yMACRO_paste            (char a_abbr, char *a_label)
    /*---(load)---------------------------*/
    if (myMACRO.e_loader != NULL) {
       /*---(free up)---------------------*/
-      if (g_macros [n].len > 0)   free (g_macros [n].keys);
+      /*> if (g_macros [n].len > 0)   free (g_macros [n].keys);                       <*/
       myMACRO.e_loader (a_abbr, x_keys);
    }
    /*---(information)-----------------*/
@@ -452,7 +452,7 @@ yMACRO_to_sreg          (char a_abbr, char a_reg)
    }
    DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));
    if (x_recd [x_len - 1] == '³' )  x_recd [--x_len] = '\0';
-   /*> rc = yvikeys_sreg_push       (a_reg, x_recd);                                  <*/
+   rc = yVIHUB_ySRC_push (a_reg, x_recd);
    DEBUG_YMACRO   yLOG_value   ("push"      , rc);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);

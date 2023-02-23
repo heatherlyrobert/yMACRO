@@ -4,6 +4,7 @@
 #include    "yMACRO_priv.h"
 
 
+
 /*
  * four execution modes...
  *
@@ -257,13 +258,15 @@ ymacro_exe_done         (void)
 }
 
 char         /*-> prepare a macro execution ----------[ ------ [ge.832.122.52]*/ /*-[01.0000.112.5]-*/ /*-[--.---.---.--]-*/
-ymacro_exe_beg          (uchar a_name)
+ymacro_exe_beg          (uchar a_name, uchar a_style)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         n           =   -1;
    int         x_curr      =   -1;
+   uchar       x_name      =  '-';
+   uchar       x_style     =  '-';
    uchar       x_lower     =  '-';
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
@@ -276,11 +279,18 @@ ymacro_exe_beg          (uchar a_name)
       return rce;
    }
    /*---(check macro name)------------*/
+   DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ecurr);
    x_curr  = myMACRO.ecurr;
-   DEBUG_YMACRO   yLOG_value   ("x_curr"    , x_curr);
-   DEBUG_YMACRO   yLOG_char    ("x_curr"    , myMACRO.ename);
+   DEBUG_YMACRO   yLOG_char    ("x_curr"    , x_curr);
+   DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
+   --rce;  if (a_name == 0) {
+      DEBUG_YMACRO   yLOG_note    ("macro name can not be null");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(check macro name)------------*/
-   x_lower = tolower (a_name);
+   if (strchr (YSTR_CHARS, a_name) != NULL)  x_lower = tolower (a_name);
+   else                                      x_lower = a_name;
    DEBUG_YMACRO   yLOG_char    ("x_lower"   , x_lower);
    n = ymacro_index  (x_lower);
    DEBUG_YMACRO   yLOG_value   ("n"         , n);
@@ -340,18 +350,37 @@ ymacro_exe_beg          (uchar a_name)
    /*---(execution style)-------------*/
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    IF_MACRO_OFF {
-      /*---(reset stack)--------------*/
-      /*> myMACRO.estack [0] = '\0';                                                  <* 
-       *> myMACRO.edepth     = 0;                                                     <*/
-      /*---(normal)-------------------*/
-      if (a_name == x_lower && a_name != ',') {
-         DEBUG_YMACRO   yLOG_note    ("set normal/delay execution");
-         if (myMACRO.ddelay != MACRO_BLITZ)  SET_MACRO_DELAY;
-         IF_MACRO_OFF                        SET_MACRO_RUN;
+      /*---(handle agrios/script)-----*/
+      if (strchr (" .", a_name) != NULL) {
+         switch (a_style) {
+         case ',' :
+            DEBUG_YMACRO   yLOG_note    ("set script/agrios to playback");
+            SET_MACRO_PLAYBACK;
+            break;
+         default  :
+            if (myMACRO.ddelay != MACRO_BLITZ) {
+               DEBUG_YMACRO   yLOG_note    ("set script/agrios to delay");
+               SET_MACRO_DELAY;
+            } else {
+               DEBUG_YMACRO   yLOG_note    ("set script/agrios to run");
+               SET_MACRO_RUN;
+            }
+            break;
+         }
+      }
+      /*---(normal macros)------------*/
+      else if (a_name == x_lower && a_name != ',') {
+         if (myMACRO.ddelay != MACRO_BLITZ) {
+            DEBUG_YMACRO   yLOG_note    ("set macro to delay execution");
+            SET_MACRO_DELAY;
+         } else {
+            DEBUG_YMACRO   yLOG_note    ("set macro to run/normal execution");
+            SET_MACRO_RUN;
+         }
       }
       /*---(debugging/playback)-------*/
       else {
-         DEBUG_YMACRO   yLOG_note    ("set debug/playback execution");
+         DEBUG_YMACRO   yLOG_note    ("set macro to playback execution");
          SET_MACRO_PLAYBACK;
       }
    }
@@ -371,6 +400,9 @@ ymacro_exe_beg          (uchar a_name)
    myMACRO.cskip  =  0;
    ymacro_exe_reset ();
    if (strchr (" .,", a_name) == NULL)  ymacro_exe_adv (0);
+   /*> else {                                                                         <* 
+    *>    IF_MACRO_PLAYBACK  ymacro_exe_adv (0);                                      <* 
+    *> }                                                                              <*/
    g_macros [myMACRO.ecurr].runby  = x_curr;
    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
    DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
@@ -591,7 +623,9 @@ ymacro_exe_control      (uchar a_key)
       if (yMODE_curr () != UMOD_INPUT)  a_key = G_KEY_NOOP;
       break;
    case G_CHAR_HUGEDOT :
-      IF_MACRO_RUN {
+      if (myMACRO.ddelay == MACRO_BLITZ) {
+         DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), ignored in BLITZ");
+      } else IF_MACRO_RUN {
          DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), pause only in run");
          myMACRO.pauses =  4;
       } else {
@@ -610,7 +644,9 @@ ymacro_exe_control      (uchar a_key)
       DEBUG_YMACRO   yLOG_info    ("s"         , s);
       DEBUG_YMACRO   yLOG_double  ("x_update"  , x_update);
       DEBUG_YMACRO   yLOG_info    ("t"         , t);
-      IF_MACRO_NOT_RUN {
+      if (myMACRO.ddelay == MACRO_BLITZ) {
+         DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), ignored in BLITZ");
+      } IF_MACRO_NOT_RUN {
          DEBUG_YMACRO   yLOG_note    ("pauses not useful in debug/playback");
          myMACRO.pauses =  0;
       } else if (x_delay >= 0.500) {
@@ -632,6 +668,7 @@ ymacro_exe_control      (uchar a_key)
    case G_CHAR_BREAK   :
       DEBUG_YMACRO   yLOG_note    ("break (ª)");
       ymacro_set2play ();
+      ymacro_agrios_style (',');
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_DISPLAY :
@@ -754,7 +791,6 @@ yMACRO_exec             (uchar a_play)
    /*---(advance)------------------------*/
    DEBUG_YMACRO   yLOG_note    ("advance");
    ymacro_exe_adv (0);
-   /*> ymacro_exe_adv (0);                                                            <*/
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return x_key;

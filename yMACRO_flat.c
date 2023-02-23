@@ -194,9 +194,11 @@ ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)
             ++s_index;
             s_abbrs [s_index] = s_abbrs [s_index - 1] + 1;
             DEBUG_YMACRO   yLOG_complex ("s_abbr"    , "%3d, %3d/%c %3d/%c %3d/%c %3d/%c %3d/%c", s_index, s_abbrs [0], S_MACRO_LIST [s_abbrs [0]], s_abbrs [1], S_MACRO_LIST [s_abbrs [1]], s_abbrs [2], S_MACRO_LIST [s_abbrs [2]], s_abbrs [3], S_MACRO_LIST [s_abbrs [3]], s_abbrs [4], S_MACRO_LIST [s_abbrs [4]]);
-            i = ymacro__install (a_lvl + 1, a_in, a_len, i + 1, s_abbrs [s_index]);
             sprintf (x_sub, "@%c", S_MACRO_LIST [s_abbrs [s_index]]);
             strlcat (x_keys, x_sub, LEN_RECD);
+            i = ymacro__install (a_lvl + 1, a_in, a_len, i + 1, s_abbrs [s_index]);
+            /*> sprintf (x_sub, "@%c", S_MACRO_LIST [s_abbrs [s_index]]);             <* 
+             *> strlcat (x_keys, x_sub, LEN_RECD);                                    <*/
             x_len = strlen (x_keys);
          }
          /*---(done)---------------------*/

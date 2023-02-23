@@ -159,6 +159,9 @@ ymacro_script__read     (void)
       /*---(fix end-of-line)----------------*/
       if (x_recd [x_len - 1] == '\n')  x_recd [--x_len] = '\0';
       DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+      /*---(lightning speed)----------------*/
+      if      (x_recd [0] == '{')   strcpy (x_recd, "ºµre0»");
+      else if (x_recd [0] == '}')   strcpy (x_recd, "ºµre5»");
       /*---(functions)----------------------*/
       if (strncmp (x_recd, "macro ", 6) == 0) {
          rc = ymacro_rec_full (x_recd + 6);
@@ -178,7 +181,7 @@ ymacro_script__read     (void)
             DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
-         rc = ymacro_exe_beg  (s_style);
+         rc = ymacro_exe_beg  ('.', s_style);
          DEBUG_YMACRO   yLOG_value   ("execute"   , rc);
          if (rc < 0) {
             DEBUG_YMACRO   yLOG_note    ("can not execute");

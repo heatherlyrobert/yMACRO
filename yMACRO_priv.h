@@ -35,18 +35,19 @@
 #define     P_CODESIZE  "large       (appoximately 10,000 slocl)"
 /*········· ··········· ´·····························´········································*/
 #define     P_DEPSTDC   "stdio,stdlib,string"
-#define     P_DEPEXTEND "···"
+#define     P_DEPPOSIX  "···"
 #define     P_DEPCORE   "yURG,yLOG,ySTR"
 #define     P_DEPVIKEYS "yVIHUB,yMODE,yKEYS"
 #define     P_DEPOTHER  "yPARSE"
+#define     P_DEPSOLO   "···"
 /*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   ""
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2b"
-#define     P_VERTXT    "full unit test compliant again"
+#define     P_VERNUM    "2.2c"
+#define     P_VERTXT    "added superfast/no-display markers { and } for scripting"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -76,7 +77,7 @@
  * metis § mv8·· § macro keys to check current char against expected and act if true      § M2865o §  · §
  *
  * metis § yg8·· § force exact range with ® operator followed by range and ¦              § M2M1u5 §  · §
- * metis § yg8·· § char check with š···¦ (match) or ™···¦ (not) then ¢´ replace if match  § M2M1ur §  · §
+ * metis § yg8·· § char check with Û···¦ (match) or Ú···¦ (not) then ¢´ replace if match  § M2M1ur §  · §
  * metis § yg8·· § use ä (for each) operator to do something over selected area           § M2M1wI §  · §
  *
  */
@@ -172,6 +173,9 @@ struct cMY {
    char      (*e_loader) (char a_name, char *a_keys);
    char      (*e_saver ) (char a_name, char *a_keys);
    /*---(agrios)---------------*/
+   uchar       g_style;
+   uchar       g_active;
+   uchar       g_agrios  [LEN_RECD];
    char      (*e_getter) (char a_type, char *r_label, char *r_content, char *r_next);
    char      (*e_forcer) (char a_type, char *a_target, char *a_contents);
    char      (*e_pusher) (char a_dir , char  a_level, char *a_args);
@@ -279,7 +283,7 @@ char        ymacro_exe_set          (uchar a_abbr);
 char        ymacro_exe_reset        (void);
 char        yMACRO_exe_pos          (char *a_name, short *a_pos);
 char        yMACRO_exe_repos        (int a_pos);
-char        ymacro_exe_beg          (uchar a_name);
+char        ymacro_exe_beg          (uchar a_name, uchar a_style);
 char        ymacro_exe_skips        (void);
 char        ymacro_exe_adv          (uchar a_play);
 char        ymacro_exe_key          (void);
@@ -345,8 +349,9 @@ char*       yMACRO__unit            (char *a_question, uchar a_abbr);
 
 /*===[[ yMACRO_agrios.c ]]====================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        ymacro_agrios_style     (char a_style);
 char        ymacro_agrios_init      (void);
-char        ymacro_agrios__read     (void);
+char        ymacro_agrios__read     (char a_first);
 
 
 

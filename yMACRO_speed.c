@@ -39,6 +39,13 @@ ymacro__delay           (char a_which, char a_delay)
    /*---(new value)-------------------*/
    DEBUG_YMACRO   yLOG_schar   (myMACRO.edelay);
    DEBUG_YMACRO   yLOG_schar   (myMACRO.ddelay);
+   /*---(implement)-------------------*/
+   if (a_which == 'd') {
+      IF_MACRO_DELAY  yKEYS_loop_macro (myMACRO.edelay, myMACRO.eupdate);
+   }
+   else {
+      IF_MACRO_RUN    yKEYS_loop_macro (myMACRO.edelay, myMACRO.eupdate);
+   }
    /*---(complete)--------------------*/
    DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -101,6 +108,7 @@ ymacro_set2play         (void)
 {
    DEBUG_YMACRO   yLOG_note    (__FUNCTION__);
    SET_MACRO_PLAYBACK;
+   ymacro_agrios_style (',');
    yKEYS_loop_return ();
    /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "macro");           <*/
    return 0;
@@ -111,6 +119,7 @@ ymacro_set2delay        (void)
 {
    DEBUG_YMACRO   yLOG_note    (__FUNCTION__);
    SET_MACRO_DELAY;
+   ymacro_agrios_style ('.');
    yKEYS_loop_macro (myMACRO.ddelay, myMACRO.dupdate);
    /*> if (myVIKEYS.loud == 'y')  yvikeys_sizes_switch ("status", "macro");           <*/
    return 0;
@@ -121,6 +130,7 @@ ymacro_set2run          (void)
 {
    DEBUG_YMACRO   yLOG_note    (__FUNCTION__);
    DEBUG_YMACRO   yLOG_char    ("blitzing"  , myMACRO.blitzing);
+   ymacro_agrios_style ('.');
    if (myMACRO.blitzing == 'y') {
       ymacro_set2blitz ();
    } else {

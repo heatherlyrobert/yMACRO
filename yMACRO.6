@@ -1,0 +1,195 @@
+.TH yMACRO 6 2016-May linux "interactive system usage and navigation"
+
+.SH NAME
+yMACRO \- wicked and flexible keyboard macros and scripts for yvikeys
+
+.SH PATRON
+.B pan-agrios
+(god of the wilds) protector of fields, groves, and wooded glens
+
+.SH IMAGERY
+mischevious young man with legs of a goat, wild beard, and lovely horns
+
+
+.SH SUMMARY
+yMACRO is one of the core vi-keys shared libraries, in this case providing
+standard, universal, and extensive keyboard macros and scripts, plus many
+useful extensions.
+
+.SH CRAZY, NIAVE, DOG-FOODING, BOOT-STRAPPING ANIMAL
+i am not competing to be the best.  i created this to learn, digest,
+grow, and own every byte.  it's optimized for transparency and debugging.
+if i wanted awesome, fast, and cutting-edge, i'd use yours ;)
+
+.SH DOCUMENTATION FILES
+.nf  
+yMACRO (1)         command-line initiation, use, and options
+yMACRO (5)         structure of config, files, and streams
+.B yMACRO (6)·········interactive system usage and navigation
+yMACRO (7)         decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) synopsis        simple run examples
+b) validation      reviewing scripts for quality
+c) conversion      updating and cleaning-up scripts
+d) generation      creating c source code for unit test
+e) compilation     turning c source into executables
+f) run-time        running unit tests
+
+.SH A) SYNOPSIS
+
+Û
+Ù
+Ú
+Ø
+ 
+±
+á
+â
+ã
+ä
+ç 
+¬
+®
+©
+¯
+ê
+Í
+¾
+
+
+=ça*çp±
+#çj*ç0±
+
+.SH FUNCTIONS
+agrios can all sub-routines, procedures, and functions using a varible
+name that points at the first instruction.  you can pass up to 9 arguments
+and can receive one return value.  also there are automatically 26 (a-z)
+local variables which will never influence any other functions.
+
+.SS simple call
+    tester±
+
+.SS call with arguments
+    tester 16,a,"hello"±   passes a int, variable contents, and a string
+
+inside the function, these are called ç0,ç1, and ç2.  the ç (µ_E) simple
+make them specifically parameters.  they are just cells can can handle
+any contents (up to 2,000 characters).
+
+certain restrictions exist to keep the coding simple.  hey, its a macro
+language, not a programming one -- trading off capability for simplicity.
+
+the locals are called ça thru çz and can kept separate for every level of
+execution.  the are put on a stack when a function is called and they are
+popped of and discarded when it returns.
+
+the return code ç? (µ_E) is available to the parent of the function.  anything
+you wish to return, simply put it in this variable.
+
+REMEMBER : calls will return to the line after the original call.  if you
+use compound statements, all code after the call will be missed.  it keeps
+the code simplier much simplier.
+
+.SH B) BRANCHERS (gyges)
+there are two methods of branching execution within an agrios script...
+   1) relative vertical position (Ø which is µ_u)
+   2) absolute address (Ú which is µ_c)
+
+.SS b1) relative vertical position
+relative jumps with specific numbers can be useful, but simple.
+   Ø5±             jump up 5 lines
+   Ø-12±           jump down 12 lines
+
+relative jumps based on variable contents, can be truly useful.
+   Øpos±           jumps using the number in <pos>
+
+relative jumps based on pointers are bizzarely flexible
+   Ø*nxt±          jumps using a pointer to a number
+
+conditional relative branches can do really cool things.  below
+is a cell formula that causes the macro to do nothing while l < 10.  but,
+when l >= 10, the cell will display (execute) a relative branch like above.
+
+   #if (l < 10, "···", "Øpos±")
+
+REMEMBER : agrios intentionally executes the "result" of the cell, not the
+contents so it can self-modify easily.
+
+.SS b2) absolute address
+absolute jumps are quite helpful to avoid the guesswork in relative jumps.
+   Ú2c10±          move execution to 2c10
+
+BUT, they can also use variables as pointers to make then flexible.
+   Únext±          move execution to the place pointed to by <next>
+
+AND, to be even more flexible, you can use pointers
+   Ú*2c10±         move execution to the location stored in 2c10
+   Ú*goodness±     move execution to the location stored in <goodness>
+
+conditional branching is easy as writing a gyges formula.  as with relative
+branches, agrios executes what it "sees", not cell contents.
+
+   #if (flag == 'y', "Úfirst±", "Úsecond±");
+
+   Úfirst±        ## if variable <flag> has a 'y'
+   Úsecond±       ## otherwise
+
+maybe easier to read and debug if you set up a separate cell for the
+calculation and bring it in
+
+   Öloc     #if (flag == 'y', "first", "second");
+
+   #"Ú"©loc©"±"   ## the results are the same, but maybe clearer
+
+REMEMBER : agrios uses Ú for one-way jumps.  use calls ( ) to act like a
+sub-routine, procedure, or function.
+
+.SH SETTERS (gyges)
+there are two methods of updating values without visiting the cells -- with a
+value (normal use) and with a formula (self-modifying macros).  a third use
+is for complex updates where a formula is placed in a working cell then the
+value is copied to the destination.
+
+.SS by value
+the structure is relatively simple "Û<loc><op><val>±".  the Û (µ_t) begins
+an assignment and the ± (µ_s) completes it.  everything between can only be
+related to assigning a value.
+
+the <loc> can be a cell reference, variable name defined with a Ö Õ Ô or Ö,
+a parameter [0-9], or a local var [a-z].
+
+basic assinments use the gyges convention of = for values, # for strings
+   Ûj=5±           assigns the value of 5 to the variable 'j'.
+   Ûs#"hello"±     assigns the string "hello" to the variable 's'.
+   Ûone=two±       assigns one variable value to another
+
+compound assignments follow the c-convention += -= *= /= and %=
+   Ûnum+=5±        adds 5 to the variable 'num'
+   Ûs›=", too"±    concatinates the string to the current contents
+   Ûnum+=i±        adds one variable to another
+
+for looping, postfix increment and decrement are undersood
+   Ûi++±           is the same as "i = i + 1" or "i+=1"
+   ÛëÀ--±          decements a sub-scripted variable
+
+AND, a single level of dereferencing is allowed
+   Û*0a1=10±       rereferences cell ptr before assigning
+   Û*ptr=10±       rereferences variable ptr before assigning
+
+.SS by formula
+for more complex operations, another simple structure "Ù<loc><op><form>±".
+the Ù (µ_l) begins an assignment and the ± (µ_s) completes it.  everything
+between it put into the first variable
+
+the <loc> can be a cell reference or a variable name defined with a Ö Õ Ô or Ö.
+
+basic assinments use the gyges convention of = for values, # for strings
+   Ùj=0a5*2±       keeps 'j' at double the value of cell 0a5
+   Ù0b3#"true"±    puts a string in the cell 0b3
+
+
+
+
+Ù

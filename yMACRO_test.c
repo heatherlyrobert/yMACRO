@@ -43,12 +43,12 @@ ymacro__unit_loud       (void)
    yPARSE_delimiters  ("");
    yURG_logger   (x_narg, x_args);
    yURG_urgs     (x_narg, x_args);
-   yURG_name  ("kitchen"      , YURG_ON);
-   yURG_name  ("ystr"         , YURG_ON);
-   yURG_name  ("yparse"       , YURG_ON);
-   yURG_name  ("ymode"        , YURG_ON);
-   yURG_name  ("ykeys"        , YURG_ON);
-   yURG_name  ("ymacro"       , YURG_ON);
+   yURG_by_name  ("kitchen"      , YURG_ON);
+   yURG_by_name  ("ystr"         , YURG_ON);
+   yURG_by_name  ("yparse"       , YURG_ON);
+   yURG_by_name  ("ymode"        , YURG_ON);
+   yURG_by_name  ("ykeys"        , YURG_ON);
+   yURG_by_name  ("ymacro"       , YURG_ON);
    DEBUG_YMACRO   yLOG_info     ("yMACRO"     , yMACRO_version   ());
    rc = yMODE_init  (MODE_MAP);
    rc = yMODE_init_after ();
@@ -176,6 +176,9 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
     *> }                                                                                                        <*/
    else if (strcmp (a_question, "repeat"       )  == 0) {
       snprintf (unit_answer, LEN_FULL, "MACRO repeat     : %d", yKEYS_repeats ());
+   }
+   else if (strcmp (a_question, "agrios"       )  == 0) {
+      snprintf (unit_answer, LEN_FULL, "yMACRO agrios    : %d", yKEYS_repeats ());
    }
    /*---(complete)-----------------------*/
    return unit_answer;

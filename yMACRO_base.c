@@ -520,7 +520,7 @@ ymacro_smode            (uchar a_major, uchar a_minor)
       /*---(execute)---------------------*/
       DEBUG_YMACRO   yLOG_note    ("running stored macro");
       yMODE_exit  ();
-      rc = ymacro_exe_beg  (a_minor);
+      rc = ymacro_exe_beg  (a_minor, '-');
       if (rc < 0) {
          DEBUG_YMACRO   yLOG_note    ("can not execute");
          DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);

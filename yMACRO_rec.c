@@ -190,7 +190,7 @@ yMACRO_rec_key          (uchar a_key, uchar a_mode)
       case G_KEY_RETURN  :  a_key  = G_CHAR_RETURN;  break;  /* return char           */
       case G_KEY_ENTER   :  a_key  = G_CHAR_RETURN;  break;  /* return char           */
       case G_KEY_ESCAPE  :  a_key  = G_CHAR_ESCAPE;  break;  /* escape char           */
-      case G_KEY_TAB     :  a_key  = G_CHAR_TAB;     break;  /* tab char              */
+      case G_KEY_TAB     :  a_key  = G_CHAR_SPACE;   break;  /* tab char              */
       case G_KEY_BS      :  a_key  = G_CHAR_BS;      break;  /* backspace char        */
       case G_KEY_SPACE   :  a_key  = G_CHAR_SPACE;   break;  /* visual space          */
       }

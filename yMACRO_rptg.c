@@ -613,4 +613,33 @@ ymacro_dump             (FILE *f)
    return 0;
 }
 
+char
+yMACRO_agrios_status    (char a_size, short a_wide, char *a_list)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        x_curr      [LEN_RECD]  = "";
+   char        t           [LEN_LABEL] = "";
+   int         i           =    0;
+   int         l           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   if (strcmp (myMACRO.g_agrios , "") != 0) {
+      sprintf (t, "%2då%.10sæ", strlen (myMACRO.g_agrios), myMACRO.g_agrios);
+   } else {
+      strcpy   (t, "··åæ");
+   }
+   sprintf (a_list, "·agrios  %c %c %-14.14s", myMACRO.g_style, myMACRO.g_active, t);
+   if (strcmp (myMACRO.g_curr [i], "") != 0) {
+      for (i = 0; i <= myMACRO.g_level; ++i) {
+         sprintf (x_curr, "  (%1d) %-6.6s %-6.6s,", i, myMACRO.g_curr [i], myMACRO.g_next [i]);
+         strlcat (a_list, x_curr, LEN_HUND);
+      }
+   }
+   l = strlen (a_list);
+   a_list [l - 1] = '´';
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 

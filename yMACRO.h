@@ -3,6 +3,7 @@
 #define yMACRO yes
 
 
+
 typedef  const unsigned char  cuchar;
 typedef  unsigned char        uchar;
 typedef  const char           cchar;
@@ -68,6 +69,7 @@ char        yMACRO_exe_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_mex_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_mac_status       (char a_size, short a_wide, char *a_list);
 char        yMACRO_scrp_status      (char a_size, short a_wide, char *a_list);
+char        yMACRO_agrios_status    (char a_size, short a_wide, char *a_list);
 
 
 
@@ -113,6 +115,9 @@ char        yMACRO_dupdate          (char a_update);
 char        yMACRO_agrios_config    (void *a_getter, void *a_forcer, void *a_pusher);
 char        yMACRO_agrios_hmode     (uchar a_major, uchar a_minor);
 char        yMACRO_agrios_start     (char *a_label);
+char        yMACRO_agrios_follow    (char *a_label);
+char        yMACRO_agrios_playback  (char *a_label);
+char        yMACRO_agrios_blitz     (char *a_label);
 
 
 #endif
