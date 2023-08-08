@@ -118,6 +118,7 @@ char        yMACRO_agrios_start     (char *a_label);
 char        yMACRO_agrios_follow    (char *a_label);
 char        yMACRO_agrios_playback  (char *a_label);
 char        yMACRO_agrios_blitz     (char *a_label);
+char        yMACRO_agrios_direct    (char a_active, char *a_content);
 
 
 #endif

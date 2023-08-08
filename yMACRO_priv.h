@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2c"
-#define     P_VERTXT    "added superfast/no-display markers { and } for scripting"
+#define     P_VERNUM    "2.2d"
+#define     P_VERTXT    "updated for agrios direct"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

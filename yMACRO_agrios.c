@@ -456,6 +456,15 @@ ymacro_agrios__execute  (void)
    return rc;
 }
 
+char
+yMACRO_agrios_direct  (char a_active, char *a_content)
+{
+   myMACRO.g_active = a_active;
+   strlcpy (myMACRO.g_agrios, a_content, LEN_RECD);
+   ymacro_agrios__execute ();
+   return 0;
+}
+
 
 
 
