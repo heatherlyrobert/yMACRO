@@ -723,6 +723,7 @@ ymacro_agrios_next      (void)
    DEBUG_YMACRO   yLOG_value   ("read"      , rc);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("g_level"   , myMACRO.g_level);
    --rce;  if (rc < 0 && myMACRO.g_level <= 0) {
       DEBUG_YMACRO   yLOG_note    ("full agrios complete");
       /*> ymacro_exe_done ();                                                         <*/

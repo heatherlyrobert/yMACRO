@@ -112,13 +112,30 @@ char        yMACRO_dupdate          (char a_update);
 
 /*===[[ yMACRO_agrios.c ]]====================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
+/*---(support)--------------*/
+char        ymacro_agrios_init      (void);
 char        yMACRO_agrios_config    (void *a_getter, void *a_forcer, void *a_pusher);
+char        ymacro_agrios__reset    (void);
+/*---(execution)------------*/
+char        ymacro_agrios__range    (void);
+char        ymacro_agrios__recurse  (char a_mode, char *a_sub);
+char        ymacro_agrios__force    (void);
+char        ymacro_agrios__call     (void);
+char        ymacro_agrios__execute  (void);
+char        yMACRO_agrios_direct    (char a_active, char *a_content);
+/*---(hmode)----------------*/
+char        ymacro_agrios__biggies  (uchar a_major, uchar a_minor);
+char        ymacro_agrios__capture  (uchar a_major, uchar a_minor);
 char        yMACRO_agrios_hmode     (uchar a_major, uchar a_minor);
+char        ymacro_agrios__read     (char a_first);
+char        ymacro_agrios_next      (void);
+/*---(initiate)-------------*/
+char        ymacro_agrios__start    (char *a_label, uchar a_style);
 char        yMACRO_agrios_start     (char *a_label);
 char        yMACRO_agrios_follow    (char *a_label);
 char        yMACRO_agrios_playback  (char *a_label);
 char        yMACRO_agrios_blitz     (char *a_label);
-char        yMACRO_agrios_direct    (char a_active, char *a_content);
+/*---(done------------------*/
 
 
 #endif

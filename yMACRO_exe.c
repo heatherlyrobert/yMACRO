@@ -189,6 +189,7 @@ ymacro_exe_done         (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
+   char        x_agrios    =  '-';
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(decision makers)----------------*/
@@ -206,6 +207,7 @@ ymacro_exe_done         (void)
          return G_KEY_NOOP;
       }
       DEBUG_YMACRO   yLOG_note    ("agrios complete");
+      x_agrios = 'y';
    }
    /*---(repeat)-------------------------*/
    if (g_macros [myMACRO.ecurr].repeat > 0) {
@@ -222,7 +224,7 @@ ymacro_exe_done         (void)
       ymacro_exe__return   ();
       DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
       DEBUG_YMACRO   yLOG_value   ("pos"       , g_macros [myMACRO.ecurr].pos);
-      if (g_macros [myMACRO.ecurr].pos >= 0) {
+      if (x_agrios != 'y' && g_macros [myMACRO.ecurr].pos >= 0) {
          DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_NOOP;
       }
@@ -231,7 +233,6 @@ ymacro_exe_done         (void)
    /*---(check script)-----------*/
    DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
    DEBUG_YMACRO   yLOG_value   ("ename"     , myMACRO.ename);
-   DEBUG_YMACRO   yLOG_value   (" "         , ' ');
    /*---(check script)-----------*/
    if (myMACRO.ename == '.') {
       DEBUG_YMACRO   yLOG_note    ("check script for next");
@@ -532,6 +533,7 @@ ymacro_exe_key          (void)
    /*---(handle playback/delay)----------*/
    DEBUG_YMACRO   yLOG_value   ("epos"      , myMACRO.epos);
    if (g_macros [myMACRO.ecurr].pos == myMACRO.epos) {
+      DEBUG_YMACRO   yLOG_note    ("return a no-action (NOOP)");
       DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return G_KEY_NOOP;  /* return a no-action */
    }
