@@ -160,8 +160,10 @@ ymacro_script__read     (void)
       if (x_recd [x_len - 1] == '\n')  x_recd [--x_len] = '\0';
       DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
       /*---(lightning speed)----------------*/
-      if      (x_recd [0] == '{')   strcpy (x_recd, "ºµre0»");
-      else if (x_recd [0] == '}')   strcpy (x_recd, "ºµre5»");
+      switch (x_recd [0]) {
+      case '{'  : case (uchar) '™'  :   strcpy (x_recd, "ºµre0»");  break;
+      case '}'  : case (uchar) '­'  :   strcpy (x_recd, "ºµre5»");  break;
+      }
       /*---(functions)----------------------*/
       if (strncmp (x_recd, "macro ", 6) == 0) {
          rc = ymacro_rec_full (x_recd + 6);
