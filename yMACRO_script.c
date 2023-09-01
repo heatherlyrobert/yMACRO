@@ -15,6 +15,7 @@ static  char   s_name   [LEN_FULL]  = "";
 static  FILE  *s_script = NULL;
 static  int    s_line   =    0;
 static  char   s_style  =  '.';
+static  char   s_saved  =  '0';
 
 char   yMACRO_skip       (void)   { myMACRO.ignore = 'y';  return 0; }
 char   yMACRO_unskip     (void)   { myMACRO.ignore = '-';  return 0; }
@@ -161,8 +162,30 @@ ymacro_script__read     (void)
       DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
       /*---(lightning speed)----------------*/
       switch (x_recd [0]) {
-      case '{'  : case (uchar) '™'  :   strcpy (x_recd, "ºµre0»");  break;
-      case '}'  : case (uchar) '­'  :   strcpy (x_recd, "ºµre5»");  break;
+      case (uchar) '™'  :
+         DEBUG_YMACRO   yLOG_note    ("beg true blitz ™");
+         strcpy  (x_recd, "ºµre0»");
+         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         break;
+      case (uchar) '­'  :
+         DEBUG_YMACRO   yLOG_note    ("end true blitz ­");
+         strcpy  (x_recd, "ºµre5»");
+         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         break;
+      case '{'  :
+         DEBUG_YMACRO   yLOG_note    ("beg braced {");
+         DEBUG_YMACRO   yLOG_value   ("s_saved"   , s_saved);
+         s_saved = myMACRO.edelay;
+         strcpy  (x_recd, "ºµre0»");
+         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         break;
+      case '}'  :
+         DEBUG_YMACRO   yLOG_note    ("end braced }");
+         sprintf (x_recd, "ºµre%c»", s_saved);
+         DEBUG_YMACRO   yLOG_value   ("s_saved"   , s_saved);
+         /*> strcpy  (x_recd, "ºµre5»");                                              <*/
+         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         break;
       }
       /*---(functions)----------------------*/
       if (strncmp (x_recd, "macro ", 6) == 0) {
