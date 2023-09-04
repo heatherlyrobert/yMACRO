@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2g"
-#define     P_VERTXT    "better script brace handling as push/pop of execution speed"
+#define     P_VERNUM    "2.2h"
+#define     P_VERTXT    "updated script blitz handling ™ ­ { } to handle ySRC command changes better"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

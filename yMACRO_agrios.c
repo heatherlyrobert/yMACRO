@@ -153,6 +153,7 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
    char        x_final     [LEN_RECD]  = "";
    char       *p           = NULL;
    char       *q           = NULL;
+   char       *r           = NULL;
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
@@ -170,6 +171,11 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
    DEBUG_YMACRO   yLOG_point   ("p (=)"     , p);
    q = strchr (a_sub, '#');
    DEBUG_YMACRO   yLOG_point   ("q (#)"     , q);
+   r = strchr (a_sub, '´');
+   DEBUG_YMACRO   yLOG_point   ("r (´)"     , r);
+   if (p != NULL && q != NULL && p < q)  q == NULL;
+   if (p != NULL && r != NULL && r < r)  r == NULL;
+   if (q != NULL && r != NULL && q < r)  r == NULL;
    /*---(handle numeric)-----------------*/
    --rce;  if (p != NULL) {
       DEBUG_YMACRO   yLOG_complex ("numeric"   , "%c at %d", p [0], p - a_sub);
@@ -202,6 +208,14 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
          DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rc);
          return rc;
       }
+   }
+   /*---(handle literal)-----------------*/
+   else if (r != NULL) {
+      p = r;
+      DEBUG_YMACRO   yLOG_complex ("literal"   , "%c at %d", p [0], p - a_sub);
+      x_type = '´';
+      p [0] = '\0';
+      x_comp = '´';
    }
    /*---(handle special)-----------------*/
    else if (l >= 3) {
@@ -237,6 +251,7 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
    DEBUG_YMACRO   yLOG_complex ("special"   , "%c %c", x_type, x_comp);
    if      (x_comp == '1')   sprintf (x_contents, "%c %s + 1", x_type, x_target);
    else if (x_comp == '2')   sprintf (x_contents, "%c %s - 1", x_type, x_target);
+   else if (x_comp == '´')   sprintf (x_contents, "´%s", p + 1);
    else if (x_comp != ' ')   sprintf (x_contents, "%c %s %c %s", x_type, x_target, x_comp, p + 1);
    else                      sprintf (x_contents, "%c %s", x_type, p + 1);
    DEBUG_YMACRO   yLOG_info    ("x_contents", x_contents);

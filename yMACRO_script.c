@@ -164,27 +164,26 @@ ymacro_script__read     (void)
       switch (x_recd [0]) {
       case (uchar) '™'  :
          DEBUG_YMACRO   yLOG_note    ("beg true blitz ™");
-         strcpy  (x_recd, "ºµre0»");
-         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         yMACRO_edelay ('0');
+         continue;
          break;
       case (uchar) '­'  :
          DEBUG_YMACRO   yLOG_note    ("end true blitz ­");
-         strcpy  (x_recd, "ºµre5»");
-         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         yMACRO_edelay ('5');
+         continue;
          break;
       case '{'  :
          DEBUG_YMACRO   yLOG_note    ("beg braced {");
-         DEBUG_YMACRO   yLOG_value   ("s_saved"   , s_saved);
          s_saved = myMACRO.edelay;
-         strcpy  (x_recd, "ºµre0»");
-         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         DEBUG_YMACRO   yLOG_value   ("s_saved"   , s_saved);
+         yMACRO_edelay ('0');
+         continue;
          break;
       case '}'  :
          DEBUG_YMACRO   yLOG_note    ("end braced }");
-         sprintf (x_recd, "ºµre%c»", s_saved);
          DEBUG_YMACRO   yLOG_value   ("s_saved"   , s_saved);
-         /*> strcpy  (x_recd, "ºµre5»");                                              <*/
-         DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
+         yMACRO_edelay (s_saved);
+         continue;
          break;
       }
       /*---(functions)----------------------*/
