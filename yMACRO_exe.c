@@ -552,12 +552,12 @@ ymacro_exe_key          (void)
    DEBUG_YMACRO   yLOG_value   ("x_uch"     , x_uch);
    /*---(check key)----------------------*/
    if (x_uch == G_CHAR_SPACE) {
-      if (yMODE_curr () == UMOD_INPUT) {
-         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in input mode");
-         DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
-         return G_KEY_SPACE;
-      }
-      else if (yMODE_curr () == UMOD_SENDKEYS) {
+      /*> if (yMODE_curr () == UMOD_INPUT) {                                          <* 
+       *>    DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in input mode");        <* 
+       *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                              <* 
+       *>    return G_KEY_SPACE;                                                      <* 
+       *> }                                                                           <*/
+      if (yMODE_curr () == UMOD_SENDKEYS) {
          DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in sendkeys mode");
          DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_NOOP;

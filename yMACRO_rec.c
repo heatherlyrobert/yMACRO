@@ -230,7 +230,8 @@ ymacro_rec_str          (char *a_keys)
       else                 strlcat (myMACRO.rkeys, a_keys, LEN_RECD);
       myMACRO.rlen  = strlen (myMACRO.rkeys);
       /*---(fix keys)-----------------------*/
-      strlencode   (myMACRO.rkeys, ySTR_MAX, LEN_RECD);
+      /*> strlencode   (myMACRO.rkeys, ySTR_MAX, LEN_RECD);                           <*/
+      strlencode   (myMACRO.rkeys, '-', LEN_RECD);
       /*---(add suffix)---------------------*/
       myMACRO.rkeys [myMACRO.rlen  ] =  G_CHAR_PLACE;
       myMACRO.rkeys [++myMACRO.rlen] =  G_KEY_NULL;
