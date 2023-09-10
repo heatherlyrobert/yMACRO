@@ -39,7 +39,7 @@ ymacro_script__open     (char *a_name)
    DEBUG_YMACRO   yLOG_info    ("a_name"    , a_name);
    /*---(fix)----------------------------*/
    if (strstr (a_name, ".script") == NULL)  sprintf (x_name, "%s.script", a_name);
-   else                                     strlcpy (x_name, a_name, LEN_HUND);
+   else                                     ystrlcpy (x_name, a_name, LEN_HUND);
    /*---(prepare)------------------------*/
    DEBUG_YMACRO   yLOG_point   ("s_script"  , s_script);
    --rce;  if (s_script != NULL) {
@@ -55,7 +55,7 @@ ymacro_script__open     (char *a_name)
       return rce;
    }
    /*---(save name)----------------------*/
-   strlcpy (s_name, x_name, LEN_DESC);
+   ystrlcpy (s_name, x_name, LEN_DESC);
    s_line = 0;
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
@@ -87,7 +87,7 @@ ymacro_script__close    (void)
    }
    /*---(ground pointer)-----------------*/
    s_script = NULL;
-   strlcpy (s_name, "", LEN_DESC);
+   ystrlcpy (s_name, "", LEN_DESC);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -114,7 +114,7 @@ ymacro_script__read     (void)
    if (s_line == 0)  yMACRO_unskip ();
    /*---(next line)----------------------*/
    --rce;  while (1) {
-      strlcpy (x_recd, "", LEN_RECD); /* clear it */
+      ystrlcpy (x_recd, "", LEN_RECD); /* clear it */
       /*---(done with line)-----------------*/
       DEBUG_YMACRO   yLOG_value   ("feof"      , feof (s_script));
       if (feof (s_script)) {
@@ -136,7 +136,7 @@ ymacro_script__read     (void)
       /*---(process line)-------------------*/
       DEBUG_YMACRO   yLOG_value   ("line"      , s_line);
       ++s_line;
-      strltrim (x_recd, ySTR_BOTH, LEN_RECD);
+      ystrltrim (x_recd, ySTR_BOTH, LEN_RECD);
       x_len = strlen (x_recd);
       /*---(check ignore status)------------*/
       if (strncmp (x_recd, ":skip"        ,  5) == 0)   yMACRO_skip   ();

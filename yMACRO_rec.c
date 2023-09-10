@@ -48,7 +48,7 @@ ymacro_rec_set          (uchar a_abbr)
    int         n           =   -1;
    if (a_abbr == 0)  return n;
    if (a_abbr == ',')  a_abbr = '.';
-   n  = strlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
+   n  = ystrlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
    if (n >= 0) {
       myMACRO.rname = a_abbr;
       myMACRO.rcurr = n;
@@ -164,10 +164,10 @@ ymacro_rec_beg          (uchar a_name)
    /*---(prepare)---------------------*/
    ymacro_rec_clear ();
    if (strchr (YSTR_UPPER, a_name) != NULL && g_macros [myMACRO.rcurr].len > 0) {
-      strlcpy (myMACRO.rkeys, g_macros [myMACRO.rcurr].keys , LEN_RECD);
-      /*> strlcpy (myMACRO.modes, g_macros [myMACRO.rcurr].modes, LEN_RECD);          <*/
+      ystrlcpy (myMACRO.rkeys, g_macros [myMACRO.rcurr].keys , LEN_RECD);
+      /*> ystrlcpy (myMACRO.modes, g_macros [myMACRO.rcurr].modes, LEN_RECD);          <*/
    } else {
-      strlcpy (myMACRO.rkeys, "¤", LEN_RECD);
+      ystrlcpy (myMACRO.rkeys, "¤", LEN_RECD);
    }
    myMACRO.rlen = strlen (myMACRO.rkeys);
    myMACRO.rpos = myMACRO.rlen - 2;
@@ -226,12 +226,12 @@ ymacro_rec_str          (char *a_keys)
          myMACRO.rkeys [--myMACRO.rlen  ] =  G_KEY_NULL;
       }
       /*---(add keys)-----------------------*/
-      if (a_keys == NULL)  strlcat (myMACRO.rkeys, ""    , LEN_RECD);
-      else                 strlcat (myMACRO.rkeys, a_keys, LEN_RECD);
+      if (a_keys == NULL)  ystrlcat (myMACRO.rkeys, ""    , LEN_RECD);
+      else                 ystrlcat (myMACRO.rkeys, a_keys, LEN_RECD);
       myMACRO.rlen  = strlen (myMACRO.rkeys);
       /*---(fix keys)-----------------------*/
-      /*> strlencode   (myMACRO.rkeys, ySTR_MAX, LEN_RECD);                           <*/
-      strlencode   (myMACRO.rkeys, '-', LEN_RECD);
+      /*> ystrlencode   (myMACRO.rkeys, ySTR_MAX, LEN_RECD);                           <*/
+      ystrlencode   (myMACRO.rkeys, '-', LEN_RECD);
       /*---(add suffix)---------------------*/
       myMACRO.rkeys [myMACRO.rlen  ] =  G_CHAR_PLACE;
       myMACRO.rkeys [++myMACRO.rlen] =  G_KEY_NULL;
@@ -336,11 +336,11 @@ ymacro_rec_full         (char *a_string)
    DEBUG_YMACRO   yLOG_char    ("[x_len-1]" , a_string [x_len - 1]);
    if (a_string [2] == G_KEY_DQUOTE && a_string [x_len - 1] == G_KEY_DQUOTE) {
       DEBUG_YMACRO   yLOG_note    ("quoted macro format");
-      strlcpy (t, a_string + 3, LEN_RECD);
+      ystrlcpy (t, a_string + 3, LEN_RECD);
       x_len = strlen (t);
       t [--x_len] = G_KEY_NULL;
    } else {
-      strlcpy (t, a_string + 2, LEN_RECD);
+      ystrlcpy (t, a_string + 2, LEN_RECD);
    }
    DEBUG_YMACRO   yLOG_note    ("done with quotes");
    DEBUG_YMACRO   yLOG_info    ("t"         , t);

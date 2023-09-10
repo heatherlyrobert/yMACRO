@@ -109,11 +109,11 @@ yMACRO_init             (void)
    /*---(hook to yVIHUB)-----------------*/
    yVIHUB_from_yMACRO (yMACRO_hmode, yMACRO_rec_mode, yMACRO_rec_key, yMACRO_exec, yMACRO_exe_mode, yMACRO_exe_pos, yMACRO_exe_current, yMACRO_exe_repos, yMACRO_agrios_hmode);
    /*---(macro abbrev list)--------------*/
-   strlcpy (S_MACRO_LIST, ""         , S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, YSTR_NUMBER, S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
-   strlcat (S_MACRO_LIST, ".ад"      , S_MACRO_MAX);
+   ystrlcpy (S_MACRO_LIST, ""         , S_MACRO_MAX);
+   ystrlcat (S_MACRO_LIST, YSTR_NUMBER, S_MACRO_MAX);
+   ystrlcat (S_MACRO_LIST, YSTR_LOWER , S_MACRO_MAX);
+   ystrlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
+   ystrlcat (S_MACRO_LIST, ".ад"      , S_MACRO_MAX);
    DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
    g_nmacro = strlen (S_MACRO_LIST);
    yMACRO_global_init ();
@@ -122,7 +122,7 @@ yMACRO_init             (void)
    myMACRO.e_saver   = NULL;
    /*---(clear data)---------------------*/
    ymacro_purge (MACRO_ALL);
-   /*> strlcpy (myVIKEYS.m_script, "", LEN_DESC);                                     <*/
+   /*> ystrlcpy (myVIKEYS.m_script, "", LEN_DESC);                                     <*/
    /*---(other updates)------------------*/
    ymacro_file_handlers ();
    /*---(agrios)-------------------------*/
@@ -243,7 +243,7 @@ ymacro_index            (uchar a_abbr)
    int         n           =   -1;
    if (a_abbr == 0)  return n;
    if (a_abbr == ',')  a_abbr = '.';
-   n  = strlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
+   n  = ystrlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
    return n;
 }
 

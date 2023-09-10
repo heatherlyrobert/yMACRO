@@ -39,7 +39,7 @@ yMACRO_list             (char a_style, char *a_list)
    /*---(defenses)-----------------------*/
    --rce;  if (a_list  == NULL)  return rce;
    /*---(prepare)------------------------*/
-   strlcpy (a_list, "", LEN_HUND);
+   ystrlcpy (a_list, "", LEN_HUND);
    x_max = strlen (S_MACRO_LIST);
    switch (a_style) {
    case '*' :
@@ -51,12 +51,12 @@ yMACRO_list             (char a_style, char *a_list)
    /*---(walk the list)------------------*/
    switch (a_style) {
    case '-' : case ',' :
-      if (a_style == ',')  strlcpy (a_list, ",", LEN_HUND);
+      if (a_style == ',')  ystrlcpy (a_list, ",", LEN_HUND);
       for (i = 0; i < g_nmacro; ++i) {
          if (g_macros [i].len <= 0) continue;
          if (a_style == ',')  sprintf    (x_entry, "%c,", S_MACRO_LIST [i]);
          else                 sprintf    (x_entry, "%c" , S_MACRO_LIST [i]);
-         strlcat    (a_list, x_entry, LEN_HUND);
+         ystrlcat    (a_list, x_entry, LEN_HUND);
          ++c;
       }
       break;
@@ -64,27 +64,27 @@ yMACRO_list             (char a_style, char *a_list)
       for (i = x_beg; i <= x_end; ++i) {
          switch (i) {
          case   0 :
-            if (a_style == 'F')  strlcat (a_list, "[" , LEN_HUND);
+            if (a_style == 'F')  ystrlcat (a_list, "[" , LEN_HUND);
             break;
          case  10 :
-            if (a_style == 'F')  strlcat (a_list, " [", LEN_HUND);
-            if (a_style == '*')  strlcat (a_list, " " , LEN_HUND);
+            if (a_style == 'F')  ystrlcat (a_list, " [", LEN_HUND);
+            if (a_style == '*')  ystrlcat (a_list, " " , LEN_HUND);
             break;
          }
          if (g_macros [i].len >  0)  {
             sprintf (x_entry, "%c" , S_MACRO_LIST [i]);
-            strlcat (a_list, x_entry, LEN_HUND);
+            ystrlcat (a_list, x_entry, LEN_HUND);
             ++c;
          } else {
-            strlcat (a_list, "·"        , LEN_HUND);
+            ystrlcat (a_list, "·"        , LEN_HUND);
          }
          switch (i) {
          case  35 :
-            if (a_style == 'F')        strlcat (a_list, "] ", LEN_HUND);
-            if (a_style == '*')        strlcat (a_list, " ", LEN_HUND);
+            if (a_style == 'F')        ystrlcat (a_list, "] ", LEN_HUND);
+            if (a_style == '*')        ystrlcat (a_list, " ", LEN_HUND);
             break;
          case  59 :
-            if (a_style == 'F')        strlcat (a_list, "]", LEN_HUND);
+            if (a_style == 'F')        ystrlcat (a_list, "]", LEN_HUND);
             break;
          }
       }
@@ -260,7 +260,7 @@ yMACRO_rec_status       (char a_size, short a_wide, char *a_list)
    /*---(length)-------------------------*/
    if (myMACRO.rcurr >= 0) {
       x_name = myMACRO.rname;
-      strlcpy (x_keys, myMACRO.rkeys, LEN_RECD);
+      ystrlcpy (x_keys, myMACRO.rkeys, LEN_RECD);
       x_len = strlen (x_keys) - 1;
       if (x_len > 0)  x_curr = x_keys [x_len - 1];
       sprintf (x_lenstr, "%3d", x_len);
@@ -322,11 +322,11 @@ ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len,
    /*---(populate)-----------------------*/
    if (n >= 0 && g_macros [n].len > 0) {
       sprintf (a_rep, "%2d", g_macros [n].repeat);
-      strldchg (a_rep, ' ', '·', LEN_TERSE);
+      ystrldchg (a_rep, ' ', '·', LEN_TERSE);
       sprintf (a_pos, "%3d", g_macros [n].pos);
-      strldchg (a_pos, ' ', '·', LEN_TERSE);
+      ystrldchg (a_pos, ' ', '·', LEN_TERSE);
       sprintf (a_len, "%3d", g_macros [n].len);
-      strldchg (a_len, ' ', '·', LEN_TERSE);
+      ystrldchg (a_len, ' ', '·', LEN_TERSE);
       x_pos  = g_macros [n].pos;
       x_cur  = g_macros [n].cur;
       if (x_cur  < 32)  x_cur  = '£';
@@ -632,7 +632,7 @@ yMACRO_agrios_status    (char a_size, short a_wide, char *a_list)
    if (strcmp (myMACRO.g_curr [i], "") != 0) {
       for (i = 0; i <= myMACRO.g_level; ++i) {
          sprintf (x_curr, "  (%1d) %-6.6s %-6.6s,", i, myMACRO.g_curr [i], myMACRO.g_next [i]);
-         strlcat (a_list, x_curr, LEN_HUND);
+         ystrlcat (a_list, x_curr, LEN_HUND);
       }
    }
    l = strlen (a_list);

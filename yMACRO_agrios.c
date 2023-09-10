@@ -32,9 +32,9 @@ ymacro_agrios_init      (void)
    myMACRO.e_pusher = NULL;
    myMACRO.g_level  = 0;
    for (i = 0; i < MAX_AGRIOS; ++i) {
-      strlcpy (myMACRO.g_curr [i], "", LEN_LABEL);
-      strlcpy (myMACRO.g_code [i], "", LEN_RECD);
-      strlcpy (myMACRO.g_next [i], "", LEN_LABEL);
+      ystrlcpy (myMACRO.g_curr [i], "", LEN_LABEL);
+      ystrlcpy (myMACRO.g_code [i], "", LEN_RECD);
+      ystrlcpy (myMACRO.g_next [i], "", LEN_LABEL);
    }
    myMACRO.g_style  = '.';
    myMACRO.g_active = '-';
@@ -117,7 +117,7 @@ ymacro_agrios__range    (void)
       return rce;
    }
    /*---(parse)--------------------------*/
-   strlcpy (t, myMACRO.g_agrios + 1, LEN_LABEL);
+   ystrlcpy (t, myMACRO.g_agrios + 1, LEN_LABEL);
    p = strstr (t, "..");
    DEBUG_YMACRO   yLOG_point   ("p"         , p);
    --rce;  if (p == NULL) {
@@ -125,8 +125,8 @@ ymacro_agrios__range    (void)
       return rce;
    }
    p [0] = p [1] = '\0';
-   strlcpy (x_beg, t    , LEN_TERSE);
-   strlcpy (x_end, p + 2, LEN_TERSE);
+   ystrlcpy (x_beg, t    , LEN_TERSE);
+   ystrlcpy (x_end, p + 2, LEN_TERSE);
    /*---(call range setting)-------------*/
    rc = yVIHUB_yMAP_range (x_beg, x_end);
    DEBUG_YMACRO   yLOG_value   ("range"     , rc);
@@ -244,8 +244,8 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
    }
    /*---(set target)---------------------*/
    DEBUG_YMACRO   yLOG_note    ("make target");
-   strlcpy  (x_target  , a_sub, LEN_TERSE);
-   strltrim (x_target  , ySTR_BOTH, LEN_TERSE);
+   ystrlcpy  (x_target  , a_sub, LEN_TERSE);
+   ystrltrim (x_target  , ySTR_BOTH, LEN_TERSE);
    DEBUG_YMACRO   yLOG_info    ("x_target"  , x_target);
    /*---(check compound)-----------------*/
    DEBUG_YMACRO   yLOG_complex ("special"   , "%c %c", x_type, x_comp);
@@ -256,8 +256,8 @@ ymacro_agrios__recurse  (char a_mode, char *a_sub)
    else                      sprintf (x_contents, "%c %s", x_type, p + 1);
    DEBUG_YMACRO   yLOG_info    ("x_contents", x_contents);
    /*---(clean contents)-----------------*/
-   /*> strlunslash (x_contents, LEN_RECD);                                            <* 
-    *> strldecode  (x_contents, LEN_RECD);                                            <*/
+   /*> ystrlunslash (x_contents, LEN_RECD);                                            <* 
+    *> ystrldecode  (x_contents, LEN_RECD);                                            <*/
    /*> DEBUG_YMACRO   yLOG_info    ("x_contents", x_contents);                        <*/
    /*---(force)--------------------------*/
    DEBUG_YMACRO   yLOG_point   ("e_forcer"  , myMACRO.e_forcer);
@@ -318,7 +318,7 @@ ymacro_agrios__force    (void)
       break;
    }
    /*---(prepare)------------------------*/
-   strlcpy (t, myMACRO.g_agrios + 1, LEN_RECD);
+   ystrlcpy (t, myMACRO.g_agrios + 1, LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("t"         , t);
    /*---(recurse)------------------------*/
    rc = ymacro_agrios__recurse (x_mode, t);
@@ -388,17 +388,17 @@ ymacro_agrios__call     (void)
    DEBUG_YMACRO   yLOG_info    ("x_target"  , x_target);
    DEBUG_YMACRO   yLOG_info    ("x_args"    , x_args);
    /*---(parse)--------------------------*/
-   strlcpy  (x_recd, myMACRO.g_agrios + 1, LEN_RECD);
+   ystrlcpy  (x_recd, myMACRO.g_agrios + 1, LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
-   strltrim (x_recd, ySTR_BOTH   , LEN_RECD);
+   ystrltrim (x_recd, ySTR_BOTH   , LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("x_recd"    , x_recd);
    p = strchr   (x_recd, ',');
    DEBUG_YMACRO   yLOG_point   ("p"         , p);
    --rce;  if (p != NULL) {
       p [0] = '\0';
-      strlcpy (x_args, p + 1, LEN_LABEL);
+      ystrlcpy (x_args, p + 1, LEN_LABEL);
    }
-   strlcpy (x_target, x_recd, LEN_LABEL);
+   ystrlcpy (x_target, x_recd, LEN_LABEL);
    /*---(push onto stack)----------------*/
    --rce;  if (x_type == G_CHAR_EMPTY) {
       DEBUG_YMACRO   yLOG_note    ("push context onto stack for next level");
@@ -419,15 +419,15 @@ ymacro_agrios__call     (void)
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    /*---(save jump for branch)-----------*/
    --rce;  if (x_type == G_CHAR_UNLIKELY) {
-      strlcpy  (s_jump, x_target, LEN_LABEL);
+      ystrlcpy  (s_jump, x_target, LEN_LABEL);
       DEBUG_YMACRO   yLOG_info    ("s_jump"    , s_jump);
-      strlcpy (x_target, myMACRO.g_curr [myMACRO.g_level], LEN_LABEL);
+      ystrlcpy (x_target, myMACRO.g_curr [myMACRO.g_level], LEN_LABEL);
    }
    /*---(get next)-----------------------*/
    if (x_type != G_CHAR_RFIELD) {
-      strlcpy (myMACRO.g_curr [myMACRO.g_level], x_target, LEN_LABEL);
-      strlcpy (myMACRO.g_code [myMACRO.g_level], ""      , LEN_RECD);
-      strlcpy (myMACRO.g_next [myMACRO.g_level], ""      , LEN_LABEL);
+      ystrlcpy (myMACRO.g_curr [myMACRO.g_level], x_target, LEN_LABEL);
+      ystrlcpy (myMACRO.g_code [myMACRO.g_level], ""      , LEN_RECD);
+      ystrlcpy (myMACRO.g_next [myMACRO.g_level], ""      , LEN_LABEL);
       s_type = x_type;
       DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
       DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
@@ -475,7 +475,7 @@ char
 yMACRO_agrios_direct  (char a_active, char *a_content)
 {
    myMACRO.g_active = a_active;
-   strlcpy (myMACRO.g_agrios, a_content, LEN_RECD);
+   ystrlcpy (myMACRO.g_agrios, a_content, LEN_RECD);
    ymacro_agrios__execute ();
    return 0;
 }
@@ -562,7 +562,7 @@ ymacro_agrios__capture  (uchar a_major, uchar a_minor)
    }
    /*---(add)----------------------------*/
    sprintf (t, "%c", a_minor);
-   strlcat (myMACRO.g_agrios, t, LEN_RECD);
+   ystrlcat (myMACRO.g_agrios, t, LEN_RECD);
    DEBUG_YMACRO   yLOG_info    ("g_agrios"  , myMACRO.g_agrios);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
@@ -637,20 +637,20 @@ ymacro_agrios__read     (char a_first)
       DEBUG_YMACRO   yLOG_char    ("s_type"    , s_type);
       DEBUG_YMACRO   yLOG_info    ("g_curr"    , myMACRO.g_curr [myMACRO.g_level]);
       DEBUG_YMACRO   yLOG_info    ("s_type"    , s_jump);
-      strlcpy (x_contents, s_jump, LEN_LABEL);
+      ystrlcpy (x_contents, s_jump, LEN_LABEL);
       rc = myMACRO.e_getter (s_type, myMACRO.g_curr [myMACRO.g_level], x_contents, x_next);
-      strlcpy (s_jump, "", LEN_LABEL);
+      ystrlcpy (s_jump, "", LEN_LABEL);
       DEBUG_YMACRO   yLOG_value   ("getter"    , rc);
       --rce;  if (rc < 0) {
          ymacro_agrios__reset ();
-         strlcpy (x_contents, "", LEN_RECD);
-         strlcpy (x_next    , "", LEN_LABEL);
+         ystrlcpy (x_contents, "", LEN_RECD);
+         ystrlcpy (x_next    , "", LEN_LABEL);
          DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       if (s_type == G_CHAR_EMPTY) {
          DEBUG_YMACRO   yLOG_note    ("function call, return quickly");
-         strlcpy (x_contents, "·", LEN_RECD);
+         ystrlcpy (x_contents, "·", LEN_RECD);
       }
       s_type = '-';
       /*---(filter comments/empties)--------*/
@@ -666,8 +666,8 @@ ymacro_agrios__read     (char a_first)
             continue;
          }
       }
-      strlcpy (myMACRO.g_code [myMACRO.g_level], x_contents, LEN_RECD);
-      strlcpy (myMACRO.g_next [myMACRO.g_level], x_next    , LEN_LABEL);
+      ystrlcpy (myMACRO.g_code [myMACRO.g_level], x_contents, LEN_RECD);
+      ystrlcpy (myMACRO.g_next [myMACRO.g_level], x_next    , LEN_LABEL);
       /*---(functions)----------------------*/
       if (strncmp (x_contents, "macro ", 6) == 0) {
          rc = ymacro_rec_full (x_contents + 6);
@@ -730,9 +730,9 @@ ymacro_agrios_next      (void)
    g_macros [myMACRO.ecurr].runby = x_runby;
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
-   strlcpy (myMACRO.g_curr [myMACRO.g_level], myMACRO.g_next [myMACRO.g_level], LEN_LABEL);
-   strlcpy (myMACRO.g_code [myMACRO.g_level], ""            , LEN_RECD);
-   strlcpy (myMACRO.g_next [myMACRO.g_level], ""            , LEN_LABEL);
+   ystrlcpy (myMACRO.g_curr [myMACRO.g_level], myMACRO.g_next [myMACRO.g_level], LEN_LABEL);
+   ystrlcpy (myMACRO.g_code [myMACRO.g_level], ""            , LEN_RECD);
+   ystrlcpy (myMACRO.g_next [myMACRO.g_level], ""            , LEN_LABEL);
    rc = ymacro_agrios__read ('-');
    g_macros [myMACRO.ecurr].runby = x_runby;
    DEBUG_YMACRO   yLOG_value   ("read"      , rc);
@@ -784,7 +784,7 @@ ymacro_agrios__start    (char *a_label, uchar a_style)
       return rce;
    }
    DEBUG_YMACRO   yLOG_info    ("a_label"   , a_label);
-   strlcpy (myMACRO.g_curr [myMACRO.g_level], a_label, LEN_LABEL);
+   ystrlcpy (myMACRO.g_curr [myMACRO.g_level], a_label, LEN_LABEL);
    /*---(execution style)----------------*/
    switch (a_style) {
    case G_CHAR_EMPTY :

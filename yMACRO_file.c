@@ -55,7 +55,7 @@ ymacro_save             (void)
    else                     g_macros [myMACRO.rcurr].keys  = strdup (myMACRO.rkeys);
    g_macros [myMACRO.rcurr].len   = strlen (myMACRO.rkeys);
    /*---(trim)---------------------------*/
-   strlcpy (x_keys, myMACRO.rkeys, LEN_RECD);
+   ystrlcpy (x_keys, myMACRO.rkeys, LEN_RECD);
    x_len = strlen (x_keys);
    if (x_len > 0)  x_keys [--x_len] = G_KEY_NULL;
    /*---(save gyges)---------------------*/
@@ -146,7 +146,7 @@ ymacro__writer          (int c, uchar a_abbr)
       return 0;
    }
    /*---(keys)---------------------------*/
-   strlcpy (x_keys, g_macros [n].keys, LEN_RECD);
+   ystrlcpy (x_keys, g_macros [n].keys, LEN_RECD);
    x_keys [g_macros [n].len - 1] = G_KEY_NULL;
    DEBUG_YMACRO   yLOG_info    ("x_keys"    , x_keys);
    /*---(write)-----------------------*/
@@ -232,7 +232,7 @@ yMACRO_reader           (int n, char *a_verb)
    /*---(save)---------------------------*/
    DEBUG_YMACRO   yLOG_note    ("saving values");
    ymacro_clear (x_abbr);
-   if (x_keys [strlen (x_keys) - 1] != '³')   strlcat (x_keys, "³"   , LEN_RECD );
+   if (x_keys [strlen (x_keys) - 1] != '³')   ystrlcat (x_keys, "³"   , LEN_RECD );
    g_macros [m].keys = strdup (x_keys);
    g_macros [m].len  = strlen (x_keys);
    if (myMACRO.e_saver != NULL)  myMACRO.e_saver (x_abbr, x_keys);
@@ -257,7 +257,7 @@ yMACRO_export           (char a_abbr)
       return rce;
    }
    /*---(write)--------------------------*/
-   rc = strlexport (0, g_macros [n].keys);
+   rc = ystrlexport (0, g_macros [n].keys);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
@@ -274,7 +274,7 @@ yMACRO_import           (char a_abbr)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(read)---------------------------*/
-   rc = strlimport  (0, x_recd, NULL);
+   rc = ystrlimport  (0, x_recd, NULL);
    DEBUG_YMACRO   yLOG_value   ("read"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
@@ -314,9 +314,9 @@ yMACRO_yank             (char a_abbr, char *a_label)
    }
    /*---(label)-----------------------*/
    if (a_label == NULL || strcmp (a_label, "") == 0) {
-      strlcpy (x_keys, "(cur)", LEN_LABEL);
+      ystrlcpy (x_keys, "(cur)", LEN_LABEL);
    } else {
-      strlcpy (x_keys, a_label, LEN_LABEL);
+      ystrlcpy (x_keys, a_label, LEN_LABEL);
    }
    /*---(load)---------------------------*/
    if (myMACRO.e_saver  != NULL) {
@@ -364,9 +364,9 @@ yMACRO_paste            (char a_abbr, char *a_label)
    }
    /*---(label)-----------------------*/
    if (a_label == NULL || strcmp (a_label, "") == 0) {
-      strlcpy (x_keys, "(cur)", LEN_LABEL);
+      ystrlcpy (x_keys, "(cur)", LEN_LABEL);
    } else {
-      strlcpy (x_keys, a_label, LEN_LABEL);
+      ystrlcpy (x_keys, a_label, LEN_LABEL);
    }
    /*---(load)---------------------------*/
    if (myMACRO.e_loader != NULL) {
@@ -405,7 +405,7 @@ yMACRO_copy             (char a_src, char a_dst)
       return rce;
    }
    /*---(copy)---------------------------*/
-   strlcpy (x_recd, g_macros [n].keys, LEN_RECD);
+   ystrlcpy (x_recd, g_macros [n].keys, LEN_RECD);
    x_len = strlen (x_recd);
    DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len <=  0) {
@@ -443,7 +443,7 @@ yMACRO_to_sreg          (char a_abbr, char a_reg)
       return rce;
    }
    /*---(copy)---------------------------*/
-   strlcpy (x_recd, g_macros [n].keys, LEN_RECD);
+   ystrlcpy (x_recd, g_macros [n].keys, LEN_RECD);
    x_len = strlen (x_recd);
    DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len <=  0) {
@@ -477,7 +477,7 @@ yMACRO_central          (char a_abbr, char *a_string)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   strlcpy (x_seek, a_string + 2, 42);
+   ystrlcpy (x_seek, a_string + 2, 42);
    x_len = strlen (x_seek);
    DEBUG_YMACRO   yLOG_info    ("x_seek"    , x_seek);
    /*---(read)---------------------------*/
@@ -502,9 +502,9 @@ yMACRO_central          (char a_abbr, char *a_string)
       if (x_recd [0] != x_seek [0])  continue;
       if (x_len == 6)  sprintf (x_key, "%2.2s%2.2s%2.2s", x_recd, x_recd + 15, x_recd + 30);
       else {
-         strlcpy  (x_key, x_recd, 42);
-         strldchg (x_key, '', '.', LEN_RECD);
-         strltrim (x_key, ySTR_MAX, LEN_RECD);
+         ystrlcpy  (x_key, x_recd, 42);
+         ystrldchg (x_key, '', '.', LEN_RECD);
+         ystrltrim (x_key, ySTR_MAX, LEN_RECD);
       }
       DEBUG_YMACRO   yLOG_info    ("x_key"     , x_key);
       if (strcmp (x_seek, x_key) != 0)  continue;

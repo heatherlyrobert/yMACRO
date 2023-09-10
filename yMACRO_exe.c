@@ -34,7 +34,7 @@ ymacro_exe_set             (uchar a_abbr)
    int         n           =   -1;
    if (a_abbr == 0)  return n;
    if (a_abbr == ',')  a_abbr = '.';
-   n  = strlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
+   n  = ystrlchr (S_MACRO_LIST, a_abbr, S_MACRO_MAX);
    if (n >= 0) {
       myMACRO.ename = a_abbr;
       myMACRO.ecurr = n;

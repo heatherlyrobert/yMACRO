@@ -43,7 +43,7 @@ ymacro__flatten         (char a_lvl, char a_src, char *a_out)
    if (s_abbrs [x_in] > 0) {
       DEBUG_YMACRO   yLOG_note    ("repeating macro");
       sprintf (x_sub, "¸@%d¹", s_abbrs [x_in]);
-      strlcat (a_out, x_sub, LEN_RECD);
+      ystrlcat (a_out, x_sub, LEN_RECD);
       myMACRO.rlen = strlen (a_out);
       DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
       return 0;
@@ -51,7 +51,7 @@ ymacro__flatten         (char a_lvl, char a_src, char *a_out)
    /*---(prefix)-------------------------*/
    if (a_lvl > 0)  {
       DEBUG_YMACRO   yLOG_note    ("prefixing");
-      strlcat (a_out, "¸", LEN_RECD);
+      ystrlcat (a_out, "¸", LEN_RECD);
       s_abbrs [x_in] = ++s_index;
       DEBUG_YMACRO   yLOG_value   ("s_abbrs"   , s_abbrs [x_in]);
       ++myMACRO.rlen;
@@ -79,7 +79,7 @@ ymacro__flatten         (char a_lvl, char a_src, char *a_out)
    /*---(suffix)-------------------------*/
    if (a_lvl > 0)  {
       DEBUG_YMACRO   yLOG_note    ("suffixing");
-      strlcat (a_out, "¹", LEN_RECD);
+      ystrlcat (a_out, "¹", LEN_RECD);
       ++myMACRO.rlen;
       DEBUG_YMACRO   yLOG_value   ("myMACRO.rlen"    , myMACRO.rlen);
    }
@@ -140,7 +140,7 @@ yMACRO_flatten_at       (uchar a_src, uchar a_dst)
       return rce;
    }
    /*---(save)---------------------------*/
-   strlcat (myMACRO.rkeys, "³"   , LEN_RECD );
+   ystrlcat (myMACRO.rkeys, "³"   , LEN_RECD );
    myMACRO.rlen  = strlen (myMACRO.rkeys);
    myMACRO.rname = a_dst;
    myMACRO.rcurr = x_dst;
@@ -184,7 +184,7 @@ ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)
             k     = s_abbrs [myMACRO.rkeys [i + 2] - '0'];
             DEBUG_YMACRO   yLOG_complex ("current"   , "%3d %3d %3d %c", myMACRO.rkeys [i + 2], myMACRO.rkeys [i + 2] - '0', k, S_MACRO_LIST [k]);
             sprintf (x_sub, "@%c", S_MACRO_LIST [k]);
-            strlcat (x_keys, x_sub, LEN_RECD);
+            ystrlcat (x_keys, x_sub, LEN_RECD);
             x_len = strlen (x_keys);
             i += 3;
          }
@@ -195,17 +195,17 @@ ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)
             s_abbrs [s_index] = s_abbrs [s_index - 1] + 1;
             DEBUG_YMACRO   yLOG_complex ("s_abbr"    , "%3d, %3d/%c %3d/%c %3d/%c %3d/%c %3d/%c", s_index, s_abbrs [0], S_MACRO_LIST [s_abbrs [0]], s_abbrs [1], S_MACRO_LIST [s_abbrs [1]], s_abbrs [2], S_MACRO_LIST [s_abbrs [2]], s_abbrs [3], S_MACRO_LIST [s_abbrs [3]], s_abbrs [4], S_MACRO_LIST [s_abbrs [4]]);
             sprintf (x_sub, "@%c", S_MACRO_LIST [s_abbrs [s_index]]);
-            strlcat (x_keys, x_sub, LEN_RECD);
+            ystrlcat (x_keys, x_sub, LEN_RECD);
             i = ymacro__install (a_lvl + 1, a_in, a_len, i + 1, s_abbrs [s_index]);
             /*> sprintf (x_sub, "@%c", S_MACRO_LIST [s_abbrs [s_index]]);             <* 
-             *> strlcat (x_keys, x_sub, LEN_RECD);                                    <*/
+             *> ystrlcat (x_keys, x_sub, LEN_RECD);                                    <*/
             x_len = strlen (x_keys);
          }
          /*---(done)---------------------*/
       }
       /*---(end of sub-macro)------------*/
       else if (myMACRO.rkeys [i] == G_CHAR_SRPAREN) {
-         strlcat (x_keys, "³", LEN_RECD);
+         ystrlcat (x_keys, "³", LEN_RECD);
          x_len = strlen (x_keys);
          DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
          break;
@@ -223,7 +223,7 @@ ymacro__install         (int a_lvl, int a_in, int a_len, int a_pos, int a_out)
       /*---(done)------------------------*/
    }
    /*---(put in place)-------------------*/
-   strlcpy (myMACRO.rkeys, x_keys, LEN_RECD);
+   ystrlcpy (myMACRO.rkeys, x_keys, LEN_RECD);
    myMACRO.rlen  = strlen (myMACRO.rkeys);
    myMACRO.rname = S_MACRO_LIST [a_out];
    myMACRO.rcurr = a_out;
@@ -261,7 +261,7 @@ yMACRO_install_at       (uchar a_src, uchar a_dst)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (myMACRO.rkeys, g_macros [x_src].keys, LEN_RECD);
+   ystrlcpy (myMACRO.rkeys, g_macros [x_src].keys, LEN_RECD);
    myMACRO.rlen = g_macros [x_src].len;
    /*---(destination)--------------------*/
    DEBUG_YMACRO   yLOG_char    ("a_dst"     , a_dst);
