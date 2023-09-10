@@ -575,7 +575,7 @@ ymacro_exe_key          (void)
       }
    }
    /*---(translate)----------------------*/
-   x_uch = chrworking (x_uch);
+   x_uch = ychrworking (x_uch);
    DEBUG_YMACRO   yLOG_char    ("x_uch"     , x_uch);
    /*---(handle controls)-------------*/
    if (x_uch < 0 || x_uch > 127) {
