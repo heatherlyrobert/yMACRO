@@ -412,7 +412,7 @@ yMACRO_copy             (char a_src, char a_dst)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));
+   DEBUG_YMACRO   yLOG_char    ("tail"      , ychrvisible (x_recd [x_len - 1]));
    if (x_recd [x_len - 1] == '³' )  x_recd [--x_len] = '\0';
    sprintf (x_direct, "%c=%s", a_dst, x_recd);
    DEBUG_YMACRO   yLOG_info    ("x_direct"  , x_direct);
@@ -450,7 +450,7 @@ yMACRO_to_sreg          (char a_abbr, char a_reg)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (x_recd [x_len - 1]));
+   DEBUG_YMACRO   yLOG_char    ("tail"      , ychrvisible (x_recd [x_len - 1]));
    if (x_recd [x_len - 1] == '³' )  x_recd [--x_len] = '\0';
    rc = yVIHUB_ySRC_push (a_reg, x_recd);
    DEBUG_YMACRO   yLOG_value   ("push"      , rc);
@@ -520,9 +520,9 @@ yMACRO_central          (char a_abbr, char *a_string)
    p = x_recd + 98;
    x_len = strlen (p);
    DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
-   DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (p [x_len - 1]));
+   DEBUG_YMACRO   yLOG_char    ("tail"      , ychrvisible (p [x_len - 1]));
    if (p [x_len - 1] == '\n')  p [--x_len] = '\0';
-   DEBUG_YMACRO   yLOG_char    ("tail"      , chrvisible (p [x_len - 1]));
+   DEBUG_YMACRO   yLOG_char    ("tail"      , ychrvisible (p [x_len - 1]));
    if (p [x_len - 1] == '³' )  p [--x_len] = '\0';
    DEBUG_YMACRO   yLOG_info    ("p"         , p);
    sprintf (x_direct, "%c=%s", a_abbr, p);

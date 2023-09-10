@@ -135,7 +135,7 @@ ymacro_exe__return      (void)
    /*---(update stack)---------------------*/
    --(myMACRO.edepth);
    myMACRO.estack [myMACRO.edepth] = '\0';
-   DEBUG_YMACRO  yLOG_complex ("return"    , "%3d pos, %c cur, %3d rep, %3d  epos", g_macros [myMACRO.ecurr].pos, chrvisible (g_macros [myMACRO.ecurr].cur), g_macros [myMACRO.ecurr].repeat, myMACRO.epos);
+   DEBUG_YMACRO  yLOG_complex ("return"    , "%3d pos, %c cur, %3d rep, %3d  epos", g_macros [myMACRO.ecurr].pos, ychrvisible (g_macros [myMACRO.ecurr].cur), g_macros [myMACRO.ecurr].repeat, myMACRO.epos);
    /*---(complete)-----------------------*/
    return 1;
 }
