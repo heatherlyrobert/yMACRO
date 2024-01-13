@@ -52,8 +52,8 @@ yMACRO_list             (char a_style, char *a_list)
    switch (a_style) {
    case '-' : case ',' :
       if (a_style == ',')  ystrlcpy (a_list, ",", LEN_HUND);
-      for (i = 0; i < g_nmacro; ++i) {
-         if (g_macros [i].len <= 0) continue;
+      for (i = 0; i < zMACRO_nmacro; ++i) {
+         if (zMACRO_macros [i].len <= 0) continue;
          if (a_style == ',')  sprintf    (x_entry, "%c,", S_MACRO_LIST [i]);
          else                 sprintf    (x_entry, "%c" , S_MACRO_LIST [i]);
          ystrlcat    (a_list, x_entry, LEN_HUND);
@@ -71,7 +71,7 @@ yMACRO_list             (char a_style, char *a_list)
             if (a_style == '*')  ystrlcat (a_list, " " , LEN_HUND);
             break;
          }
-         if (g_macros [i].len >  0)  {
+         if (zMACRO_macros [i].len >  0)  {
             sprintf (x_entry, "%c" , S_MACRO_LIST [i]);
             ystrlcat (a_list, x_entry, LEN_HUND);
             ++c;
@@ -320,15 +320,15 @@ ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len,
    strcpy (a_pos, "---");
    strcpy (a_len, "---");
    /*---(populate)-----------------------*/
-   if (n >= 0 && g_macros [n].len > 0) {
-      sprintf (a_rep, "%2d", g_macros [n].repeat);
+   if (n >= 0 && zMACRO_macros [n].len > 0) {
+      sprintf (a_rep, "%2d", zMACRO_macros [n].repeat);
       ystrldchg (a_rep, ' ', '·', LEN_TERSE);
-      sprintf (a_pos, "%3d", g_macros [n].pos);
+      sprintf (a_pos, "%3d", zMACRO_macros [n].pos);
       ystrldchg (a_pos, ' ', '·', LEN_TERSE);
-      sprintf (a_len, "%3d", g_macros [n].len);
+      sprintf (a_len, "%3d", zMACRO_macros [n].len);
       ystrldchg (a_len, ' ', '·', LEN_TERSE);
-      x_pos  = g_macros [n].pos;
-      x_cur  = g_macros [n].cur;
+      x_pos  = zMACRO_macros [n].pos;
+      x_cur  = zMACRO_macros [n].cur;
       if (x_cur  < 32)  x_cur  = '£';
       if (x_pos  <  0)  x_cur  = '¬';
    }
@@ -339,13 +339,13 @@ ymacro_status__exe      (char n, short h, char *a_rep, char *a_pos, char *a_len,
    }
    /*---(before)-------------------------*/
    if      (x_pos <=  0)  sprintf (x_bef , "%*.*s", h, h, YSTR_MACRO);
-   else if (x_pos >   h)  sprintf (x_bef , "<%-*.*s", h - 1, h - 1, g_macros [n].keys + x_pos - h + 1);
-   else                   sprintf (x_bef , "%*.*s%*.*s"   , h - x_pos, h - x_pos, YSTR_MACRO, x_pos, x_pos, g_macros [n].keys);
+   else if (x_pos >   h)  sprintf (x_bef , "<%-*.*s", h - 1, h - 1, zMACRO_macros [n].keys + x_pos - h + 1);
+   else                   sprintf (x_bef , "%*.*s%*.*s"   , h - x_pos, h - x_pos, YSTR_MACRO, x_pos, x_pos, zMACRO_macros [n].keys);
    /*---(after)--------------------------*/
-   x_rem = g_macros [n].len - g_macros [n].pos - 1;
+   x_rem = zMACRO_macros [n].len - zMACRO_macros [n].pos - 1;
    if      (x_rem <=  0)  sprintf (x_aft , "%*.*s", h, h, YSTR_MACRO);
-   else if (x_rem >   h)  sprintf (x_aft , "%-*.*s>", h - 1, h - 1, g_macros [n].keys + x_pos + 1);
-   else                   sprintf (x_aft , "%*.*s%*.*s"   , x_rem, x_rem, g_macros [n].keys + x_pos + 1, h - x_rem, h - x_rem, YSTR_MACRO + x_rem);
+   else if (x_rem >   h)  sprintf (x_aft , "%-*.*s>", h - 1, h - 1, zMACRO_macros [n].keys + x_pos + 1);
+   else                   sprintf (x_aft , "%*.*s%*.*s"   , x_rem, x_rem, zMACRO_macros [n].keys + x_pos + 1, h - x_rem, h - x_rem, YSTR_MACRO + x_rem);
    /*---(concat)-------------------------*/
    sprintf (a_list, "%s %c %s", x_bef, x_cur, x_aft);
    /*---(complete)-----------------------*/
@@ -391,7 +391,7 @@ yMACRO_exe_status       (char a_size, short a_wide, char *a_list)
    ymacro_status__exe (myMACRO.ecurr, h, x_rep, x_pos, x_len, x_list);
    /*---(prefix)-------------------------*/
    if (myMACRO.ecurr >= 0) {
-      n = g_macros [myMACRO.ecurr].runby;
+      n = zMACRO_macros [myMACRO.ecurr].runby;
       if (n >= 0)  x_runby = S_MACRO_LIST [n];
    }
    switch (a_size) {
@@ -502,12 +502,12 @@ yMACRO_mex_status       (char a_size, short a_wide, char *a_list)
       }
       switch (a_size) {
       case 't'  :
-         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %c", x_abbr, g_macros [n].cur);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %c", x_abbr, zMACRO_macros [n].cur);
          else              sprintf (x_curr, ", - ¬");
          break;
       case 's'  :
          ymacro_fill_num (x_pos, 3);
-         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %s %c", x_abbr, x_pos, g_macros [n].cur);
+         if (i < myMACRO.edepth)  sprintf (x_curr, ", %c %s %c", x_abbr, x_pos, zMACRO_macros [n].cur);
          else              sprintf (x_curr, ", - --- ¬");
          break;
       case 'm'  :
@@ -604,9 +604,9 @@ ymacro_dump             (FILE *f)
    x_end = strlen (S_MACRO_LIST);
    /*---(clear)--------------------------*/
    for (i = 0; i <= x_end; ++i) {
-      if (g_macros [i].len <= 0)  continue;
+      if (zMACRO_macros [i].len <= 0)  continue;
       fprintf (f, "%c  %4d  å%sæ\n", S_MACRO_LIST [i],
-            g_macros [i].len, g_macros [i].keys);
+            zMACRO_macros [i].len, zMACRO_macros [i].keys);
    }
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);

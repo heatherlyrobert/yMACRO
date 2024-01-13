@@ -94,9 +94,9 @@ ymacro_set2stop         (void)
 {
    DEBUG_YMACRO   yLOG_note    (__FUNCTION__);
    SET_MACRO_STOP;
-   g_macros [myMACRO.ecurr].pos    = -1;
-   g_macros [myMACRO.ecurr].cur    = '·';
-   g_macros [myMACRO.ecurr].repeat =  0;
+   zMACRO_macros [myMACRO.ecurr].pos    = -1;
+   zMACRO_macros [myMACRO.ecurr].cur    = '·';
+   zMACRO_macros [myMACRO.ecurr].repeat =  0;
    myMACRO.ecurr = -1;
    myMACRO.epos  = -1;
    yKEYS_loop_return ();

@@ -51,9 +51,9 @@ ymacro_save             (void)
    ymacro_clear (myMACRO.rname);
    /*> ymacro_reset (myMACRO.rname);                                                  <*/
    /*---(save to macro)------------------*/
-   if (myMACRO.rlen == 0)   g_macros [myMACRO.rcurr].keys  = g_stub;
-   else                     g_macros [myMACRO.rcurr].keys  = strdup (myMACRO.rkeys);
-   g_macros [myMACRO.rcurr].len   = strlen (myMACRO.rkeys);
+   if (myMACRO.rlen == 0)   zMACRO_macros [myMACRO.rcurr].keys  = zMACRO_stub;
+   else                     zMACRO_macros [myMACRO.rcurr].keys  = strdup (myMACRO.rkeys);
+   zMACRO_macros [myMACRO.rcurr].len   = strlen (myMACRO.rkeys);
    /*---(trim)---------------------------*/
    ystrlcpy (x_keys, myMACRO.rkeys, LEN_RECD);
    x_len = strlen (x_keys);
@@ -85,22 +85,22 @@ ymacro_fetch             (void)
       DEBUG_YMACRO   yLOG_char    ("ename"     , myMACRO.ename);
       /*> ymacro_wipe  (myMACRO.ename);                                               <*/
       ymacro_reset (myMACRO.ename);
-      myMACRO.e_loader (myMACRO.ename, g_macros [myMACRO.ecurr].keys);
-      if (g_macros [myMACRO.ecurr].keys != NULL) {
-         g_macros [myMACRO.ecurr].len = strlen (g_macros [myMACRO.ecurr].keys);
-         x_ch = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].len - 1];
-         if (x_ch != G_CHAR_HALT)  g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].len++] = G_CHAR_HALT;
-         g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].len  ] = G_KEY_NULL;
+      myMACRO.e_loader (myMACRO.ename, zMACRO_macros [myMACRO.ecurr].keys);
+      if (zMACRO_macros [myMACRO.ecurr].keys != NULL) {
+         zMACRO_macros [myMACRO.ecurr].len = strlen (zMACRO_macros [myMACRO.ecurr].keys);
+         x_ch = zMACRO_macros [myMACRO.ecurr].keys [zMACRO_macros [myMACRO.ecurr].len - 1];
+         if (x_ch != G_CHAR_HALT)  zMACRO_macros [myMACRO.ecurr].keys [zMACRO_macros [myMACRO.ecurr].len++] = G_CHAR_HALT;
+         zMACRO_macros [myMACRO.ecurr].keys [zMACRO_macros [myMACRO.ecurr].len  ] = G_KEY_NULL;
       } else {
-         g_macros [myMACRO.ecurr].len = 0;
+         zMACRO_macros [myMACRO.ecurr].len = 0;
       }
    }
    /*---(information)-----------------*/
-   DEBUG_YMACRO   yLOG_info    ("macro"     , g_macros [myMACRO.ecurr].keys);
-   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [myMACRO.ecurr].len);
+   DEBUG_YMACRO   yLOG_info    ("macro"     , zMACRO_macros [myMACRO.ecurr].keys);
+   DEBUG_YMACRO   yLOG_value   ("len"       , zMACRO_macros [myMACRO.ecurr].len);
    /*---(set globals)-----------------*/
-   if (g_macros [myMACRO.ecurr].pos < 0)  g_macros [myMACRO.ecurr].cur = 0;
-   else                             g_macros [myMACRO.ecurr].cur = g_macros [myMACRO.ecurr].keys [g_macros [myMACRO.ecurr].pos];
+   if (zMACRO_macros [myMACRO.ecurr].pos < 0)  zMACRO_macros [myMACRO.ecurr].cur = 0;
+   else                             zMACRO_macros [myMACRO.ecurr].cur = zMACRO_macros [myMACRO.ecurr].keys [zMACRO_macros [myMACRO.ecurr].pos];
    /*---(complete)--------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -140,14 +140,14 @@ ymacro__writer          (int c, uchar a_abbr)
       return rce;
    }
    /*---(label)--------------------------*/
-   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [n].len);
-   if (g_macros [n].len <= 0)  {
+   DEBUG_YMACRO   yLOG_value   ("len"       , zMACRO_macros [n].len);
+   if (zMACRO_macros [n].len <= 0)  {
       DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(keys)---------------------------*/
-   ystrlcpy (x_keys, g_macros [n].keys, LEN_RECD);
-   x_keys [g_macros [n].len - 1] = G_KEY_NULL;
+   ystrlcpy (x_keys, zMACRO_macros [n].keys, LEN_RECD);
+   x_keys [zMACRO_macros [n].len - 1] = G_KEY_NULL;
    DEBUG_YMACRO   yLOG_info    ("x_keys"    , x_keys);
    /*---(write)-----------------------*/
    rc = yPARSE_vprintf (c, "macro", a_abbr, x_keys);
@@ -233,8 +233,8 @@ yMACRO_reader           (int n, char *a_verb)
    DEBUG_YMACRO   yLOG_note    ("saving values");
    ymacro_clear (x_abbr);
    if (x_keys [strlen (x_keys) - 1] != '³')   ystrlcat (x_keys, "³"   , LEN_RECD );
-   g_macros [m].keys = strdup (x_keys);
-   g_macros [m].len  = strlen (x_keys);
+   zMACRO_macros [m].keys = strdup (x_keys);
+   zMACRO_macros [m].len  = strlen (x_keys);
    if (myMACRO.e_saver != NULL)  myMACRO.e_saver (x_abbr, x_keys);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO  yLOG_exit    (__FUNCTION__);
@@ -257,7 +257,7 @@ yMACRO_export           (char a_abbr)
       return rce;
    }
    /*---(write)--------------------------*/
-   rc = ystrlexport (0, g_macros [n].keys);
+   rc = ystrlexport (0, zMACRO_macros [n].keys);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return rc;
@@ -321,8 +321,8 @@ yMACRO_yank             (char a_abbr, char *a_label)
    /*---(load)---------------------------*/
    if (myMACRO.e_saver  != NULL) {
       /*---(free up)---------------------*/
-      if (g_macros [n].len > 0)   free (g_macros [n].keys);
-      g_macros [n].keys = NULL;
+      if (zMACRO_macros [n].len > 0)   free (zMACRO_macros [n].keys);
+      zMACRO_macros [n].keys = NULL;
       ymacro_reset (a_abbr);
       /*---(grab)------------------------*/
       myMACRO.e_saver  (a_abbr, x_keys);
@@ -330,12 +330,12 @@ yMACRO_yank             (char a_abbr, char *a_label)
       x_ch = x_keys [l - 1];
       if (x_ch != G_CHAR_HALT)  x_keys [l++] = G_CHAR_HALT;
       x_keys [l] = G_KEY_NULL;
-      g_macros [n].keys = strdup (x_keys);
-      g_macros [n].len = strlen (g_macros [n].keys);
+      zMACRO_macros [n].keys = strdup (x_keys);
+      zMACRO_macros [n].len = strlen (zMACRO_macros [n].keys);
    }
    /*---(information)-----------------*/
-   DEBUG_YMACRO   yLOG_info    ("macro"     , g_macros [n].keys);
-   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [n].len);
+   DEBUG_YMACRO   yLOG_info    ("macro"     , zMACRO_macros [n].keys);
+   DEBUG_YMACRO   yLOG_value   ("len"       , zMACRO_macros [n].len);
    /*---(complete)--------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -371,12 +371,12 @@ yMACRO_paste            (char a_abbr, char *a_label)
    /*---(load)---------------------------*/
    if (myMACRO.e_loader != NULL) {
       /*---(free up)---------------------*/
-      /*> if (g_macros [n].len > 0)   free (g_macros [n].keys);                       <*/
+      /*> if (zMACRO_macros [n].len > 0)   free (zMACRO_macros [n].keys);                       <*/
       myMACRO.e_loader (a_abbr, x_keys);
    }
    /*---(information)-----------------*/
-   DEBUG_YMACRO   yLOG_info    ("macro"     , g_macros [n].keys);
-   DEBUG_YMACRO   yLOG_value   ("len"       , g_macros [n].len);
+   DEBUG_YMACRO   yLOG_info    ("macro"     , zMACRO_macros [n].keys);
+   DEBUG_YMACRO   yLOG_value   ("len"       , zMACRO_macros [n].len);
    /*---(complete)--------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -405,7 +405,7 @@ yMACRO_copy             (char a_src, char a_dst)
       return rce;
    }
    /*---(copy)---------------------------*/
-   ystrlcpy (x_recd, g_macros [n].keys, LEN_RECD);
+   ystrlcpy (x_recd, zMACRO_macros [n].keys, LEN_RECD);
    x_len = strlen (x_recd);
    DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len <=  0) {
@@ -443,7 +443,7 @@ yMACRO_to_sreg          (char a_abbr, char a_reg)
       return rce;
    }
    /*---(copy)---------------------------*/
-   ystrlcpy (x_recd, g_macros [n].keys, LEN_RECD);
+   ystrlcpy (x_recd, zMACRO_macros [n].keys, LEN_RECD);
    x_len = strlen (x_recd);
    DEBUG_YMACRO   yLOG_value   ("x_len"     , x_len);
    --rce;  if (x_len <=  0) {

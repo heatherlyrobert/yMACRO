@@ -16,11 +16,11 @@ tMY         myMACRO;
 
 char    S_MACRO_LIST   [S_MACRO_MAX];
 
-tMACRO  g_macros    [S_MACRO_MAX];
-int     g_nmacro    =    0;
+tMACRO  zMACRO_macros    [S_MACRO_MAX];
+int     zMACRO_nmacro    =    0;
 
 
-uchar   *g_stub     = "";
+uchar   *zMACRO_stub     = "";
 
 
 
@@ -115,7 +115,7 @@ yMACRO_init             (void)
    ystrlcat (S_MACRO_LIST, YSTR_GREEK , S_MACRO_MAX);
    ystrlcat (S_MACRO_LIST, ".ад"      , S_MACRO_MAX);
    DEBUG_YMACRO   yLOG_info    ("LIST"      , S_MACRO_LIST);
-   g_nmacro = strlen (S_MACRO_LIST);
+   zMACRO_nmacro = strlen (S_MACRO_LIST);
    yMACRO_global_init ();
    /*---(clear pointers)-----------------*/
    myMACRO.e_loader  = NULL;
@@ -219,7 +219,7 @@ char
 yMACRO_zero             (void)
 {
    if (myMACRO.ecurr < 0)  return 0;
-   g_macros [myMACRO.ecurr].repeat = 0;
+   zMACRO_macros [myMACRO.ecurr].repeat = 0;
    return 0;
 }
 
@@ -227,7 +227,7 @@ char
 yMACRO_count            (void)
 {
    if (myMACRO.ecurr < 0)                   return 0;
-   return g_macros [myMACRO.ecurr].repeat;
+   return zMACRO_macros [myMACRO.ecurr].repeat;
 }
 
 
@@ -274,17 +274,17 @@ ymacro_clear            (uchar a_abbr)
    }
    /*---(running)------------------------*/
    DEBUG_YMACRO   yLOG_snote   ("runby");
-   g_macros [n].runby     =   -1;
+   zMACRO_macros [n].runby     =   -1;
    /*---(contents)-----------------------*/
    DEBUG_YMACRO   yLOG_snote   ("data");
-   if (g_macros [n].keys != g_stub)  free (g_macros [n].keys);
-   g_macros [n].keys      = g_stub;
-   g_macros [n].len       =    0;
+   if (zMACRO_macros [n].keys != zMACRO_stub)  free (zMACRO_macros [n].keys);
+   zMACRO_macros [n].keys      = zMACRO_stub;
+   zMACRO_macros [n].len       =    0;
    /*---(execute)------------------------*/
    DEBUG_YMACRO   yLOG_snote   ("exec");
-   g_macros [n].pos       =   -1;
-   g_macros [n].cur       =    0;
-   g_macros [n].repeat    =    0;
+   zMACRO_macros [n].pos       =   -1;
+   zMACRO_macros [n].cur       =    0;
+   zMACRO_macros [n].repeat    =    0;
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -307,9 +307,9 @@ ymacro_reset            (uchar a_abbr)
    }
    /*---(execute)------------------------*/
    DEBUG_YMACRO   yLOG_snote   ("exec");
-   g_macros [n].pos       =   -1;
-   g_macros [n].cur       =    0;
-   g_macros [n].repeat    =    0;
+   zMACRO_macros [n].pos       =   -1;
+   zMACRO_macros [n].cur       =    0;
+   zMACRO_macros [n].repeat    =    0;
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -332,12 +332,12 @@ ymacro_wipe             (uchar a_abbr)
    }
    /*---(running)------------------------*/
    DEBUG_YMACRO   yLOG_snote   ("runby");
-   g_macros [n].runby     =   -1;
+   zMACRO_macros [n].runby     =   -1;
    /*---(execute)------------------------*/
    DEBUG_YMACRO   yLOG_snote   ("exec");
-   g_macros [n].pos       =   -1;
-   g_macros [n].cur       =    0;
-   g_macros [n].repeat    =    0;
+   zMACRO_macros [n].pos       =   -1;
+   zMACRO_macros [n].cur       =    0;
+   zMACRO_macros [n].repeat    =    0;
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -366,8 +366,8 @@ ymacro_purge            (char a_scope)
       return rce;
    }
    /*---(clear)--------------------------*/
-   DEBUG_YMACRO   yLOG_value   ("g_nmacro"  , g_nmacro);
-   for (i = 0; i < g_nmacro; ++i) {
+   DEBUG_YMACRO   yLOG_value   ("zMACRO_nmacro"  , zMACRO_nmacro);
+   for (i = 0; i < zMACRO_nmacro; ++i) {
       x_abbr = S_MACRO_LIST [i];
       if (a_scope == YMACRO_LOWER  && strchr (YSTR_LOWER , x_abbr) == NULL)  continue;
       if (a_scope == YMACRO_NUMBER && strchr (YSTR_NUMBER, x_abbr) == NULL)  continue;
@@ -401,7 +401,7 @@ yMACRO_reset_all        (void)
    SET_MACRO_IGNORE;
    SET_MACRO_STOP;
    /*---(reset positions)----------------*/
-   for (i = 0; i < g_nmacro; ++i) {
+   for (i = 0; i < zMACRO_nmacro; ++i) {
       x_abbr = S_MACRO_LIST [i];
       ymacro_wipe  (x_abbr);
    }

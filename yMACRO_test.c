@@ -18,8 +18,7 @@ ymacro__unit_quiet      (void)
    char        rc           =    0;
    int         x_narg       = 1;
    char       *x_args [20]  = {"yMACRO_unit" };
-   yPARSE_init  ('y', NULL, '-');
-   yPARSE_delimiters  ("");
+   rc = yPARSE_config (YPARSE_AUTO, NULL, YPARSE_ONETIME, YPARSE_FIELD, YPARSE_FILL);
    /*> yURG_logger   (x_narg, x_args);                                                <*/
    /*> yURG_urgs     (x_narg, x_args);                                                <*/
    rc = yMODE_init  (MODE_MAP);
@@ -39,8 +38,7 @@ ymacro__unit_loud       (void)
    char        rc           =    0;
    int         x_narg       = 1;
    char       *x_args [20]  = {"yMACRO_unit" };
-   yPARSE_init  ('y', NULL, '-');
-   yPARSE_delimiters  ("");
+   rc = yPARSE_config (YPARSE_AUTO, NULL, YPARSE_ONETIME, YPARSE_FIELD, YPARSE_FILL);
    yURG_logger   (x_narg, x_args);
    yURG_urgs     (x_narg, x_args);
    yURG_by_name  ("kitchen"      , YURG_ON);
@@ -108,11 +106,11 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
    }
    else if (strcmp (a_question, "exec"           )   == 0) {
       if (myMACRO.ecurr < 0)  snprintf (unit_answer, LEN_RECD, "MACRO exec   (%c) : macro pointer grounded", myMACRO.ename);
-      else              snprintf (unit_answer, LEN_RECD, "MACRO exec   (%c) : %c %c %3d %02x %3d[%-.30s]", myMACRO.ename, myMACRO.emode, myMACRO.ddelay, g_macros [myMACRO.ecurr].pos, (uchar) g_macros [myMACRO.ecurr].cur, g_macros [myMACRO.ecurr].len, g_macros [myMACRO.ecurr].keys);
+      else              snprintf (unit_answer, LEN_RECD, "MACRO exec   (%c) : %c %c %3d %02x %3d[%-.30s]", myMACRO.ename, myMACRO.emode, myMACRO.ddelay, zMACRO_macros [myMACRO.ecurr].pos, (uchar) zMACRO_macros [myMACRO.ecurr].cur, zMACRO_macros [myMACRO.ecurr].len, zMACRO_macros [myMACRO.ecurr].keys);
       return unit_answer;
    }
    /*> else if (strcmp (a_question, "keys"           )   == 0) {                                             <* 
-    *>    snprintf (unit_answer, LEN_RECD, "MACRO keys   (%c) : %-.45s", a_abbr, g_macros [myMACRO.ecurr].keys);   <* 
+    *>    snprintf (unit_answer, LEN_RECD, "MACRO keys   (%c) : %-.45s", a_abbr, zMACRO_macros [myMACRO.ecurr].keys);   <* 
     *>    return unit_answer;                                                                                <* 
     *> }                                                                                                     <*/
    else if (strcmp (a_question, "list"           )   == 0) {
@@ -151,28 +149,28 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
    else if (strcmp (a_question, "saved"          )   == 0) {
       if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO saved  (%c) : not a valid macro name", a_abbr);
       else {
-         sprintf (t, "å%-.33sæ", g_macros [n].keys);
-         if (g_macros [n].len > 33)  t [34] = '>';
-         snprintf (unit_answer, LEN_RECD, "MACRO saved  (%c) : %2d%-35.35s %2d %2d %2d", a_abbr, g_macros [n].len, t, g_macros [n].pos, g_macros [n].runby, g_macros [n].repeat);
+         sprintf (t, "å%-.33sæ", zMACRO_macros [n].keys);
+         if (zMACRO_macros [n].len > 33)  t [34] = '>';
+         snprintf (unit_answer, LEN_RECD, "MACRO saved  (%c) : %2d%-35.35s %2d %2d %2d", a_abbr, zMACRO_macros [n].len, t, zMACRO_macros [n].pos, zMACRO_macros [n].runby, zMACRO_macros [n].repeat);
       }
    }
    else if (strcmp (a_question, "full"           )   == 0) {
       if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : not a valid macro name", a_abbr);
       else {
-         snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : %3då%-sæ", a_abbr, g_macros [n].len, g_macros [n].keys);
+         snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : %3då%-sæ", a_abbr, zMACRO_macros [n].len, zMACRO_macros [n].keys);
       }
    }
    else if (strcmp (a_question, "modes"          )   == 0) {
       if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO modes  (%c) : not a valid macro name", a_abbr);
       else {
-         sprintf (t, "å%-.33sæ", g_macros [n].modes);
-         if (g_macros [n].len > 33)  t [34] = '>';
-         snprintf (unit_answer, LEN_RECD, "MACRO modes  (%c) : %2d%-35.35s %2d %2d %2d", a_abbr, g_macros [n].len, t, g_macros [n].pos, g_macros [n].runby, g_macros [n].repeat);
+         sprintf (t, "å%-.33sæ", zMACRO_macros [n].modes);
+         if (zMACRO_macros [n].len > 33)  t [34] = '>';
+         snprintf (unit_answer, LEN_RECD, "MACRO modes  (%c) : %2d%-35.35s %2d %2d %2d", a_abbr, zMACRO_macros [n].len, t, zMACRO_macros [n].pos, zMACRO_macros [n].runby, zMACRO_macros [n].repeat);
       }
    }
    /*> else if (strcmp (a_question, "full"           )   == 0) {                                                <* 
     *>    if (n < 0)  snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : not a valid macro name", a_abbr);   <* 
-    *>    else        snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : %s", a_abbr, g_macros [n].keys);    <* 
+    *>    else        snprintf (unit_answer, LEN_RECD, "MACRO full   (%c) : %s", a_abbr, zMACRO_macros [n].keys);    <* 
     *> }                                                                                                        <*/
    else if (strcmp (a_question, "repeat"       )  == 0) {
       snprintf (unit_answer, LEN_FULL, "MACRO repeat     : %d", yKEYS_repeats ());

@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2l"
-#define     P_VERTXT    "missed old chrworking references"
+#define     P_VERNUM    "2.2m"
+#define     P_VERTXT    "changed global variable names to fix external collisions"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -202,11 +202,11 @@ struct cMACRO {
    uchar       cur;                         /* current key                    */
    uchar       repeat;                      /* number of repeats              */ /*---(done)--------------*/
 };
-extern tMACRO  g_macros    [S_MACRO_MAX];
-extern int     g_nmacro;           
+extern tMACRO  zMACRO_macros    [S_MACRO_MAX];
+extern int     zMACRO_nmacro;           
 
 
-extern uchar  *g_stub;
+extern uchar  *zMACRO_stub;
 
 
 

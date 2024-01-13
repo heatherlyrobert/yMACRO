@@ -379,12 +379,12 @@ ymacro_agrios__call     (void)
       break;
    }
    /*---(clear mode)---------------------*/
-   x_runby = g_macros [myMACRO.ecurr].runby;
+   x_runby = zMACRO_macros [myMACRO.ecurr].runby;
    DEBUG_YMACRO  yLOG_value   ("x_runby"   , x_runby);
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    ymacro_set2stop ();
-   g_macros [myMACRO.ecurr].runby = x_runby;
+   zMACRO_macros [myMACRO.ecurr].runby = x_runby;
    DEBUG_YMACRO   yLOG_info    ("x_target"  , x_target);
    DEBUG_YMACRO   yLOG_info    ("x_args"    , x_args);
    /*---(parse)--------------------------*/
@@ -415,7 +415,7 @@ ymacro_agrios__call     (void)
          return rce;
       }
    }
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    /*---(save jump for branch)-----------*/
    --rce;  if (x_type == G_CHAR_UNLIKELY) {
@@ -429,11 +429,11 @@ ymacro_agrios__call     (void)
       ystrlcpy (myMACRO.g_code [myMACRO.g_level], ""      , LEN_RECD);
       ystrlcpy (myMACRO.g_next [myMACRO.g_level], ""      , LEN_LABEL);
       s_type = x_type;
-      DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+      DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
       DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
       rc = ymacro_agrios__read ('-');
-      g_macros [myMACRO.ecurr].runby = x_runby;
-      DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+      zMACRO_macros [myMACRO.ecurr].runby = x_runby;
+      DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
       DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
    }
    /*---(complete)-----------------------*/
@@ -622,7 +622,7 @@ ymacro_agrios__read     (char a_first)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    DEBUG_YMACRO  yLOG_value   ("ecurr"     , myMACRO.ecurr);
-   x_runby = g_macros [myMACRO.ecurr].runby;
+   x_runby = zMACRO_macros [myMACRO.ecurr].runby;
    DEBUG_YMACRO  yLOG_value   ("x_runby"   , x_runby);
    /*---(defense)------------------------*/
    DEBUG_YMACRO   yLOG_point   ("e_getter"  , myMACRO.e_getter);
@@ -679,7 +679,7 @@ ymacro_agrios__read     (char a_first)
       }
       /*---(normal)-------------------------*/
       else {
-         DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+         DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
          DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
          sprintf (x_ready, " =%s", x_contents);
          DEBUG_YMACRO   yLOG_info    ("current"   , x_ready);
@@ -689,7 +689,7 @@ ymacro_agrios__read     (char a_first)
             DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
-         DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+         DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
          DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
          rc = ymacro_exe_beg  (G_CHAR_EMPTY, myMACRO.g_style);
          DEBUG_YMACRO   yLOG_value   ("execute"   , rc);
@@ -699,9 +699,9 @@ ymacro_agrios__read     (char a_first)
             return rce;
          }
          if (a_first == 'y')  ymacro_exe_adv (0);
-         DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
-         /*> g_macros [myMACRO.ecurr].runby = x_runby;                                <*/
-         DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+         DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
+         /*> zMACRO_macros [myMACRO.ecurr].runby = x_runby;                                <*/
+         DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
          DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
          break;
       }
@@ -722,22 +722,22 @@ ymacro_agrios_next      (void)
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
-   x_runby =  g_macros [myMACRO.ecurr].runby;
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
+   x_runby =  zMACRO_macros [myMACRO.ecurr].runby;
    /*---(clear mode)-----*/
    ymacro_set2stop ();
    /*---(check next)-----*/
-   g_macros [myMACRO.ecurr].runby = x_runby;
+   zMACRO_macros [myMACRO.ecurr].runby = x_runby;
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
    ystrlcpy (myMACRO.g_curr [myMACRO.g_level], myMACRO.g_next [myMACRO.g_level], LEN_LABEL);
    ystrlcpy (myMACRO.g_code [myMACRO.g_level], ""            , LEN_RECD);
    ystrlcpy (myMACRO.g_next [myMACRO.g_level], ""            , LEN_LABEL);
    rc = ymacro_agrios__read ('-');
-   g_macros [myMACRO.ecurr].runby = x_runby;
+   zMACRO_macros [myMACRO.ecurr].runby = x_runby;
    DEBUG_YMACRO   yLOG_value   ("read"      , rc);
    DEBUG_YMACRO   yLOG_complex ("stack"     , "%2då%sæ", myMACRO.edepth, myMACRO.estack);
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.ecurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.ecurr].runby);
    DEBUG_YMACRO   yLOG_value   ("g_level"   , myMACRO.g_level);
    --rce;  if (rc < 0 && myMACRO.g_level <= 0) {
       DEBUG_YMACRO   yLOG_note    ("full agrios complete");

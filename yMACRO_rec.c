@@ -138,15 +138,15 @@ ymacro_rec_beg          (uchar a_name)
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YMACRO   yLOG_value   ("pos"       , g_macros [n].pos);
-   --rce;  if (g_macros [n].pos >= 0) {
+   DEBUG_YMACRO   yLOG_value   ("pos"       , zMACRO_macros [n].pos);
+   --rce;  if (zMACRO_macros [n].pos >= 0) {
       DEBUG_YMACRO   yLOG_note    ("this macro is active");
       yKEYS_set_lock ();
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [n].runby);
-   --rce;  if (g_macros [n].runby >= 0 && n != 61) {
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [n].runby);
+   --rce;  if (zMACRO_macros [n].runby >= 0 && n != 61) {
       DEBUG_YMACRO   yLOG_note    ("this macro is running higher in tree");
       yKEYS_set_lock ();
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
@@ -163,9 +163,9 @@ ymacro_rec_beg          (uchar a_name)
    DEBUG_YMACRO   yLOG_value   ("myMACRO.rcurr"   , myMACRO.rcurr);
    /*---(prepare)---------------------*/
    ymacro_rec_clear ();
-   if (strchr (YSTR_UPPER, a_name) != NULL && g_macros [myMACRO.rcurr].len > 0) {
-      ystrlcpy (myMACRO.rkeys, g_macros [myMACRO.rcurr].keys , LEN_RECD);
-      /*> ystrlcpy (myMACRO.modes, g_macros [myMACRO.rcurr].modes, LEN_RECD);          <*/
+   if (strchr (YSTR_UPPER, a_name) != NULL && zMACRO_macros [myMACRO.rcurr].len > 0) {
+      ystrlcpy (myMACRO.rkeys, zMACRO_macros [myMACRO.rcurr].keys , LEN_RECD);
+      /*> ystrlcpy (myMACRO.modes, zMACRO_macros [myMACRO.rcurr].modes, LEN_RECD);          <*/
    } else {
       ystrlcpy (myMACRO.rkeys, "¤", LEN_RECD);
    }
@@ -267,7 +267,7 @@ yMACRO_rec_end          (void)
          ymacro_save ();
          /*> ymacro_wipe (myMACRO.rname);                                             <*/
       }
-      DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.rcurr].runby);
+      DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.rcurr].runby);
       /*> ymacro_rec_clear ();                                                        <*/
       ymacro_rec_reset  ();
       /*> myMACRO.rkeys [0] = G_KEY_NULL;                                             <* 
@@ -279,7 +279,7 @@ yMACRO_rec_end          (void)
    } else {
       DEBUG_YMACRO   yLOG_note    ("not recording, nothing to do");
    }
-   DEBUG_YMACRO   yLOG_value   ("runby"     , g_macros [myMACRO.rcurr].runby);
+   DEBUG_YMACRO   yLOG_value   ("runby"     , zMACRO_macros [myMACRO.rcurr].runby);
    /*---(complete)-----------------------*/
    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
    return 0;
