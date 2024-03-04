@@ -4,7 +4,6 @@
 #include    "yMACRO_priv.h"
 
 
-
 /*
  * four execution modes...
  *
@@ -674,7 +673,11 @@ ymacro_exe_control      (uchar a_key)
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_DISPLAY :
-      DEBUG_YMACRO   yLOG_note    ("display (©)");
+      DEBUG_YMACRO   yLOG_note    ("display (­)");
+      if (myMACRO.e_drawer  != NULL) {
+         DEBUG_YMACRO   yLOG_note    ("update drawing");
+         myMACRO.e_drawer ();
+      }
       a_key = G_KEY_NOOP;
       break;
    case G_CHAR_SPACE   :

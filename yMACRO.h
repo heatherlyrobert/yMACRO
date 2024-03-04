@@ -18,6 +18,7 @@ char*       yMACRO_version          (void);
 char        yMACRO_global_init      (void);       /* for other unit tests */
 char        yMACRO_init             (void);
 char        yMACRO_config           (void *a_loader, void *a_saver);
+char        yMACRO_graphic_config   (void *a_drawer, void *a_printer);
 char        yMACRO_wrap             (void);
 char        yMACRO_reset_all        (void);
 char        yMACRO_hmode            (uchar a_major, uchar a_minor);

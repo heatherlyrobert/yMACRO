@@ -1,5 +1,7 @@
 #!/usr/local/bin/koios
 #   koios-polos (axis of heaven) unit testing meta-language
+#>
+#> ln -s ../yMACRO*/yMACRO_gyges.sunit gyges_YMACRO.unit
 
 
 
@@ -333,6 +335,454 @@ SCRP          (YMACRO) quickly verify layerd macros                            
      get      check saved system                   yMACRO__unit                "saved"        , '0'                                                                                  s_equal     MACRO saved  (0) : 32å·:c2¦·¸LJ·¸··3l·2j··¹¹·6k·¸@2¹·³æ  -1 -1  0                                    
 
    COND       verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     wrap-up the program                  PROG__unit_end                                                                                                                    i_equal     0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+SCRP          (YMACRO) quickly verify running a script                           0s   script          yMACRO_direct                                                                ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     setup the program                    PROG__unit_quiet                                                                                                                  i_equal     0                                                                                                    
+     local    create working variable              - - - - - - - - - - - - -   char      x_name  [LEN_HUND]  = "/tmp/ymacro_testing.script";                                                                                                                                                                           
+
+   COND       create a tab and initial position                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     add tab by abbreviation              yKEYS_string                ":umake·0¦··,0"                                                                                       i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a1              0u    0x    0y    0z                                             
+
+   COND       create script file                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   5j·10l                                                                                                                                                                                                                     
+     append   ... add a record                     - - - - - - - - - - - - -   3j·5h                                                                                                                                                                                                                      
+     append   ... add a record                     - - - - - - - - - - - - -   2k·l                                                                                                                                                                                                                       
+
+   COND       verify executing the script                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     handle the key                       yKEYS_string                ":0a1¦··:script /tmp/ymacro_testing¦"                                                                 i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0g7              0u    6x    6y    0z                                             
+
+   COND       create script file (skip all)                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SKIP                                                                                                                                                                                                                  
+     append   ... add a record                     - - - - - - - - - - - - -   5j·10l                                                                                                                                                                                                                     
+     append   ... add a record                     - - - - - - - - - - - - -   3j·5h                                                                                                                                                                                                                      
+     append   ... add a record                     - - - - - - - - - - - - -   2k·l                                                                                                                                                                                                                       
+
+   COND       verify executing the script                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     handle the key                       yKEYS_string                ":0a1¦··:script /tmp/ymacro_testing¦"                                                                 i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a1              0u    0x    0y    0z                                             
+
+   COND       create script file (skip section)                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   5j·10l                                                                                                                                                                                                                     
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SKIP                                                                                                                                                                                                                  
+     append   ... add a record                     - - - - - - - - - - - - -   3j·5h                                                                                                                                                                                                                      
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< UNSKIP                                                                                                                                                                                                                
+     append   ... add a record                     - - - - - - - - - - - - -   2k·l                                                                                                                                                                                                                       
+
+   COND       verify executing the script                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     handle the key                       yKEYS_string                ":0a1¦··:script /tmp/ymacro_testing¦"                                                                 i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0l4              0u   11x    3y    0z                                             
+
+   COND       verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     wrap-up the program                  PROG__unit_end                                                                                                                    i_equal     0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+SCRP          (YMACRO) quickly verify script screen print                        0s   scrn_print      yMACRO_direct                                                                ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     setup the program                    PROG__unit_quiet                                                                                                                  i_equal     0                                                                                                    
+     exec     start the graphics                   PROG_dawn                                                                                                                         i_equal     0                                                                                                    
+     local    create working variable              - - - - - - - - - - - - -   char      x_name  [LEN_HUND]  = "/tmp/ymacro_testing.script";                                                                                                                                                              
+
+   COND       create a tab and initial position                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     add tab by abbreviation              yKEYS_string                ":umake·0¦··,0"                                                                                       i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a1              0u    0x    0y    0z                                             
+
+   COND       create script file                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   :winpush  675 100 619 443¦                                                                                                                                                                                                 
+     append   ... add a record                     - - - - - - - - - - - - -   :0a1¦·····+10¦                                                                                                                                                                                                             
+     append   ... add a record                     - - - - - - - - - - - - -   :0c10¦····shello¦                                                                                                                                                                                                          
+     append   ... add a record                     - - - - - - - - - - - - -   :0g29¦····+32¦                                                                                                                                                                                                             
+
+   COND       verify executing the script                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     handle the key                       yKEYS_string                ":0a1¦··:script /tmp/ymacro_testing¦"                                                                 i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0g29             0u    6x   28y    0z                                             
+
+   COND       force drawing                                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     DRAW THE SCREEN                      yVIEW_draw                                                                                                                        i_equal     0                                                                                                    
+
+   COND       create script file                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/gyges_actual1.scrn                                                                                                                                                                                   
+     append   ... add a record                     - - - - - - - - - - - - -   :winpop¦                                                                                                                                                                                                                   
+
+   COND       verify executing the script                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     handle the key                       yKEYS_string                ":script /tmp/ymacro_testing¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0g29             0u    6x   28y    0z                                             
+     exec     check match to expected              yURG_diff                   "/tmp/gyges_actual1.scrn", "gyges_YMACRO_1.scrn"                                                      i_equal     1                                                                                                    
+
+   COND       create script file                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   :winpush  675 100 619 443¦                                                                                                                                                                                                 
+     append   ... add a record                     - - - - - - - - - - - - -   :0a1¦·····+10¦                                                                                                                                                                                                             
+     append   ... add a record                     - - - - - - - - - - - - -   :0c10¦····shello¦                                                                                                                                                                                                          
+     append   ... add a record                     - - - - - - - - - - - - -   :0g29¦····+32¦                                                                                                                                                                                                             
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/gyges_actual2.scrn                                                                                                                                                                                   
+     append   ... add a record                     - - - - - - - - - - - - -   :winpop¦                                                                                                                                                                                                                   
+
+   COND       verify executing the script                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     handle the key                       yKEYS_string                ":0a1¦··:script /tmp/ymacro_testing¦"                                                                 i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0g29             0u    6x   28y    0z                                             
+     exec     check match to expected              yURG_diff                   "/tmp/gyges_actual2.scrn", "gyges_YMACRO_2.scrn"                                                      i_equal     1                                                                                                    
+
+   COND       verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     exec     stop the graphics                    PROG_dusk                                                                                                                         i_equal     0                                                                                                    
+     exec     wrap-up the program                  PROG__unit_end                                                                                                                    i_equal     0                                                                                                    
+
+
+
+#23456789-12  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-123456789- 
+#==(verb)===  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  ========(var)======= 
+SCRP          (YMACRO) verify voyager script (static version)                    0s   voyager         yMACRO_direct                                                                ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     setup the program                    PROG__unit_quiet                                                                                                                  i_equal     0                                                                                                    
+     exec     start the graphics                   PROG_dawn                                                                                                                         i_equal     0                                                                                                    
+#>   exec     turn on debugging (MID)              yURG_name                   "mid"          , YURG_ON                                                                              i_equal     0                                                                                                    
+#>   exec     turn on debugging (yMACRO)           yURG_name                   "ymacro"       , YURG_ON                                                                              i_equal     0                                                                                                    
+#>   exec     turn on debugging (yKEYS)            yURG_name                   "ykeys"        , YURG_ON                                                                              i_equal     0                                                                                                    
+#>   exec     turn on debugging (yVIEW)            yURG_name                   "yview"        , YURG_ON                                                                              i_equal     0                                                                                                    
+#>   exec     turn off debugging (yCALC)           yURG_name                   "ycalc"        , YURG_OFF                                                                             i_equal     0                                                                                                    
+     exec     ... save original window location    yX11_win_save                                                                                                                     i_equal     0                                                                                                    
+     local    create working variable              - - - - - - - - - - - - -   char      x_name  [LEN_HUND]  = "/tmp/ymacro_voyager.script";                                                                                                                                                              
+     get      ... review default speed             yMACRO__unit                "speed"          , 0                                                                                  s_equal     MACRO speed      : exec  0 1us    0, n 100ms  §  delay  0 1us    0, n 100ms  §  macro  - -  0p            
+
+   COND       create a working tab                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     add tab by abbreviation              yKEYS_string                ":umake·0¦··,0"                                                                                       i_equal     0                                                                                                    
+
+   COND       verify setup                                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     get      ... review default speed             yMACRO__unit                "speed"          , 0                                                                                  s_equal     MACRO speed      : exec  0 1us    0, n 100ms  §  delay  0 1us    0, n 100ms  §  macro  - -  0p            
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   º··µre5··»                                                                                                                                                                                                                 
+     append   ... add a record                     - - - - - - - - - - - - -   {
+     append   ... add a record                     - - - - - - - - - - - - -      :note #¦
+     append   ... add a record                     - - - - - - - - - - - - -      :myhome 675 100¦
+     append   ... add a record                     - - - - - - - - - - - - -      :mysize 619 443¦
+     append   ... add a record                     - - - - - - - - - - - - -      :0p29¦··+1¦··l+1¦··l+1¦··l+1¦··l-1¦··
+     append   ... add a record                     - - - - - - - - - - - - -      :0p30¦··s ¦··ls  5¦··
+     append   ... add a record                     - - - - - - - - - - - - -      :0p34¦··s=p29+5¦··
+     append   ... add a record                     - - - - - - - - - - - - -      0_
+     append   ... add a record                     - - - - - - - - - - - - -   }
+     append   ... add a record                     - - - - - - - - - - - - -   ­                                                                                                                                                                                                                          
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_1.scrn
+     append   ... add a record                     - - - - - - - - - - - - -                                                                                                                                                                                                                              
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a1              0u    0x    0y    0z                                             
+     get      ... review speed                     yMACRO__unit                "speed"          , 0                                                                                  s_equal     MACRO speed      : exec  5 100ms  0, n 100ms  §  delay  0 1us    0, n 100ms  §  macro  - -  0p       
+     get      ... reviwe window                    yX11_win_where_unit         -1                                                                                                    s_equal     X11 where        : ¬¬¬¬¬¬¬¬¬¬¬¬  ¬   675x   100y   619w   443t                                       
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_1.scrn", "unit_ymacro_voyager_1.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify header                                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -                                                                                                                                                                                                                              
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ header statement ]]====================================================##                                                                                                                                           
+     append   ... add a record                     - - - - - - - - - - - - -   º:0a1¦·······swhere is the voyager 1 spacecraft (90 sec)?¦···············································11(ls<¦)··»                                                                                                       
+     append   ... add a record                     - - - - - - - - - - - - -   º··0··v·11l··»                                                                                                                                                                                                             
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏÏÏÏ·ÏÏÏÏÏ                                                                                                                                                                                                                
+     append   ... add a record                     - - - - - - - - - - - - -                                                                                                                                                                                                                              
+     append   ... add a record                     - - - - - - - - - - - - -   º··¥··0··2j··sa friend of mine stunned me recently.  he said, a major news channel reported that the¦····11(ls<¦)··»                                                                                                       
+     append   ... add a record                     - - - - - - - - - - - - -   º··¥··0···j··svoyager spacecraft had returned signals from numerous stars it had already passed.¦········11(ls<¦)··»                                                                                                       
+     append   ... add a record                     - - - - - - - - - - - - -   º··¥··0···j··sthe reporter was then confidently making pronouncements and uncovering conspiracies !?!¦···11(ls<¦)··»                                                                                                       
+     append   ... add a record                     - - - - - - - - - - - - -   º··¥··0···j··»                                                                                                                                                                                                             
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏÏÏÏ·ÏÏÏÏÏ ÏÏÏÏÏ·ÏÏÏÏÏ                                                                                                                                                                                                    
+     append   ... add a record                     - - - - - - - - - - - - -                                                                                                                                                                                                                              
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_2.scrn                                                                                                                                                                          
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a6              0u    0x    5y    0z                                             
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_2.scrn", "unit_ymacro_voyager_2.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify titles and legend                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -                                                                                                                                                                                                                              
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ titles ]]==============================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·:0a12¦·····sstart with some headers¦··f|··4(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·0···j······sand column sizing to¦·····f|··4(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·0···j······sorganze.¦R················f|··4(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·:0a8¦·»
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏÏÏÏ·ÏÏÏÏÏ
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ·····ssubject¦··········F·w····-^¦
+     append   ... add a record                     - - - - - - - - - - - - -   l····syear¦·············F·wl···-^¦
+     append   ... add a record                     - - - - - - - - - - - - -   l····sday¦··············F·whhh·-^¦
+     append   ... add a record                     - - - - - - - - - - - - -   l····shour¦·············F·Nll··-^¦
+     append   ... add a record                     - - - - - - - - - - - - -   l····smin¦··············F·Nl···-^¦
+     append   ... add a record                     - - - - - - - - - - - - -   l····ssec¦··············F·nll··-^¦
+     append   ... add a record                     - - - - - - - - - - - - -   0·j
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ºv··5j5l··x··v··5j5l··x»
+     append   ... add a record                     - - - - - - - - - - - - -   º2jl···snow add scaling values¦···f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ºjh····sto convert between¦·······f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ºjh····sthese time units.¦········f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º04k»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ·····sscales (per)¦
+     append   ... add a record                     - - - - - - - - - - - - -   2l···+365¦··············f|
+     append   ... add a record                     - - - - - - - - - - - - -   l····+24¦···············f|
+     append   ... add a record                     - - - - - - - - - - - - -   l····+60¦···············f|
+     append   ... add a record                     - - - - - - - - - - - - -   l····+60¦···············f|
+     append   ... add a record                     - - - - - - - - - - - - -   º0j··v··3j5l··x··v··3j5l··x»
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏÏÏÏ·ÏÏÏÏÏ
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ legend ]]==============================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·:0c26¦··sWARNING, simplistic mathematical projections¦········F|¦··································3(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·3h···s(directionally correct only)¦························F|¦··································3(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·:0d29¦··sAUTOMATIC TEXT COLORATION¦···························F|_¦·································2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·:0c30¦··+1¦···················································l··sblue are numerical constants¦····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·3h·j····=`k¦+1¦···············································l··sgreen are calculated numbers¦····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·3h·j····=0p29+0q29+0r29+0s29+0t29+0q29-0r29+0s29+0t29+5-5¦····l··sred are complicated formulas¦····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·3h·j····s 4¦··········f>······································l··sbrown are text constants¦········2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·3h·j····#0p30µ_d0q30¦·f>······································l··spurple are text formulas¦········2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·3h·j····s~p34¦········f>······································l··smagenta are reused formulas¦·····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏÏÏÏ·ÏÏÏÏÏ
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_3.scrn                                                                                                                                                                          
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0f35             0u    5x   34y    0z                                             
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_3.scrn", "unit_ymacro_voyager_3.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify speeds                                                      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -                                                                                                                                                                                                                              
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ speeds ]]==============================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   :a11¦·····slight miles¦···L····+186282¦·······fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·2j·2h···sthis formula is being built¦·····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·2h···sby moving/wandering not¦·········2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·2h···styping directly.¦················2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·4k··h··»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   =ÏÏ`ÏÏlÏÏ*ÏÏkÏÏkÏÏ'ÏÏ¦ÏÏ¦····fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·2j·3h··sthen, cut/paste across¦·············ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j··h··swith automatic formula¦·············ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j··h··stransformations.¦···················ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ·4k·ÏÏ·2l·ÏÏ·y·ÏÏ·3(hÏÏpÏÏ)
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·2j··v··2j4l··x··v··2j4l··x»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º··0·····sgreen background means¦·····f|······ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j··h··sthis value is needed¦·······f|······ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j··h··sby current cell.¦···········f|······ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·2k··l··syellow marks¦···············f|··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·····sthe current¦················f|··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·····scell.¦······················f|··»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º··l·2k··spurple background means¦····f|····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·2h··sthis cell provides info¦····f|····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j·2h··sto the current cell.¦·······f|····2(ls<¦)··»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º·4h·4k·»
+     append   ... add a record                     - - - - - - - - - - - - -   l
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏÏÏÏÏÏ
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_4.scrn                                                                                                                                                                          
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0c11             0u    2x   10y    0z                                             
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_4.scrn", "unit_ymacro_voyager_4.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify comparisons                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   º·2j··0··v··2j5l··x··v··2j5l··x··2k»
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   º·2l·7j··svoyager is 20,000 times¦·······f|··ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   º··j··h··sSLOWER than light (0.006c).¦···f|··ls<¦··»
+     append   ... add a record                     - - - - - - - - - - - - -   º·8k·h··»
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºs  voyager miles¦»
+     append   ... add a record                     - - - - - - - - - - - - -   3l···+38610¦············fc
+     append   ... add a record                     - - - - - - - - - - - - -   l····=ÏÏ`ÏÏhÏÏ/ÏÏkÏÏkÏÏkÏÏlÏÏ'ÏÏ¦ÏÏ¦·····fc··y·ÏÏ·l··p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   ·3h·k··y···j····p
+     append   ... add a record                     - - - - - - - - - - - - -   ··h····p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   ·0··j···ºs  speeding bullet¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ···3l····+682¦··············fc
+     append   ... add a record                     - - - - - - - - - - - - -   ····l··k···y·j·p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fg
+     append   ... add a record                     - - - - - - - - - - - - -   hhhk·y
+     append   ... add a record                     - - - - - - - - - - - - -   j····p
+     append   ... add a record                     - - - - - - - - - - - - -   h····p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºs  usain bolt¦»
+     append   ... add a record                     - - - - - - - - - - - - -   lll··+27¦···············fc
+     append   ... add a record                     - - - - - - - - - - - - -   lk···y·j·p··············fg
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fg
+     append   ... add a record                     - - - - - - - - - - - - -   hhhk·y
+     append   ... add a record                     - - - - - - - - - - - - -   j····p
+     append   ... add a record                     - - - - - - - - - - - - -   h····p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   º4jl··v··j2l··x··v··j2l··x··4kh»
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ sun ]]=================================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   0jj·ºsour sun (one au)¦»
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   º7j····svoyager takes 100 days to¦·····f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ºjh····stravel 1au vs light in 8min.¦··f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º8k0»
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   l····+9.295Ë7¦··········fc
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºslight¦············f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····=`k'''/kkkkk.¦¦····fG··y
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fG
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fg
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fg
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················f0
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºsvoyager¦··········f>»
+     append   ... add a record                     - - - - - - - - - - - - -   llk··y·j·p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºsbullet¦···········f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºsusain¦············f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····p
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   º3jh·v··jl··x··v··jl··x··3k0»
+     append   ... add a record                     - - - - - - - - - - - - -    
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_5.scrn
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a20             0u    0x   19y    0z                                             
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_5.scrn", "unit_ymacro_voyager_5.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify destinations                                                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ closest start ]]=======================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   0jj··ºsproxima centari¦»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º6j0···sthis star is the closest to¦··f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º0j····searth in ANY direction.¦······f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º7k0»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   lj···+4.2¦··············Ff1¦
+     append   ... add a record                     - - - - - - - - - - - - -   k····=`j*kkkkkkkkkkkk¦¦···fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºslight¦············f>»
+     append   ... add a record                     - - - - - - - - - - - - -   ll···=`kh'''/11kl.¦¦····fc··y
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fc
+     append   ... add a record                     - - - - - - - - - - - - -   l····p··················fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºsvoyager¦··········f>»
+     append   ... add a record                     - - - - - - - - - - - - -   llk··y·jh·p·············Fc0¦
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºshuman gens¦······f>»
+     append   ... add a record                     - - - - - - - - - - - - -   º·0·3j··xl··xl·»
+     append   ... add a record                     - - - - - - - - - - - - -   º·0··j··si'll guess 25yrs each on an¦···f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º·0··j··sinterstellar spacecraft¦·······f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º·0·5k·»
+     append   ... add a record                     - - - - - - - - - - - - -   l····=`k¦/25¦···········fc
+     append   ... add a record                     - - - - - - - - - - - - -   ÏÏ
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º3j0··v··3jl··x··v··2jl··x»
+     append   ... add a record                     - - - - - - - - - - - - -   º3k»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ first star ]]==========================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   0jj··ºsgliese 445¦»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º6j0···sthis is the star voyager¦········f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º0j····swill ACTUALLY pass nearest¦······f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º0j····s(not close by, ~2 light years)¦··f|··ls<¦»
+     append   ... add a record                     - - - - - - - - - - - - -   º8k0»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   lj···+17.1¦·············Ff1¦
+     append   ... add a record                     - - - - - - - - - - - - -   k····=`j*17k¦¦··········fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºslight¦············f>»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºsvoyager¦··········f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····=`2k/15k¦¦·········fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºshuman gens¦······f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····=`k¦/25¦···········fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º3j0··v··2jl··x··v··2jl··x»
+     append   ... add a record                     - - - - - - - - - - - - -   º3k»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_6.scrn
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0a30             0u    0x   29y    0z                                             
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_6.scrn", "unit_ymacro_voyager_6.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify final notes                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((08.004))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     clear file (so not appended)         yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     file     read for writing                     - - - - - - - - - - - - -   [[ x_name ]]                                                                                                                                                                                                               
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ now ]]=================================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   0jj··ºsvoyager NOW (years)¦»
+     append   ... add a record                     - - - - - - - - - - - - -   l····+43¦
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºsmiles so far¦·····f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····=`k*20k¦¦··········fc
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   0j···ºspercent done¦·····f>»
+     append   ... add a record                     - - - - - - - - - - - - -   l····=`k/6k¦*100¦·······fg
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   ##==[[ footer quote ]]========================================================##
+     append   ... add a record                     - - - - - - - - - - - - -   º:0a37¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ºsspace is big.  really big.  you just won't believe how vasty, hugely, mindbogglingly big.¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ºl··s<¦··y··lp··lp··lp··lp»
+     append   ... add a record                     - - - - - - - - - - - - -   º0j·s  -- hitchhiker's guide to the galaxy by the one-and-only douglas adams (noted futurist ;)¦»
+     append   ... add a record                     - - - - - - - - - - - - -   ºl··s<¦··y··lp··lp··lp··lp»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   º_0··v5l»
+     append   ... add a record                     - - - - - - - - - - - - -   
+     append   ... add a record                     - - - - - - - - - - - - -   #<<< SCREEN_PRINT /tmp/unit_ymacro_voyager_7.scrn
+     exec     handle script                        yKEYS_string                ":script /tmp/ymacro_voyager¦"                                                                        i_equal     0                                                                                                    
+     get      ... check position                   yMAP__unit                  "current"      , 0                                                                                    s_equal     MAP current      : 0f1              0u    5x    0y    0z                                             
+     exec     ... check screen against expected    yURG_diff                   "/tmp/unit_ymacro_voyager_7.scrn", "unit_ymacro_voyager_7.scrn"                                       i_equal     1                                                                                                    
+
+   COND       verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     ... return window to orginal         yX11_win_pop                                                                                                                      i_equal     0                                                                                                    
+     exec     clear file                           yURG_rm                     x_name                                                                                                i_equal     0                                                                                                    
+     exec     stop the graphics                    PROG_dusk                                                                                                                         i_equal     0                                                                                                    
      exec     wrap-up the program                  PROG__unit_end                                                                                                                    i_equal     0                                                                                                    
 
 

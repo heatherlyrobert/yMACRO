@@ -187,6 +187,32 @@ yMACRO_config           (void *a_loader, void *a_saver)
 }
 
 char
+yMACRO_graphic_config   (void *a_drawer, void *a_printer)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   --rce;  if (!yMODE_check_needs  (SMOD_MACRO)) {
+      DEBUG_YMACRO   yLOG_note    ("init must complete before config");
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(save)---------------------------*/
+   if (a_drawer  != NULL) myMACRO.e_drawer  = a_drawer;
+   DEBUG_YMACRO   yLOG_point   ("drawer"    , myMACRO.e_drawer);
+   if (a_printer != NULL) myMACRO.e_printer = a_printer;
+   DEBUG_YMACRO   yLOG_point   ("printer"   , myMACRO.e_printer);
+   /*---(update status)------------------*/
+   yMODE_conf_set   (SMOD_MACRO, '2');
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 yMACRO_wrap             (void)
 {
    return 0;

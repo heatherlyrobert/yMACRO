@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2m"
-#define     P_VERTXT    "changed global variable names to fix external collisions"
+#define     P_VERNUM    "2.2n"
+#define     P_VERTXT    "added debugging commands for scripts to simplify testing and use"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -101,23 +101,23 @@
 #define     SET_MACRO_PLAYBACK   yMACRO_modeset (MACRO_PLAYBACK);
 #define     SET_MACRO_DELAY      yMACRO_modeset (MACRO_DELAY);
 /*---(speeds)----------*/
-#define     MACRO_BLITZ        '0'
-#define     MACRO_FAST         '1'
-#define     MACRO_THOU         '2'
-#define     MACRO_HUND         '3'
-#define     MACRO_TWENTY       '4'
-#define     MACRO_TENTH        '5'
-#define     MACRO_HALF         '6'
-#define     MACRO_SEC          '7'
-#define     MACRO_DOUBLE       '8'
-#define     MACRO_TRIPLE       '9'
+/*> #define     MACRO_BLITZ        '0'                                                <* 
+ *> #define     MACRO_BLUR         '1'                                                <* 
+ *> #define     MACRO_THOU         '2'                                                <* 
+ *> #define     MACRO_HUND         '3'                                                <* 
+ *> #define     MACRO_TWENTY       '4'                                                <* 
+ *> #define     MACRO_TENTH        '5'                                                <* 
+ *> #define     MACRO_HALF         '6'                                                <* 
+ *> #define     MACRO_SEC          '7'                                                <* 
+ *> #define     MACRO_DOUBLE       '8'                                                <* 
+ *> #define     MACRO_TRIPLE       '9'                                                <*/
 /*---(updates)---------*/
-#define     MACRO_FAST         'f'  /* fast   updates */
-#define     MACRO_NORMAL       'n'  /* normal updates */
-#define     MACRO_SLOWER       's'  /* slower updates */
-#define     MACRO_BLINKS       'b'  /* stop action looking */
-#define     MACRO_PEEKS        'p'  /* very slow screen updates */
-#define     MACRO_BLIND        'd'  /* no screen updates */
+/*> #define     MACRO_FAST         'f'  /+ fast   updates +/                          <* 
+ *> #define     MACRO_NORMAL       'n'  /+ normal updates +/                          <* 
+ *> #define     MACRO_SLOWER       's'  /+ slower updates +/                          <* 
+ *> #define     MACRO_BLINKS       'b'  /+ stop action looking +/                     <* 
+ *> #define     MACRO_PEEKS        'p'  /+ very slow screen updates +/                <* 
+ *> #define     MACRO_BLIND        'd'  /+ no screen updates +/                       <*/
 
 
 /*---(recording)-------*/
@@ -170,15 +170,17 @@ struct cMY {
    char        edepth;
    char        estack    [LEN_LABEL];
    /*---(functions)------------*/
-   char      (*e_loader) (char a_name, char *a_keys);
-   char      (*e_saver ) (char a_name, char *a_keys);
+   char      (*e_loader)  (char a_name, char *a_keys);
+   char      (*e_saver )  (char a_name, char *a_keys);
+   char      (*e_printer) (char *a_name);
+   char      (*e_drawer)  (void);
    /*---(agrios)---------------*/
    uchar       g_style;
    uchar       g_active;
    uchar       g_agrios  [LEN_RECD];
-   char      (*e_getter) (char a_type, char *r_label, char *r_content, char *r_next);
-   char      (*e_forcer) (char a_type, char *a_target, char *a_contents);
-   char      (*e_pusher) (char a_dir , char  a_level, char *a_args);
+   char      (*e_getter)  (char a_type, char *r_label, char *r_content, char *r_next);
+   char      (*e_forcer)  (char a_type, char *a_target, char *a_contents);
+   char      (*e_pusher)  (char a_dir , char  a_level, char *a_args);
    char        g_level;
    char        g_curr    [MAX_AGRIOS][LEN_LABEL];
    char        g_code    [MAX_AGRIOS][LEN_RECD];
@@ -247,6 +249,7 @@ char        yMACRO_count            (void);
 uchar       ymacro_smode            (uchar a_major, uchar a_minor);
 /*---(unittest)-------------*/
 char        ymacro__unit_quiet      (void);
+char        ymacro__unit_noisy      (void);
 char        ymacro__unit_loud       (void);
 char        ymacro__unit_end        (void);
 
@@ -339,6 +342,7 @@ char        yMACRO_unskip           (void);
 char        yMACRO_skipping         (void);
 char        ymacro_script__open     (char *a_name);
 char        ymacro_script__close    (void);
+char        ymacro_script__temp     (char a_recd [LEN_RECD]);
 char        ymacro_script__read     (void);
 char        ymacro_script__start    (char *a_name, char a_style);
 

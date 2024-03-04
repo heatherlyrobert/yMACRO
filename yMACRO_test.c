@@ -12,6 +12,21 @@ static void  o___UNIT_TEST_______o () { return; }
 
 char          unit_answer [LEN_FULL];
 
+char
+ymacro__unit_noisy      (void)
+{
+   int         x_narg       = 1;
+   char       *x_args [20]  = {"yMACRO_unit" };
+   yURG_logger   (x_narg, x_args);
+   yURG_urgs     (x_narg, x_args);
+   yURG_by_name  ("kitchen"      , YURG_ON);
+   yURG_by_name  ("yparse"       , YURG_ON);
+   yURG_by_name  ("ymode"        , YURG_ON);
+   yURG_by_name  ("ykeys"        , YURG_ON);
+   yURG_by_name  ("ymacro"       , YURG_ON);
+   return 0;
+}
+
 char       /*----: set up program urgents/debugging --------------------------*/
 ymacro__unit_quiet      (void)
 {
@@ -80,8 +95,10 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
    int         x_len       =    0;
    int         i           =    0;
    char        x_ddelay    [LEN_TERSE];
+   char        x_dskip     =    0;
    char        x_dupdate   [LEN_TERSE];
    char        x_edelay    [LEN_TERSE];
+   char        x_eskip     =    0;
    char        x_eupdate   [LEN_TERSE];
    /*---(preprare)-----------------------*/
    strcpy  (unit_answer, "MACRO unit       : question not understood");
@@ -120,14 +137,14 @@ yMACRO__unit            (char *a_question, uchar a_abbr)
    }
    else if (strcmp (a_question, "speed"          )   == 0) {
       /*> snprintf (unit_answer, LEN_FULL, "MACRO speed    %c : %8.6fd %5.3fu %2d/%2ds, deb %c/%c, exe %c/%c, %2dp", myMACRO.blitzing, myMACRO.edelay, myMACRO.eupdate, myMACRO.cskip, myMACRO.nskip, myMACRO.ddelay, myMACRO.dupdate, myMACRO.edelay, myMACRO.eupdate, myMACRO.pauses);   <*/
-      yKEYS_ddelay_info  (myMACRO.ddelay , x_ddelay , NULL, NULL);
+      yKEYS_ddelay_info  (myMACRO.ddelay , x_ddelay , &x_dskip, NULL);
       yKEYS_dupdate_info (myMACRO.dupdate, x_dupdate, NULL);
-      yKEYS_ddelay_info  (myMACRO.edelay , x_edelay , NULL, NULL);
+      yKEYS_ddelay_info  (myMACRO.edelay , x_edelay , &x_eskip, NULL);
       yKEYS_dupdate_info (myMACRO.eupdate, x_eupdate, NULL);
       /*> snprintf (unit_answer, LEN_FULL, "MACRO speed    %c : deb %c/%c, exe %c/%c, %2dp", myMACRO.blitzing, myMACRO.ddelay, myMACRO.dupdate, myMACRO.edelay, myMACRO.eupdate, myMACRO.pauses);   <*/
-      snprintf (unit_answer, LEN_FULL, "MACRO speed      : exec  %c %-5.5s, %c %-5.5s  §  delay  %c %-5.5s, %c %-5.5s  §  macro  %c %c %2dp",
-            myMACRO.edelay, x_edelay, myMACRO.eupdate, x_eupdate,
-            myMACRO.ddelay, x_ddelay, myMACRO.dupdate, x_dupdate,
+      snprintf (unit_answer, LEN_FULL, "MACRO speed      : exec  %c %-5.5s %2d, %c %-5.5s  §  delay  %c %-5.5s %2d, %c %-5.5s  §  macro  %c %c %2dp",
+            myMACRO.edelay, x_edelay, x_eskip, myMACRO.eupdate, x_eupdate,
+            myMACRO.ddelay, x_ddelay, x_dskip, myMACRO.dupdate, x_dupdate,
             myMACRO.blitz, myMACRO.blitzing, myMACRO.pauses);
       return unit_answer;
    }
