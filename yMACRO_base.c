@@ -92,6 +92,21 @@ yMACRO_global_init      (void)
    return 0;
 }
 
+char
+yMACRO_reinit           (void)
+{
+   /*---(header)-------------------------*/
+   DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(clear data)---------------------*/
+   ymacro_purge     (MACRO_ALL);
+   yMACRO_reset_all ();
+   /*---(agrios)-------------------------*/
+   ymacro_agrios_reinit ();
+   /*---(complete)-----------------------*/
+   DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 char         /*-> initialize macro environment -------[ shoot  [gz.210.001.01]*/ /*-[00.0000.102.4]-*/ /*-[--.---.---.--]-*/
 yMACRO_init             (void)
 {

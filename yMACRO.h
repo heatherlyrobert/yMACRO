@@ -19,6 +19,7 @@ char        yMACRO_global_init      (void);       /* for other unit tests */
 char        yMACRO_init             (void);
 char        yMACRO_config           (void *a_loader, void *a_saver);
 char        yMACRO_graphic_config   (void *a_drawer, void *a_printer);
+char        yMACRO_reinit           (void);
 char        yMACRO_wrap             (void);
 char        yMACRO_reset_all        (void);
 char        yMACRO_hmode            (uchar a_major, uchar a_minor);
@@ -38,6 +39,8 @@ char        yMACRO_exe_pos          (char *a_name, short *a_pos);
 char        yMACRO_exe_current      (uchar *a_abbr, short *a_len, short *a_pos, uchar *a_prev, uchar *a_curr);
 char        yMACRO_exe_repos        (int a_pos);
 uchar       yMACRO_exec             (uchar a_play);
+char        yMACRO_true_blitzing    (void);
+char        yMACRO_norm_blitzing    (void);
 
 /*===[[ yMACRO_file.c ]]======================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
@@ -91,6 +94,7 @@ char        yMACRO_skipping         (void);
 char        yMACRO_script_start     (char *a_name);
 char        yMACRO_script_follow    (char *a_name);
 char        yMACRO_script_playback  (char *a_name);
+char        yMACRO_script_rapido    (char *a_name);
 char        yMACRO_script_blitz     (char *a_name);
 
 
@@ -114,6 +118,7 @@ char        yMACRO_dupdate          (char a_update);
 /*===[[ yMACRO_agrios.c ]]====================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 /*---(support)--------------*/
+char        ymacro_agrios_reinit    (void);
 char        ymacro_agrios_init      (void);
 char        yMACRO_agrios_config    (void *a_getter, void *a_forcer, void *a_pusher);
 char        ymacro_agrios__reset    (void);
@@ -135,6 +140,7 @@ char        ymacro_agrios__start    (char *a_label, uchar a_style);
 char        yMACRO_agrios_start     (char *a_label);
 char        yMACRO_agrios_follow    (char *a_label);
 char        yMACRO_agrios_playback  (char *a_label);
+char        yMACRO_agrios_rapido    (char *a_label);
 char        yMACRO_agrios_blitz     (char *a_label);
 /*---(done------------------*/
 

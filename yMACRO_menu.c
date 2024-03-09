@@ -43,7 +43,7 @@ yMACRO_menu_end         (void)
       DEBUG_YMACRO   yLOG_char    ("emode aft" , myMACRO.emode);
       switch (myMACRO.emode) {
       case MACRO_RUN      :
-         if      (myMACRO.blitz    == 'y')  ymacro_set2blitz ();
+         if (strchr ("Yy", myMACRO.blitz) != NULL)  ymacro_set2blitz ();
          else if (myMACRO.blitzing == 'y')  ymacro_set2blitz ();
          else                               ymacro_set2run   ();
          break;

@@ -159,7 +159,7 @@ ymacro_script__temp     (char a_recd [LEN_RECD])
       s_dsaved = myMACRO.edelay;
       s_dblitz = myMACRO.blitz;
       yMACRO_edelay ('0');
-      myMACRO.blitz = 'y';
+      myMACRO.blitz = 'Y';
       rcf = 1;
    }
    --rce;  if (rcf == 0 && strncmp (a_recd, "#<<< UNBLITZ"    , 12) == 0) {
@@ -416,12 +416,20 @@ ymacro_script__start    (char *a_name, char a_style)
    char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_YMACRO   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YMACRO   yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YMACRO   yLOG_info    ("a_name"    , a_name);
    rc = ymacro_script__open (a_name);
    DEBUG_YMACRO   yLOG_value   ("open"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_YMACRO   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_YMACRO   yLOG_char    ("a_style"   , a_style);
    if (a_style == '!') {
       /*> yvikeys_sizes_switch ("status", "script");                                  <*/
       a_style = '.';
@@ -430,7 +438,7 @@ ymacro_script__start    (char *a_name, char a_style)
    DEBUG_YMACRO   yLOG_char    ("s_style"   , s_style);
    yMACRO_unskip ();
    DEBUG_YMACRO   yLOG_char    ("ignore"    , myMACRO.ignore);
-   if (myMACRO.blitz == 'y')  myMACRO.blitzing = 'y';
+   if (strchr ("Yy", myMACRO.blitz) != NULL)  myMACRO.blitzing = 'y';
    DEBUG_YMACRO   yLOG_char    ("blitz"     , myMACRO.blitz);
    DEBUG_YMACRO   yLOG_char    ("blitzing"  , myMACRO.blitzing);
    rc = ymacro_script__read ();
@@ -447,5 +455,6 @@ ymacro_script__start    (char *a_name, char a_style)
 char yMACRO_script_start     (char *a_name) { return ymacro_script__start (a_name, '.'); }
 char yMACRO_script_follow    (char *a_name) { return ymacro_script__start (a_name, '!'); }
 char yMACRO_script_playback  (char *a_name) { return ymacro_script__start (a_name, ','); }
-char yMACRO_script_blitz     (char *a_name) { myMACRO.blitz  = 'y';  return ymacro_script__start (a_name, '.'); }
+char yMACRO_script_rapido    (char *a_name) { myMACRO.blitz  = 'y';  return ymacro_script__start (a_name, '.'); }
+char yMACRO_script_blitz     (char *a_name) { myMACRO.blitz  = 'Y';  return ymacro_script__start (a_name, '.'); }
 

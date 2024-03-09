@@ -24,12 +24,13 @@ ymacro_agrios_style     (char a_style)
 static void      o___SUPPORT_________________o (void) {;}
 
 char
-ymacro_agrios_init      (void)
-{
+ymacro_agrios_reinit    (void)
+{  /*---(notes)--------------------------*/
+   /*
+    *  leave configuration in place, but clear everything else
+    *
+    */
    int         i           =    0;
-   myMACRO.e_getter = NULL;
-   myMACRO.e_forcer = NULL;
-   myMACRO.e_pusher = NULL;
    myMACRO.g_level  = 0;
    for (i = 0; i < MAX_AGRIOS; ++i) {
       ystrlcpy (myMACRO.g_curr [i], "", LEN_LABEL);
@@ -39,6 +40,26 @@ ymacro_agrios_init      (void)
    myMACRO.g_style  = '.';
    myMACRO.g_active = '-';
    strcpy (myMACRO.g_agrios, "");
+   return 0;
+}
+
+char
+ymacro_agrios_init      (void)
+{
+   int         i           =    0;
+   myMACRO.e_getter = NULL;
+   myMACRO.e_forcer = NULL;
+   myMACRO.e_pusher = NULL;
+   ymacro_agrios_reinit ();
+   /*> myMACRO.g_level  = 0;                                                          <* 
+    *> for (i = 0; i < MAX_AGRIOS; ++i) {                                             <* 
+    *>    ystrlcpy (myMACRO.g_curr [i], "", LEN_LABEL);                               <* 
+    *>    ystrlcpy (myMACRO.g_code [i], "", LEN_RECD);                                <* 
+    *>    ystrlcpy (myMACRO.g_next [i], "", LEN_LABEL);                               <* 
+    *> }                                                                              <* 
+    *> myMACRO.g_style  = '.';                                                        <* 
+    *> myMACRO.g_active = '-';                                                        <* 
+    *> strcpy (myMACRO.g_agrios, "");                                                 <*/
    return 0;
 }
 
@@ -800,7 +821,7 @@ ymacro_agrios__start    (char *a_label, uchar a_style)
    }
    myMACRO.g_style = a_style;
    DEBUG_YMACRO   yLOG_char    ("g_style"   , myMACRO.g_style);
-   if (myMACRO.blitz == 'y')  myMACRO.blitzing = 'y';
+   if (strchr ("Yy", myMACRO.blitz) != NULL)  myMACRO.blitzing = 'y';
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitz"   , myMACRO.blitz);
    DEBUG_YMACRO   yLOG_char    ("myMACRO.blitzing", myMACRO.blitzing);
    /*---(begin)--------------------------*/
@@ -818,5 +839,6 @@ ymacro_agrios__start    (char *a_label, uchar a_style)
 char yMACRO_agrios_start     (char *a_label) { return ymacro_agrios__start (a_label, ' '); }
 char yMACRO_agrios_follow    (char *a_label) { return ymacro_agrios__start (a_label, '!'); }
 char yMACRO_agrios_playback  (char *a_label) { return ymacro_agrios__start (a_label, ','); }
-char yMACRO_agrios_blitz     (char *a_label) { myMACRO.blitz  = 'y';  return ymacro_agrios__start (a_label, ' '); }
+char yMACRO_agrios_rapido    (char *a_label) { myMACRO.blitz  = 'y';  return ymacro_agrios__start (a_label, ' '); }
+char yMACRO_agrios_blitz     (char *a_label) { myMACRO.blitz  = 'Y';  return ymacro_agrios__start (a_label, ' '); }
 

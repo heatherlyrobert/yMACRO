@@ -300,9 +300,12 @@ ymacro_set2blitz        (void)
 {
    DEBUG_YMACRO   yLOG_note    (__FUNCTION__);
    DEBUG_YMACRO   yLOG_char    ("blitzing"  , myMACRO.blitzing);
-   if (myMACRO.blitzing == 'y') return 0;
+   /*> if (myMACRO.blitzing == 'y') return 0;                                         <*/
    SET_MACRO_RUN;
-   yKEYS_loop_macro (MACRO_BLITZ, MACRO_BLIND);
+   if      (myMACRO.blitz    == 'Y')  yKEYS_loop_macro (MACRO_BLITZ, MACRO_BLIND);
+   else if (myMACRO.blitz    == 'y')  yKEYS_loop_macro (MACRO_BLITZ, '-');
+   else if (myMACRO.blitzing == 'y')  return 0;
+   else                               yKEYS_loop_macro (MACRO_BLITZ, MACRO_BLIND);
    myMACRO.blitzing = 'y';
    return 0;
 }

@@ -46,8 +46,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "2.--, clean, improve, and expand"
 #define     P_VERMINOR  "2.2-, better inter-library communication"
-#define     P_VERNUM    "2.2n"
-#define     P_VERTXT    "added debugging commands for scripts to simplify testing and use"
+#define     P_VERNUM    "2.2o"
+#define     P_VERTXT    "significant delay/pause updates for integration testing with gyges"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -57,6 +57,18 @@
 /*                      ´·········1·········2·········3·········4·········5·········6·········7*/
 /*===[[ HEADER END ]]=========================================================*/
 
+
+/*
+ *   true blitz    runs at fastest (1us) still with sleep loop, skipping all NOOP and SKIP
+ *   rapido        runs at fastest (1us) still with sleep loop, skipping all NOOP, keeping all SKIP
+ *   blitz         runs at fastest (1us) still with sleep loop, skipping all NOOP, reducing Ï and « to ·
+ *   script        runs at edelay/ddelay still with sleep loop, skipping all NOOP, keeping all SKIP
+ *   playback      runs step-by-step under user control, reducing NOOP, SKIP, to one
+ *
+ *
+ *
+ *
+ */
 
 /*---(ansi-c standard)-------------------*/
 #include    <stdio.h>             /* clibc  standard input/output             */
@@ -94,6 +106,7 @@
 #define     IF_MACRO_NOT_PLAYING if (yMACRO_exe_mode () == MACRO_STOP     )
 #define     IF_MACRO_PLAYING     if (yMACRO_exe_mode () != MACRO_STOP     )
 #define     IF_MACRO_ON          if (yMACRO_exe_mode () != MACRO_STOP     ) 
+#define     IF_MACRO_TRUE_BLITZ  if (myMACRO.blitz == 'Y') 
 /*---(setting)---------*/
 #define     SET_MACRO_OFF        yMACRO_modeset (MACRO_STOP);
 #define     SET_MACRO_STOP       yMACRO_modeset (MACRO_STOP);
@@ -354,6 +367,7 @@ char*       yMACRO__unit            (char *a_question, uchar a_abbr);
 /*===[[ yMACRO_agrios.c ]]====================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        ymacro_agrios_style     (char a_style);
+char        ymacro_agrios_reinit    (void);
 char        ymacro_agrios_init      (void);
 char        ymacro_agrios__read     (char a_first);
 
