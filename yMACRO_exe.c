@@ -565,14 +565,14 @@ ymacro_exe_key          (void)
    x_uch = zMACRO_macros [myMACRO.ecurr].keys [zMACRO_macros [myMACRO.ecurr].pos];
    DEBUG_YMACRO   yLOG_value   ("x_uch"     , x_uch);
    /*---(check key)----------------------*/
-   if (x_uch == G_CHAR_SPACE) {
+   if (x_uch == G_CHAR_SPACE || x_uch == G_CHAR_WAIT) {
       /*> if (yMODE_curr () == UMOD_INPUT) {                                          <* 
-       *>    DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in input mode");        <* 
+       *>    DEBUG_YMACRO   yLOG_note    ("found a spacer (·«) in input mode");        <* 
        *>    DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);                              <* 
        *>    return G_KEY_SPACE;                                                      <* 
        *> }                                                                           <*/
       if (yMODE_curr () == UMOD_SENDKEYS) {
-         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in sendkeys mode");
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·«) in sendkeys mode");
          DEBUG_YMACRO   yLOG_note    ("returning G_KEY_SKIP");
          DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_SKIP;
@@ -589,11 +589,11 @@ ymacro_exe_key          (void)
       }
       /*---(handle it)----------------------*/
       IF_MACRO_RUN {
-         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in macro run mode");
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·«) in macro run mode");
          myMACRO.cskip = myMACRO.nskip;
          ++myMACRO.epos;
-         if (x_prev == '·') {
-            DEBUG_YMACRO   yLOG_note    ("returning G_KEY_NOOP, only one tick/beat pause on first in series");
+         if (x_uch == G_CHAR_SPACE && x_prev == '·') {
+            DEBUG_YMACRO   yLOG_note    ("returning G_KEY_NOOP, duplicate (·) tick/beat pause only on first in series");
             DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
             return G_KEY_NOOP;
          } else IF_MACRO_TRUE_BLITZ {
@@ -606,7 +606,7 @@ ymacro_exe_key          (void)
             return G_KEY_SKIP;
          }
       } else {
-         DEBUG_YMACRO   yLOG_note    ("found a spacer (·) in macro playback/debug mode");
+         DEBUG_YMACRO   yLOG_note    ("found a spacer (·«) in macro playback/debug mode");
          DEBUG_YMACRO   yLOG_note    ("returning G_KEY_SKIP");
          DEBUG_YMACRO   yLOG_exit    (__FUNCTION__);
          return G_KEY_SKIP;
@@ -674,10 +674,10 @@ ymacro_exe_control      (uchar a_key)
       DEBUG_YMACRO   yLOG_note    ("returning G_KEY_NOOP");
       a_key = G_KEY_NOOP;
       break;
-   case G_CHAR_SPACE   :
-      DEBUG_YMACRO   yLOG_note    ("macro spacer (·)");
+   case G_CHAR_SPACE   : case G_CHAR_WAIT   :
+      DEBUG_YMACRO   yLOG_note    ("macro spacers (·«)");
       IF_MACRO_RUN {
-         if (x_prev == '·') {
+         if (a_key == G_KEY_SPACE && x_prev == '·') {
             DEBUG_YMACRO   yLOG_note    ("returning G_KEY_NOOP, only one tick/beat pause on first in series");
             a_key = G_KEY_NOOP;
          }
@@ -709,6 +709,7 @@ ymacro_exe_control      (uchar a_key)
       }
       break;
    case G_CHAR_HUGEDOT :
+      DEBUG_YMACRO   yLOG_note    ("macro huge dot (Ï)");
       IF_MACRO_RUN {
          IF_MACRO_TRUE_BLITZ {
             DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), ignored in RUN while TRUE BLITZING");
@@ -733,45 +734,45 @@ ymacro_exe_control      (uchar a_key)
          a_key = G_KEY_SKIP;
       }
       break;
-   case G_CHAR_WAIT    :
-      DEBUG_YMACRO   yLOG_note    ("wait («)");
-      /*> DEBUG_YMACRO   yLOG_double  ("delay"     , myVIKEYS.delay);                   <*/
-      DEBUG_YMACRO   yLOG_value   ("skip"      , myMACRO.nskip);
-      yKEYS_loop_get (&x_delay, s, &x_update, t);
-      DEBUG_YMACRO   yLOG_double  ("x_delay"   , x_delay);
-      DEBUG_YMACRO   yLOG_info    ("s"         , s);
-      DEBUG_YMACRO   yLOG_double  ("x_update"  , x_update);
-      DEBUG_YMACRO   yLOG_info    ("t"         , t);
-      IF_MACRO_NOT_RUN {
-         DEBUG_YMACRO   yLOG_note    ("wait half-second («), becomes one beet in playback/debug");
-         myMACRO.pauses =  0;
-         a_key = G_KEY_SKIP;
-      } IF_MACRO_TRUE_BLITZ {
-         DEBUG_YMACRO   yLOG_note    ("wait half-second («), ignored in RUN while TRUE BLITZING");
-         myMACRO.pauses =  0;
-         a_key = G_KEY_NOOP;
-      } else if (myMACRO.edelay == MACRO_BLITZ) {
-         DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), made into one · in normal BLITZ/RAPIDO");
-         DEBUG_YMACRO   yLOG_note    ("returning G_KEY_SKIP, in normal BLITZ mode");
-         myMACRO.pauses =  0;
-         a_key = G_KEY_SKIP;
-      } else if (x_delay >= 0.500) {
-         DEBUG_YMACRO   yLOG_note    ("wait half-second («), running too slow, pauses not required");
-         myMACRO.pauses =  0;
-         a_key = G_KEY_SKIP;
-      } else if (x_delay < 0.009) {
-         DEBUG_YMACRO   yLOG_note    ("wait half-second («), running too fast, pauses are proportional");
-         myMACRO.pauses = 19;       /* for total of 20 loops in main */
-         a_key = G_KEY_SKIP;
-      } else {
-         DEBUG_YMACRO   yLOG_note    ("wait half-second («), sweet spot, pauses are exactly 0.5s");
-         DEBUG_YMACRO   yLOG_double  ("calc"      , 0.5 / x_delay);
-         DEBUG_YMACRO   yLOG_value   ("trunc"     , trunc (0.5 / x_delay));
-         myMACRO.pauses = trunc (0.5 / x_delay) - 1;
-         a_key = G_KEY_SKIP;
-      }
-      DEBUG_YMACRO   yLOG_value   ("myMACRO.pauses"   , myMACRO.pauses);
-      break;
+   /*> case G_CHAR_WAIT    :                                                                                    <* 
+    *>    DEBUG_YMACRO   yLOG_note    ("wait («)");                                                             <* 
+    *>    /+> DEBUG_YMACRO   yLOG_double  ("delay"     , myVIKEYS.delay);                   <+/                 <* 
+    *>    DEBUG_YMACRO   yLOG_value   ("skip"      , myMACRO.nskip);                                            <* 
+    *>    yKEYS_loop_get (&x_delay, s, &x_update, t);                                                           <* 
+    *>    DEBUG_YMACRO   yLOG_double  ("x_delay"   , x_delay);                                                  <* 
+    *>    DEBUG_YMACRO   yLOG_info    ("s"         , s);                                                        <* 
+    *>    DEBUG_YMACRO   yLOG_double  ("x_update"  , x_update);                                                 <* 
+    *>    DEBUG_YMACRO   yLOG_info    ("t"         , t);                                                        <* 
+    *>    IF_MACRO_NOT_RUN {                                                                                    <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("wait half-second («), becomes one beet in playback/debug");          <* 
+    *>       myMACRO.pauses =  0;                                                                               <* 
+    *>       a_key = G_KEY_SKIP;                                                                                <* 
+    *>    } IF_MACRO_TRUE_BLITZ {                                                                               <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("wait half-second («), ignored in RUN while TRUE BLITZING");          <* 
+    *>       myMACRO.pauses =  0;                                                                               <* 
+    *>       a_key = G_KEY_NOOP;                                                                                <* 
+    *>    } else if (myMACRO.edelay == MACRO_BLITZ) {                                                           <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("wait five tick/beat (Ï), made into one · in normal BLITZ/RAPIDO");   <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("returning G_KEY_SKIP, in normal BLITZ mode");                        <* 
+    *>       myMACRO.pauses =  0;                                                                               <* 
+    *>       a_key = G_KEY_SKIP;                                                                                <* 
+    *>    } else if (x_delay >= 0.500) {                                                                        <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("wait half-second («), running too slow, pauses not required");       <* 
+    *>       myMACRO.pauses =  0;                                                                               <* 
+    *>       a_key = G_KEY_SKIP;                                                                                <* 
+    *>    } else if (x_delay < 0.009) {                                                                         <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("wait half-second («), running too fast, pauses are proportional");   <* 
+    *>       myMACRO.pauses = 19;       /+ for total of 20 loops in main +/                                     <* 
+    *>       a_key = G_KEY_SKIP;                                                                                <* 
+    *>    } else {                                                                                              <* 
+    *>       DEBUG_YMACRO   yLOG_note    ("wait half-second («), sweet spot, pauses are exactly 0.5s");         <* 
+    *>       DEBUG_YMACRO   yLOG_double  ("calc"      , 0.5 / x_delay);                                         <* 
+    *>       DEBUG_YMACRO   yLOG_value   ("trunc"     , trunc (0.5 / x_delay));                                 <* 
+    *>       myMACRO.pauses = trunc (0.5 / x_delay) - 1;                                                        <* 
+    *>       a_key = G_KEY_SKIP;                                                                                <* 
+    *>    }                                                                                                     <* 
+    *>    DEBUG_YMACRO   yLOG_value   ("myMACRO.pauses"   , myMACRO.pauses);                                    <* 
+    *>    break;                                                                                                <*/
    case G_CHAR_BREAK   :
       DEBUG_YMACRO   yLOG_note    ("break (ª)");
       ymacro_set2play ();
